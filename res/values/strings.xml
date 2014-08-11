@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">微天气</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    
+        <!-- 上拉下拉 -->
+    <string name="pull_to_refresh_tap_label">下拉刷新</string>
+    <string name="pull_to_refresh_release_label">松开刷新数据</string>
+    <string name="loadmore_label">正在加载...</string>
+    <string name="xlistview_header_last_time">上次更新时间：</string>
+    <string name="pull_to_refresh_refreshing_label">查看更多</string>
+    <string name="pull_to_refresh_pull_label">松开载入更多</string>
+    <string name="loading_label">再按一次退出</string>
+    
+    
+    
+    <string name="white">白色</string>
+    <string name="black">黑色</string>
+    <string name="red">红色</string>
+    <string name="lavender">淡紫色</string>
+    <string name="lightcyan">亮青色</string>
+    
+    
+    <string name="jiaxing">嘉兴</string>
+    <string name="jiashan">嘉善</string>
+    <string name="pinghu">平湖</string>
+    <string name="tongxiang">桐乡</string>
+    <string name="haiyan">海盐</string>
+    <string name="haining">海宁</string>
+    
+    
+    
+    
+
+</resources>

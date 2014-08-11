@@ -44,9 +44,10 @@ public class SettingActivity extends Activity{
 
 	private List<String> getColor() {
 		// TODO Auto-generated method stub
-		listColors.add("°×É«");
-		listColors.add("×ÏÉ«");
-		listColors.add("ºìÉ«");
+		listColors.add("é»‘è‰²");
+		listColors.add("ç™½è‰²");
+		listColors.add("ç´«è‰²");
+		listColors.add("çº¢è‰²");
 		return listColors;
 	}
 
@@ -54,12 +55,12 @@ public class SettingActivity extends Activity{
 	private List<String> getCity() {
 		// TODO Auto-generated method stub
 
-		listCitys.add("¼ÎĞË");
-		listCitys.add("¼ÎÉÆ");
-		listCitys.add("Æ½ºş");
-		listCitys.add("Í©Ïç");
-		listCitys.add("º£ÑÎ");
-		listCitys.add("º£Äş");
+		listCitys.add("å˜‰å–„");
+		listCitys.add("å¹³æ¹–");
+		listCitys.add("å˜‰å…´");
+		listCitys.add("æ¡ä¹¡");
+		listCitys.add("æµ·ç›");
+		listCitys.add("æµ·å®");
 		return listCitys;
 	}
 

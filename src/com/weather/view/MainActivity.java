@@ -17,6 +17,7 @@ import android.view.GestureDetector.OnGestureListener;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ListView;
@@ -38,6 +39,7 @@ public class MainActivity extends Activity{
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		getWindow().setBackgroundDrawableResource(R.color.blue);
 		listView = (ListView) findViewById(R.id.listView);
 		listView.setAdapter(new MyAdapter(this, getData()));
 		date = (TextView) findViewById(R.id.date);
@@ -63,7 +65,7 @@ public class MainActivity extends Activity{
 	private void getDate() {
 		// TODO Auto-generated method stub
 		Calendar calendar = Calendar.getInstance();
-		int month = calendar.get(Calendar.MONTH);
+		int month = calendar.get(Calendar.MONTH)+1;
 		int day = calendar.get(Calendar.DATE);
 		date.setText(month + "." + day);
 	}
@@ -85,12 +87,18 @@ public class MainActivity extends Activity{
 
 				try {
 					jsonArr = new JSONArray(json);
-					obj = (JSONObject) jsonArr.get(0);
+					obj = (JSONObject) jsonArr.get(2);
 					list.add(obj.getString("city"));
 					list.add(obj.getString("type"));
 					list.add(obj.getString("temperature"));
 					list.add(obj.getString("wind_direction"));
 					list.add(obj.getString("wind_force"));
+					Log.v("wang", "   city0  =" + ((JSONObject) jsonArr.get(0)).getString("city"));
+					Log.v("wang", "   city1  =" + ((JSONObject) jsonArr.get(1)).getString("city"));
+					Log.v("wang", "   city2  =" + ((JSONObject) jsonArr.get(2)).getString("city"));
+					Log.v("wang", "   city3  =" + ((JSONObject) jsonArr.get(3)).getString("city"));
+					Log.v("wang", "   city4  =" + ((JSONObject) jsonArr.get(4)).getString("city"));
+					Log.v("wang", "   city5  =" + ((JSONObject) jsonArr.get(5)).getString("city"));
 					// for (int i = 0; i < jsonArr.length(); i++) {
 					// obj = (JSONObject) jsonArr.getssss(i);
 					// list.add(obj.getString("city"));

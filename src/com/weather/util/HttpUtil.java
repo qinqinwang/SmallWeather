@@ -22,17 +22,14 @@ public class HttpUtil {
 	}
 
 	public static String getJsonContent(String urlStr) {
-		try {// 获取HttpURLConnection连接对象
+		try {
 			URL url = new URL(urlStr);
 			HttpURLConnection httpConn = (HttpURLConnection) url
 					.openConnection();
-			// 设置连接属性
 			httpConn.setConnectTimeout(30000);
 			httpConn.setReadTimeout(30000);
 			httpConn.setDoInput(true);
 			httpConn.setRequestMethod("GET");
-			// 获取相应码
-
 			int respCode = httpConn.getResponseCode();
 			if (respCode == 200) {
 				return ConvertStream2Json(httpConn.getInputStream());
@@ -49,16 +46,13 @@ public class HttpUtil {
 
 	private static String ConvertStream2Json(InputStream inputStream) {
 		String jsonStr = "";
-		// ByteArrayOutputStream相当于内存输出流
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		byte[] buffer = new byte[1024];
 		int len = 0;
-		// 将输入流转移到内存输出流中
 		try {
 			while ((len = inputStream.read(buffer, 0, buffer.length)) != -1) {
 				out.write(buffer, 0, len);
 			}
-			// 将内存流转换为字符串
 			jsonStr = new String(out.toByteArray());
 			write(jsonStr);
 		} catch (IOException e) {

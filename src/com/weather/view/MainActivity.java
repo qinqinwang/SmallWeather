@@ -39,7 +39,7 @@ public class MainActivity extends Activity{
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		getWindow().setBackgroundDrawableResource(R.color.blue);
+		getWindow().setBackgroundDrawableResource(R.color.red);
 		listView = (ListView) findViewById(R.id.listView);
 		listView.setAdapter(new MyAdapter(this, getData()));
 		date = (TextView) findViewById(R.id.date);
@@ -53,9 +53,6 @@ public class MainActivity extends Activity{
 				Intent intent = new Intent();
 				intent.setClass(MainActivity.this, SettingActivity.class);
 				startActivity(intent);
-				overridePendingTransition(R.anim.push_left_out,
-						R.anim.push_left_in);
-				MainActivity.this.finish();
 
 			}
 		});

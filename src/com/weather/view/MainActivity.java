@@ -14,10 +14,13 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -56,6 +59,7 @@ public class MainActivity extends Activity {
 			editor.putInt("cityPosition", 2);
 			editor.commit();
 			getData(true);
+			getWindow().setBackgroundDrawableResource(R.color.red);
 			((MyApplication) MainActivity.this.getApplication()).setFlag(false);
 		} else {
 			getData(false);
@@ -67,24 +71,28 @@ public class MainActivity extends Activity {
 				editor.putInt("colorPosition", colorPosition);
 				editor.commit();
 				if (colorPosition == 0) {
-					getWindow().setBackgroundDrawableResource(R.color.black);
-				} else if (colorPosition == 1) {
-					getWindow().setBackgroundDrawableResource(R.color.blue);
-				} else if (colorPosition == 2) {
-					getWindow().setBackgroundDrawableResource(R.color.purple);
-				} else if (colorPosition == 3) {
 					getWindow().setBackgroundDrawableResource(R.color.red);
+				} else if (colorPosition == 1) {
+					getWindow().setBackgroundDrawableResource(R.color.green);
+				} else if (colorPosition == 2) {
+					getWindow().setBackgroundDrawableResource(R.color.blue);
+				}else if (colorPosition == 3) {
+					getWindow().setBackgroundDrawableResource(R.color.purple);
+				} else if (colorPosition == 4) {
+					getWindow().setBackgroundDrawableResource(R.color.rose);
 				}
 			} else {
 				colorP = sp.getInt("colorPosition", 0);
 				if (colorP == 0) {
-					getWindow().setBackgroundDrawableResource(R.color.black);
-				} else if (colorP == 1) {
-					getWindow().setBackgroundDrawableResource(R.color.blue);
-				} else if (colorP == 2) {
-					getWindow().setBackgroundDrawableResource(R.color.purple);
-				} else if (colorP == 3) {
 					getWindow().setBackgroundDrawableResource(R.color.red);
+				} else if (colorP == 1) {
+					getWindow().setBackgroundDrawableResource(R.color.green);
+				} else if (colorP == 2) {
+					getWindow().setBackgroundDrawableResource(R.color.blue);
+				} else if (colorP == 3) {
+					getWindow().setBackgroundDrawableResource(R.color.purple);
+				}else if (colorP == 4) {
+					getWindow().setBackgroundDrawableResource(R.color.rose);
 				}
 			}
 		}
@@ -103,6 +111,7 @@ public class MainActivity extends Activity {
 
 			}
 		});
+		
 
 	}
 
@@ -183,21 +192,12 @@ public class MainActivity extends Activity {
 					list.add(obj.getString("city"));
 					list.add(obj.getString("type"));
 					list.add(obj.getString("temperature"));
-					list.add(obj.getString("wind_direction"));
-					list.add(obj.getString("wind_force"));
+					list.add(obj.getString("wind_direction")+" "+obj.getString("wind_force"));
+//					list.add(obj.getString("wind_force"));
 
 					myAdapter = new MyAdapter(MainActivity.this, list, true);
 					listView.setAdapter(myAdapter);
 					myAdapter.notifyDataSetChanged();
-
-					// for (int i = 0; i < jsonArr.length(); i++) {
-					// obj = (JSONObject) jsonArr.getssss(i);
-					// list.add(obj.getString("city"));
-					// list.add(obj.getString("type"));
-					// list.add(obj.getString("temperature"));
-					// list.add(obj.getString("wind_direction"));
-					// list.add(obj.getString("wind_force"));
-					// }
 
 				} catch (JSONException e1) {
 					// TODO Auto-generated catch block
@@ -214,11 +214,10 @@ public class MainActivity extends Activity {
 					jsonArr = new JSONArray(json);
 					obj = (JSONObject) jsonArr.get(cityP);
 					list1.add(obj.getString("city"));
-					Log.v("wang", "  obj.getString  =" + obj.getString("city"));
 					list1.add(obj.getString("type"));
 					list1.add(obj.getString("temperature"));
-					list1.add(obj.getString("wind_direction"));
-					list1.add(obj.getString("wind_force"));
+					list1.add(obj.getString("wind_direction")+"  "+obj.getString("wind_force"));
+//					list1.add(obj.getString("wind_force"));
 					myAdapter = new MyAdapter(MainActivity.this, list1, true);
 					listView.setAdapter(myAdapter);
 					myAdapter.notifyDataSetChanged();
@@ -238,5 +237,25 @@ public class MainActivity extends Activity {
 		// TODO Auto-generated method stub
 		MainActivity.this.finish();
 		return super.onKeyDown(keyCode, event);
+	}
+	
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.main, menu);
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		// Handle action bar item clicks here. The action bar will
+		// automatically handle clicks on the Home/Up button, so long
+		// as you specify a parent activity in AndroidManifest.xml.
+		int id = item.getItemId();
+		if (id == R.id.action_settings) {
+			return true;
+		}
+		return super.onOptionsItemSelected(item);
 	}
 }

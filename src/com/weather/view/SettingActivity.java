@@ -69,10 +69,11 @@ public class SettingActivity extends Activity {
 
 	private List<String> getColor() {
 		// TODO Auto-generated method stub
-		listColors.add("黑色");
-		listColors.add("蓝色");
-		listColors.add("紫色");
-		listColors.add("红色");
+		listColors.add("红");
+		listColors.add("绿");
+		listColors.add("蓝");
+		listColors.add("紫");
+		listColors.add("玫红");
 		return listColors;
 	}
 

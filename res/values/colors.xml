@@ -2,6 +2,14 @@
 <resources>
     
     
+     <color name="red">#ff6666</color> <!-- 红 --> 
+    <color name="green">#88C901</color> <!-- 绿 --> 
+    <color name="blue">#01B4F8</color> <!--蓝 --> 
+    <color name="purple">#DE00F0</color> <!-- 紫色 --> 
+    <color name="rose">#FF3586</color> <!-- 玫红 --> 
+    
+    
+    
     <color name="white">#ffffff</color> <!-- 白色 --> 
     <color name="ivory">#fffff0</color> <!-- 象牙色 --> 
     <color name="lightyellow">#ffffe0</color> <!-- 亮黄色 --> 
@@ -32,7 +40,6 @@
     <color name="deeppink">#ff1493</color> <!-- 深粉红色 --> 
     <color name="fuchsia">#ff00ff</color> <!-- 紫红色 --> 
     <color name="magenta">#ff00ff</color> <!-- 红紫色 --> 
-    <color name="red">#ff0000</color> <!-- 红色 --> 
     <color name="oldlace">#fdf5e6</color> <!-- 老花色 --> 
     <color name="lightgoldenrodyellow">#fafad2</color> <!-- 亮金黄色 --> 
     <color name="linen">#faf0e6</color> <!-- 亚麻色 --> 
@@ -99,7 +106,6 @@
     <color name="gray">#808080</color> <!-- 灰色 --> 
     <color name="grey">#808080</color> <!-- 灰色 --> 
     <color name="olive">#808000</color> <!-- 橄榄色 --> 
-    <color name="purple">#800080</color> <!-- 紫色 --> 
     <color name="maroon">#800000</color> <!-- 粟色 --> 
     <color name="aquamarine">#7fffd4</color> <!-- 碧绿色 --> 
     <color name="chartreuse">#7fff00</color> <!-- 黄绿色 --> 
@@ -141,9 +147,7 @@
     <color name="deepskyblue">#00bfff</color> <!-- 深天蓝色 --> 
     <color name="darkcyan">#008b8b</color> <!-- 暗青色 --> 
     <color name="teal">#008080</color> <!-- 水鸭色 --> 
-    <color name="green">#008000</color> <!-- 绿色 --> 
     <color name="darkgreen">#006400</color> <!-- 暗绿色 --> 
-    <color name="blue">#0000ff</color> <!-- 蓝色 --> 
     <color name="mediumblue">#0000cd</color> <!-- 中兰色 --> 
     <color name="darkblue">#00008b</color> <!-- 暗蓝色 --> 
     <color name="navy">#000080</color> <!-- 海军色 --> 

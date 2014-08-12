@@ -59,7 +59,7 @@ public class MainActivity extends Activity {
 			editor.putInt("cityPosition", 2);
 			editor.commit();
 			getData(true);
-			getWindow().setBackgroundDrawableResource(R.color.red);
+			getWindow().setBackgroundDrawableResource(R.color.green);
 			((MyApplication) MainActivity.this.getApplication()).setFlag(false);
 		} else {
 			getData(false);

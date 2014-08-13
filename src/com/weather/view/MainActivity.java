@@ -39,6 +39,7 @@ import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 
 import com.smallweather.R;
+import com.umeng.analytics.MobclickAgent;
 import com.weather.adapter.MyAdapter;
 import com.weather.util.FontManager;
 import com.weather.util.HttpUtil;
@@ -86,6 +87,7 @@ public class MainActivity extends Activity {
 		getDate();
 		ViewGroup viewGroup = (ViewGroup) findViewById(android.R.id.content);
 		FontManager.changeFonts(viewGroup, this);
+		MobclickAgent.setDebugMode(true);
 	}
 
 	private void hasNet() {
@@ -398,5 +400,12 @@ public class MainActivity extends Activity {
 		}
 		return reads;
 		
+	}
+	
+	@Override
+	protected void onResume() {
+		// TODO Auto-generated method stub
+		super.onResume();
+		MobclickAgent.onResume(this);
 	}
 }

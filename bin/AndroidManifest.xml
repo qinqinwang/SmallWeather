@@ -28,6 +28,13 @@
         <activity
             android:name="com.weather.view.rightFragment">
         </activity>
+                <meta-data
+            android:name="UMENG_APPKEY"
+            android:value="53eb2564fd98c50d4600d1f2" >
+        </meta-data>
+        <meta-data
+            android:name="UMENG_CHANNEL"
+            android:value="Umeng" />
     </application>
 
 </manifest>

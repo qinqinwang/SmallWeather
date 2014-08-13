@@ -2,6 +2,7 @@ package com.weather.util;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,7 +15,6 @@ import android.provider.OpenableColumns;
 import android.util.Log;
 
 public class HttpUtil {
-	private final static String FILE_NAME = "weather.txt";
 	private static Context context;
 
 	public HttpUtil(Context context) {
@@ -54,7 +54,6 @@ public class HttpUtil {
 				out.write(buffer, 0, len);
 			}
 			jsonStr = new String(out.toByteArray());
-			write(jsonStr);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -62,30 +61,5 @@ public class HttpUtil {
 		return jsonStr;
 	}
 
-	private static void write(String name) {
-		try {
-			FileOutputStream outputStream = context.openFileOutput(FILE_NAME,
-					Context.MODE_APPEND);
-			outputStream.write(name.getBytes());
-			outputStream.close();
-		} catch (Exception e) {
-			// TODO: handle exception
-		}
-
-	}
-
-	public String getName() throws Exception {
-		FileInputStream inputStream = context.openFileInput(FILE_NAME);
-		ByteArrayOutputStream outStream = new ByteArrayOutputStream();
-		byte[] buffer = new byte[1024];
-		int len = 0;
-		while ((len = inputStream.read(buffer)) != -1) {
-			outStream.write(buffer, 0, len);
-		}
-		outStream.close();
-		byte[] data = outStream.toByteArray();
-		String name = new String(data);
-		return name;
-	}
 
 }

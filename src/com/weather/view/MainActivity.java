@@ -15,6 +15,7 @@ import org.json.JSONObject;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.graphics.LightingColorFilter;
@@ -45,6 +46,10 @@ import com.weather.util.FontManager;
 import com.weather.util.HttpUtil;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 
+import android.app.PendingIntent;
+import android.app.NotificationManager;
+import android.app.Notification;
+
 public class MainActivity extends Activity {
 	private TextView date, city, type, temperature, wind;
 	private ImageButton setting;
@@ -66,6 +71,9 @@ public class MainActivity extends Activity {
 
 	JSONArray jsonArr;
 	JSONObject obj;
+	NotificationManager nm ;
+	
+	
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -87,8 +95,27 @@ public class MainActivity extends Activity {
 		getDate();
 		ViewGroup viewGroup = (ViewGroup) findViewById(android.R.id.content);
 		FontManager.changeFonts(viewGroup, this);
+		
+		nm= (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);               
+		
+		
 		MobclickAgent.setDebugMode(true);
 	}
+	
+	public void send(String citys,String s){
+		  NotificationManager manager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
+          //构建一个通知对象(需要传递的参数有三个,分别是图标,标题和 时间)
+          Notification notification = new Notification(R.drawable.logo,null,System.currentTimeMillis());
+          Intent intent = new Intent(MainActivity.this,MainActivity.class);
+          PendingIntent pendingIntent = PendingIntent.getActivity(MainActivity.this,0,intent,0); 
+          notification.setLatestEventInfo(getApplicationContext(), citys, s, pendingIntent);
+          notification.flags = Notification.FLAG_AUTO_CANCEL;//点击后自动消失
+//          notification.defaults = Notification.DEFAULT_SOUND;//声音默认
+          manager.notify(0, notification);
+		
+		
+	}
+	
 
 	private void hasNet() {
 		// TODO Auto-generated method stub
@@ -347,6 +374,8 @@ public class MainActivity extends Activity {
 		}
 	}
 	private void setCity(int cityPosotion){
+		String s = null;
+		String citys = null;
 		try {
 			jsonArr = new JSONArray(json);
 			obj = (JSONObject) jsonArr.get(cityPosotion);
@@ -355,11 +384,13 @@ public class MainActivity extends Activity {
 			temperature.setText(obj.getString("temperature"));
 			wind.setText(obj.getString("wind_direction") + " "
 					+ obj.getString("wind_force"));
-
+			citys = obj.getString("city");
+			s = obj.getString("type")+obj.getString("temperature");
 		} catch (JSONException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
+		send(citys,s);
 	}
 	
 

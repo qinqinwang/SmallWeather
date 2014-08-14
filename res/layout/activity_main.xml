@@ -62,7 +62,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/title"
-        android:paddingTop="130dip"
+        android:paddingTop="120dip"
         android:gravity="center"
         android:orientation="vertical" >
 
@@ -73,7 +73,7 @@
             android:layout_gravity="center"
             android:gravity="center"
             android:textColor="@color/white"
-            android:textSize="130sp" />
+            android:textSize="100sp" />
 
         <TextView
             android:id="@+id/temperature"

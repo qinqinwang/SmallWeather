@@ -164,6 +164,7 @@ public class MainActivity extends Activity {
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
 				// TODO Auto-generated method stub
+				MainActivity.this.getMenu().toggle();
 				Editor editor = sp.edit();
 				editor.putInt("colorPosition", position);
 				editor.commit();
@@ -183,6 +184,7 @@ public class MainActivity extends Activity {
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
 				// TODO Auto-generated method stub
+				MainActivity.this.getMenu().toggle();
 				if(isNetworkAvailable(MainActivity.this)){
 					Editor editor = sp.edit();
 					editor.putInt("cityPosition", position);

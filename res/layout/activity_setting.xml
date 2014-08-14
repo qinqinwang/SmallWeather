@@ -29,7 +29,7 @@
             android:layout_height="wrap_content"
             android:divider="@null"
             android:listSelector="@drawable/list_selector"
-            android:padding="5dip" />
+            android:padding="15dip" />
     </LinearLayout>
 
     <LinearLayout
@@ -54,7 +54,7 @@
             android:layout_height="wrap_content"
             android:divider="@null"
             android:listSelector="@drawable/list_selector"
-            android:padding="5dip" />
+            android:padding="15dip" />
     </LinearLayout>
 
 </LinearLayout>

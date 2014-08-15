@@ -4,8 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/blacks"
-    android:paddingTop="20dip"
-    android:orientation="vertical" >
+    android:orientation="vertical"
+    android:paddingTop="20dip" >
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -17,8 +17,8 @@
             android:layout_height="wrap_content"
             android:background="@color/blackc"
             android:gravity="center"
-            android:paddingTop="5dip"
             android:paddingBottom="5dip"
+            android:paddingTop="5dip"
             android:text="@string/color_settings"
             android:textColor="@color/white"
             android:textSize="20sp" />
@@ -40,11 +40,11 @@
         <TextView
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:text="@string/city_settings"
-            android:gravity="center"
-            android:paddingTop="5dip"
-            android:paddingBottom="5dip"
             android:background="@color/blackc"
+            android:gravity="center"
+            android:paddingBottom="5dip"
+            android:paddingTop="5dip"
+            android:text="@string/city_settings"
             android:textColor="@color/white"
             android:textSize="20sp" />
 
@@ -56,5 +56,17 @@
             android:listSelector="@drawable/list_selector"
             android:padding="15dip" />
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/shareText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/blackc"
+        android:paddingBottom="5dip"
+        android:paddingLeft="25dip"
+        android:paddingTop="5dip"
+        android:text="分享给微信朋友"
+        android:textColor="@color/white"
+        android:textSize="20sp" />
 
 </LinearLayout>

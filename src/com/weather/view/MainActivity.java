@@ -14,11 +14,14 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
-import android.graphics.LightingColorFilter;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -27,28 +30,23 @@ import android.os.Message;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.AdapterView.OnItemClickListener;
 
+import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 import com.smallweather.R;
 import com.umeng.analytics.MobclickAgent;
 import com.weather.adapter.MyAdapter;
 import com.weather.util.FontManager;
 import com.weather.util.HttpUtil;
-import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
-
-import android.app.PendingIntent;
-import android.app.NotificationManager;
-import android.app.Notification;
 
 public class MainActivity extends Activity {
 	private TextView date, city, type, temperature, wind;
@@ -69,11 +67,14 @@ public class MainActivity extends Activity {
 
 	private final static String FILE_NAME = "weather.txt";
 
-	JSONArray jsonArr;
-	JSONObject obj;
-	NotificationManager nm ;
-	
-	
+	private JSONArray jsonArr;
+	private JSONObject obj;
+	private NotificationManager nm;
+	private final String APP_ID = "wxc1166aff17ba799b";
+	private ImageButton share;
+	private TextView shareText;
+
+	// IWXAPI api;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -95,45 +96,45 @@ public class MainActivity extends Activity {
 		getDate();
 		ViewGroup viewGroup = (ViewGroup) findViewById(android.R.id.content);
 		FontManager.changeFonts(viewGroup, this);
-		
-		nm= (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);               
-		
-		
+
+		nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
 		MobclickAgent.setDebugMode(true);
 	}
-	
-	public void send(String citys,String s){
-		  NotificationManager manager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
-          //构建一个通知对象(需要传递的参数有三个,分别是图标,标题和 时间)
-          Notification notification = new Notification(R.drawable.logo,null,System.currentTimeMillis());
-          Intent intent = new Intent(MainActivity.this,MainActivity.class);
-          PendingIntent pendingIntent = PendingIntent.getActivity(MainActivity.this,0,intent,0); 
-          notification.setLatestEventInfo(getApplicationContext(), citys, s, pendingIntent);
-          notification.flags = Notification.FLAG_AUTO_CANCEL;//点击后自动消失
-//          notification.defaults = Notification.DEFAULT_SOUND;//声音默认
-          manager.notify(0, notification);
-		
-		
+
+	public void send(String citys, String s) {
+		NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+		// 构建一个通知对象(需要传递的参数有三个,分别是图标,标题和 时间)
+		Notification notification = new Notification(R.drawable.logo, null,
+				System.currentTimeMillis());
+		Intent intent = new Intent(MainActivity.this, MainActivity.class);
+		PendingIntent pendingIntent = PendingIntent.getActivity(
+				MainActivity.this, 0, intent, 0);
+		notification.setLatestEventInfo(getApplicationContext(), citys, s,
+				pendingIntent);
+		notification.flags = Notification.FLAG_AUTO_CANCEL;// 点击后自动消失
+		// notification.defaults = Notification.DEFAULT_SOUND;//声音默认
+		manager.notify(0, notification);
+
 	}
-	
 
 	private void hasNet() {
 		// TODO Auto-generated method stub
-		if(isNetworkAvailable(MainActivity.this)){
-//			getDate();
+		if (isNetworkAvailable(MainActivity.this)) {
+			// getDate();
 			getData();
-		}else{
-			if("".equals(readFile())||readFile() ==null){
+		} else {
+			if ("".equals(readFile()) || readFile() == null) {
 				Toast.makeText(MainActivity.this, "无网络，无法获取数据", 8000).show();
 				Message msg = new Message();
 				msg.what = 4;
 				handler.sendMessage(msg);
-			}else{
+			} else {
 				Toast.makeText(MainActivity.this, "连接网络，可更新数据", 8000).show();
 				Message msg = new Message();
 				msg.what = 0;
 				msg.obj = readFile();
-				handler.sendMessage(msg);	
+				handler.sendMessage(msg);
 			}
 		}
 	}
@@ -185,7 +186,7 @@ public class MainActivity extends Activity {
 					int position, long id) {
 				// TODO Auto-generated method stub
 				MainActivity.this.getMenu().toggle();
-				if(isNetworkAvailable(MainActivity.this)){
+				if (isNetworkAvailable(MainActivity.this)) {
 					Editor editor = sp.edit();
 					editor.putInt("cityPosition", position);
 					editor.commit();
@@ -193,24 +194,74 @@ public class MainActivity extends Activity {
 					msg.what = 3;
 					msg.arg1 = position;
 					handler.sendMessage(msg);
-				}else{
-					if("".equals(readFile())||readFile() ==null){
+				} else {
+					if ("".equals(readFile()) || readFile() == null) {
 						Toast.makeText(MainActivity.this, "请连接网络", 8000).show();
 						Message msg = new Message();
 						msg.what = 4;
 						handler.sendMessage(msg);
-					}else{
+					} else {
 						Editor editor = sp.edit();
 						editor.putInt("cityPosition", position);
 						editor.commit();
 						Message msg = new Message();
 						msg.what = 3;
 						msg.arg1 = position;
-						handler.sendMessage(msg);	
+						handler.sendMessage(msg);
 					}
 				}
 			}
 		});
+
+		share = (ImageButton) findViewById(R.id.share);
+		// api = WXAPIFactory.createWXAPI(this, APP_ID, true);
+		// api.registerApp(APP_ID);
+		share.setOnClickListener(new View.OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				
+				shareToFriend(sp.getString("weather", null));
+
+				// startActivity(intent);
+				// String text = "share our application";
+				// WXTextObject textObj = new WXTextObject();
+				// textObj.text = text;
+				//
+				// WXMediaMessage msg = new WXMediaMessage(textObj);
+				// msg.mediaObject = textObj;
+				// msg.description = text;
+				//
+				// SendMessageToWX.Req req = new SendMessageToWX.Req();
+				// req.transaction = String.valueOf(System.currentTimeMillis());
+				// req.message = msg;
+				//
+				// api.sendReq(req);
+			}
+		});
+		
+		
+		shareText = (TextView)findViewById(R.id.shareText);
+		shareText.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				shareToFriend(sp.getString("weather", null));
+			}
+		});
+		
+	}
+
+	private void shareToFriend(String weather) {
+		Intent intent = new Intent();
+		ComponentName comp = new ComponentName("com.tencent.mm",
+				"com.tencent.mm.ui.tools.ShareImgUI");
+		intent.setComponent(comp);
+		intent.setAction("android.intent.action.SEND");
+		intent.putExtra(Intent.EXTRA_TEXT, weather);
+		startActivity(intent);
 	}
 
 	public SlidingMenu getMenu() {
@@ -236,41 +287,38 @@ public class MainActivity extends Activity {
 			@Override
 			public void run() {
 				// TODO Auto-generated method stub
-				
-				    
-					HttpUtil httpUtil = new HttpUtil(MainActivity.this);
-					result = httpUtil
-							.getJsonContent("http://dev.365jinbi.com/weather/");
-					saveFile(result);
-					
-					Calendar calendar = Calendar.getInstance();
-					int year = calendar.get(Calendar.YEAR);
-					int month = calendar.get(Calendar.MONTH) + 1;
-					int day = calendar.get(Calendar.DATE);
-					dates = month + "." + day;
-					if (sp.getInt("tag", 0) == 0) {
-						Editor editor = sp.edit();
-						editor.putString("date", dates);
-						editor.putInt("tag", 1);
-						editor.commit();
-						Message msg = new Message();
-						msg.what = 1;
-						msg.obj = result;
-						handler.sendMessage(msg);
-					} else {
-						Message msg = new Message();
-						msg.what = 0;
-						msg.obj = result;
-						handler.sendMessage(msg);
-					}
-					Editor editors = sp.edit();
-					editors.putString("date", dates);
-					editors.commit();
-					
 
+				HttpUtil httpUtil = new HttpUtil(MainActivity.this);
+				result = httpUtil
+						.getJsonContent("http://dev.365jinbi.com/weather/");
+				saveFile(result);
+
+				Calendar calendar = Calendar.getInstance();
+				int year = calendar.get(Calendar.YEAR);
+				int month = calendar.get(Calendar.MONTH) + 1;
+				int day = calendar.get(Calendar.DATE);
+				dates = month + "." + day;
+				if (sp.getInt("tag", 0) == 0) {
+					Editor editor = sp.edit();
+					editor.putString("date", dates);
+					editor.putInt("tag", 1);
+					editor.commit();
+					Message msg = new Message();
+					msg.what = 1;
+					msg.obj = result;
+					handler.sendMessage(msg);
+				} else {
+					Message msg = new Message();
+					msg.what = 0;
+					msg.obj = result;
+					handler.sendMessage(msg);
 				}
+				Editor editors = sp.edit();
+				editors.putString("date", dates);
+				editors.commit();
 
-			
+			}
+
 		}).start();
 	}
 
@@ -342,40 +390,41 @@ public class MainActivity extends Activity {
 		listCitys.add("海宁");
 		return listCitys;
 	}
-	
-	
-	public static boolean isNetworkAvailable(Context context) {   
-        ConnectivityManager cm = (ConnectivityManager) context   
-                .getSystemService(Context.CONNECTIVITY_SERVICE);   
-        if (cm == null) {   
-        } else {  
-            NetworkInfo[] info = cm.getAllNetworkInfo();   
-            if (info != null) {   
-                for (int i = 0; i < info.length; i++) {   
-                    if (info[i].getState() == NetworkInfo.State.CONNECTED) {   
-                        return true;   
-                    }   
-                }   
-            }   
-        }   
-        return false;   
-    }
+
+	public static boolean isNetworkAvailable(Context context) {
+		ConnectivityManager cm = (ConnectivityManager) context
+				.getSystemService(Context.CONNECTIVITY_SERVICE);
+		if (cm == null) {
+		} else {
+			NetworkInfo[] info = cm.getAllNetworkInfo();
+			if (info != null) {
+				for (int i = 0; i < info.length; i++) {
+					if (info[i].getState() == NetworkInfo.State.CONNECTED) {
+						return true;
+					}
+				}
+			}
+		}
+		return false;
+	}
+
 	private void setColor(int colorPosition) {
 		if (colorPosition == 0) {
-			viewMain.setBackgroundColor(MainActivity.this
-					.getResources().getColor(R.color.green));
+			viewMain.setBackgroundColor(MainActivity.this.getResources()
+					.getColor(R.color.green));
 		} else if (colorPosition == 1) {
-			viewMain.setBackgroundColor(MainActivity.this
-					.getResources().getColor(R.color.red));
+			viewMain.setBackgroundColor(MainActivity.this.getResources()
+					.getColor(R.color.red));
 		} else if (colorPosition == 2) {
-			viewMain.setBackgroundColor(MainActivity.this
-					.getResources().getColor(R.color.blue));
+			viewMain.setBackgroundColor(MainActivity.this.getResources()
+					.getColor(R.color.blue));
 		} else if (colorPosition == 3) {
-			viewMain.setBackgroundColor(MainActivity.this
-					.getResources().getColor(R.color.purple));
+			viewMain.setBackgroundColor(MainActivity.this.getResources()
+					.getColor(R.color.purple));
 		}
 	}
-	private void setCity(int cityPosotion){
+
+	private void setCity(int cityPosotion) {
 		String s = null;
 		String citys = null;
 		try {
@@ -387,14 +436,19 @@ public class MainActivity extends Activity {
 			wind.setText(obj.getString("wind_direction") + " "
 					+ obj.getString("wind_force"));
 			citys = obj.getString("city");
-			s = obj.getString("type")+obj.getString("temperature");
+
+			
+			s = obj.getString("type") +"  "+  obj.getString("temperature");
+			String weather = citys+"  "+s;
+			Editor editor = sp.edit();
+			editor.putString("weather", weather);
+			editor.commit();
 		} catch (JSONException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		send(citys,s);
+		send(citys, s);
 	}
-	
 
 	private void saveFile(String str) {
 		FileOutputStream fos;
@@ -413,13 +467,13 @@ public class MainActivity extends Activity {
 
 	}
 
-	public String readFile(){
+	public String readFile() {
 		try {
-			FileInputStream fis =openFileInput(FILE_NAME);
+			FileInputStream fis = openFileInput(FILE_NAME);
 			byte[] b = new byte[1024];
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			while(fis.read(b)!= -1){
-				baos.write(b,0,b.length);
+			while (fis.read(b) != -1) {
+				baos.write(b, 0, b.length);
 			}
 			baos.close();
 			fis.close();
@@ -432,9 +486,9 @@ public class MainActivity extends Activity {
 			e.printStackTrace();
 		}
 		return reads;
-		
+
 	}
-	
+
 	@Override
 	protected void onResume() {
 		// TODO Auto-generated method stub

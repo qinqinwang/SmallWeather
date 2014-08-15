@@ -41,7 +41,12 @@
             android:layout_alignParentRight="true"
             android:gravity="center"
             android:orientation="horizontal" >
-
+<ImageButton
+                android:id="@+id/share"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/share" />
+     
             <TextView
                 android:id="@+id/city"
                 android:layout_width="wrap_content"

@@ -221,8 +221,10 @@ public class MainActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				
+				//分享微信朋友
 				shareToFriend(sp.getString("weather", null));
+				//分享朋友圈
+				shareToTimeLine(sp.getString("weather", null));
 
 				// startActivity(intent);
 				// String text = "share our application";
@@ -263,6 +265,17 @@ public class MainActivity extends Activity {
 		intent.putExtra(Intent.EXTRA_TEXT, weather);
 		startActivity(intent);
 	}
+	
+    private void shareToTimeLine(String weather) {
+        Intent intent = new Intent();
+        ComponentName comp = new ComponentName("com.tencent.mm",
+                        "com.tencent.mm.ui.tools.ShareToTimeLineUI");
+        intent.setComponent(comp);
+        intent.setAction("android.intent.action.SEND");
+//        intent.setType("image/*");
+        intent.putExtra(Intent.EXTRA_TEXT,weather);
+        startActivity(intent);
+}
 
 	public SlidingMenu getMenu() {
 		return menu;

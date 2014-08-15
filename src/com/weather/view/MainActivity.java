@@ -1,6 +1,7 @@
 package com.weather.view;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -22,21 +23,31 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.graphics.Bitmap;
+import android.graphics.Rect;
+import android.graphics.Bitmap.CompressFormat;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -64,6 +75,7 @@ public class MainActivity extends Activity {
 	private List<String> listCitys = new ArrayList<String>();
 	private RelativeLayout viewMain;
 	private SlidingMenu menu;
+	private Button shareFriend, shareCircle, btn_cancel;
 
 	private final static String FILE_NAME = "weather.txt";
 
@@ -72,7 +84,7 @@ public class MainActivity extends Activity {
 	private NotificationManager nm;
 	private final String APP_ID = "wxc1166aff17ba799b";
 	private ImageButton share;
-	private TextView shareText;
+//	private TextView shareText;
 
 	// IWXAPI api;
 
@@ -221,61 +233,85 @@ public class MainActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				//分享微信朋友
-				shareToFriend(sp.getString("weather", null));
-				//分享朋友圈
-				shareToTimeLine(sp.getString("weather", null));
+				SelectPicPopupWindow(MainActivity.this, viewMain);
+				
 
-				// startActivity(intent);
-				// String text = "share our application";
-				// WXTextObject textObj = new WXTextObject();
-				// textObj.text = text;
-				//
-				// WXMediaMessage msg = new WXMediaMessage(textObj);
-				// msg.mediaObject = textObj;
-				// msg.description = text;
-				//
-				// SendMessageToWX.Req req = new SendMessageToWX.Req();
-				// req.transaction = String.valueOf(System.currentTimeMillis());
-				// req.message = msg;
-				//
-				// api.sendReq(req);
 			}
 		});
+
 		
-		
-		shareText = (TextView)findViewById(R.id.shareText);
-		shareText.setOnClickListener(new OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				shareToFriend(sp.getString("weather", null));
-			}
-		});
-		
+
 	}
 
-	private void shareToFriend(String weather) {
+	// 截图
+	public Uri shotScreen() {
+		// View是你需要截图的View
+		View view = this.getWindow().getDecorView();
+		view.setDrawingCacheEnabled(true);
+		view.buildDrawingCache();
+		Bitmap b1 = view.getDrawingCache();
+
+		// 获取状态栏高度
+		Rect frame = new Rect();
+		this.getWindow().getDecorView().getWindowVisibleDisplayFrame(frame);
+		int statusBarHeight = frame.top;
+
+		// 获取屏幕长和高
+		int width = this.getWindowManager().getDefaultDisplay().getWidth();
+		int height = this.getWindowManager().getDefaultDisplay().getHeight();
+		// 去掉标题栏
+		Bitmap b = Bitmap.createBitmap(b1, 0, statusBarHeight, width, height
+				- statusBarHeight);
+		view.destroyDrawingCache();
+
+		FileOutputStream Os;
+		try {
+			Os = this.openFileOutput("Img" + ".jpg",
+					Context.MODE_WORLD_READABLE);
+			b.compress(Bitmap.CompressFormat.JPEG, 100, Os);
+			Os.close();
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		File F = this.getFileStreamPath("Img" + ".jpg");
+		Uri u = Uri.fromFile(F);
+
+		return u;
+	}
+
+	private void shareToFriend(String weather, Uri u) {
 		Intent intent = new Intent();
 		ComponentName comp = new ComponentName("com.tencent.mm",
 				"com.tencent.mm.ui.tools.ShareImgUI");
 		intent.setComponent(comp);
 		intent.setAction("android.intent.action.SEND");
-		intent.putExtra(Intent.EXTRA_TEXT, weather);
+
+		intent.setType("image/jpg");
+//		intent.putExtra(Intent.EXTRA_TEXT, weather);
+		intent.putExtra(Intent.EXTRA_STREAM, u);
+		// intent.putExtra(Intent.EXTRA_TEXT, weather);
 		startActivity(intent);
 	}
-	
-    private void shareToTimeLine(String weather) {
-        Intent intent = new Intent();
-        ComponentName comp = new ComponentName("com.tencent.mm",
-                        "com.tencent.mm.ui.tools.ShareToTimeLineUI");
-        intent.setComponent(comp);
-        intent.setAction("android.intent.action.SEND");
-//        intent.setType("image/*");
-        intent.putExtra(Intent.EXTRA_TEXT,weather);
-        startActivity(intent);
-}
+
+	private void shareToTimeLine(Uri u) {
+
+		Intent intent = new Intent();
+		ComponentName comp = new ComponentName("com.tencent.mm",
+				"com.tencent.mm.ui.tools.ShareToTimeLineUI");
+		intent.setComponent(comp);
+		intent.setAction("android.intent.action.SEND");
+		// Bitmap bm = shotScreen();
+		intent.setType("image/jpg");
+		// ByteArrayOutputStream stream = new ByteArrayOutputStream();
+		// bm.compress(CompressFormat.JPEG, 100, stream);
+		// intent.putExtra("bitmap", bm);
+		intent.putExtra(Intent.EXTRA_STREAM, u);
+		startActivity(intent);
+	}
 
 	public SlidingMenu getMenu() {
 		return menu;
@@ -450,9 +486,8 @@ public class MainActivity extends Activity {
 					+ obj.getString("wind_force"));
 			citys = obj.getString("city");
 
-			
-			s = obj.getString("type") +"  "+  obj.getString("temperature");
-			String weather = citys+"  "+s;
+			s = obj.getString("type") + "  " + obj.getString("temperature");
+			String weather = citys + "  " + s;
 			Editor editor = sp.edit();
 			editor.putString("weather", weather);
 			editor.commit();
@@ -507,5 +542,47 @@ public class MainActivity extends Activity {
 		// TODO Auto-generated method stub
 		super.onResume();
 		MobclickAgent.onResume(this);
+	}
+
+	private void SelectPicPopupWindow(Context context, View parent) {
+		LayoutInflater inflater = (LayoutInflater) context
+				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		final View vPopWindow = inflater.inflate(R.layout.menu, null, false);
+		// 宽300 高300
+		final PopupWindow popWindow = new PopupWindow(vPopWindow, 300, 300,
+				true);
+		popWindow.setAnimationStyle(R.anim.push_bottom_in);  
+		shareFriend = (Button) vPopWindow.findViewById(R.id.share_friend);
+		shareCircle = (Button) vPopWindow.findViewById(R.id.share_circle);
+		btn_cancel = (Button)vPopWindow.findViewById(R.id.btn_cancel);
+		sp = getSharedPreferences("weather", Context.MODE_PRIVATE);
+		btn_cancel.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				 popWindow.dismiss(); 
+			}
+		});
+		shareCircle.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+
+				shareToTimeLine(shotScreen());
+			}
+		});
+		shareFriend.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				shareToFriend(sp.getString("weather", null), shotScreen());
+			}
+		});
+
+		popWindow.showAtLocation(parent, Gravity.BOTTOM, 0, 0);
+
 	}
 }

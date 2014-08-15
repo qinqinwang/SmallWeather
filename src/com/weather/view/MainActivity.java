@@ -291,7 +291,6 @@ public class MainActivity extends Activity {
 		intent.setAction("android.intent.action.SEND");
 
 		intent.setType("image/jpg");
-//		intent.putExtra(Intent.EXTRA_TEXT, weather);
 		intent.putExtra(Intent.EXTRA_STREAM, u);
 		// intent.putExtra(Intent.EXTRA_TEXT, weather);
 		startActivity(intent);
@@ -304,11 +303,7 @@ public class MainActivity extends Activity {
 				"com.tencent.mm.ui.tools.ShareToTimeLineUI");
 		intent.setComponent(comp);
 		intent.setAction("android.intent.action.SEND");
-		// Bitmap bm = shotScreen();
 		intent.setType("image/jpg");
-		// ByteArrayOutputStream stream = new ByteArrayOutputStream();
-		// bm.compress(CompressFormat.JPEG, 100, stream);
-		// intent.putExtra("bitmap", bm);
 		intent.putExtra(Intent.EXTRA_STREAM, u);
 		startActivity(intent);
 	}
@@ -571,6 +566,7 @@ public class MainActivity extends Activity {
 				// TODO Auto-generated method stub
 
 				shareToTimeLine(shotScreen());
+				popWindow.dismiss();
 			}
 		});
 		shareFriend.setOnClickListener(new OnClickListener() {
@@ -579,6 +575,7 @@ public class MainActivity extends Activity {
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
 				shareToFriend(sp.getString("weather", null), shotScreen());
+				popWindow.dismiss();
 			}
 		});
 

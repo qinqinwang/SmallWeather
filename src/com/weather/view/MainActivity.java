@@ -8,8 +8,18 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
+import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -23,6 +33,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.graphics.Bitmap.CompressFormat;
@@ -71,8 +83,11 @@ public class MainActivity extends Activity {
 	private SharedPreferences sp = null;
 	private ListView listColor;
 	private ListView listCity;
+	private ListView listshare;
 	private List<String> listColors = new ArrayList<String>();
 	private List<String> listCitys = new ArrayList<String>();
+	private List<String> listShare = new ArrayList<String>();
+	
 	private RelativeLayout viewMain;
 	private SlidingMenu menu;
 	private Button shareFriend, shareCircle, btn_cancel;
@@ -83,10 +98,11 @@ public class MainActivity extends Activity {
 	private JSONObject obj;
 	private NotificationManager nm;
 	private final String APP_ID = "wxc1166aff17ba799b";
-	private ImageButton share;
-//	private TextView shareText;
+//	private ImageButton share;
 
-	// IWXAPI api;
+	private int vercode;
+	private ArrayList<HashMap<String, String>> applist = new ArrayList<HashMap<String, String>>();
+
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -110,7 +126,9 @@ public class MainActivity extends Activity {
 		FontManager.changeFonts(viewGroup, this);
 
 		nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-
+		
+		//更新
+//		Update();
 		MobclickAgent.setDebugMode(true);
 	}
 
@@ -224,23 +242,34 @@ public class MainActivity extends Activity {
 				}
 			}
 		});
-
-		share = (ImageButton) findViewById(R.id.share);
-		// api = WXAPIFactory.createWXAPI(this, APP_ID, true);
-		// api.registerApp(APP_ID);
-		share.setOnClickListener(new View.OnClickListener() {
+		listshare = (ListView) findViewById(R.id.list_share);
+		listshare.setAdapter(new MyAdapter(this, getShare()));
+		listshare.setOnItemClickListener(new OnItemClickListener() {
 
 			@Override
-			public void onClick(View v) {
+			public void onItemClick(AdapterView<?> parent, View view,
+					final int position, long id) {
 				// TODO Auto-generated method stub
-				SelectPicPopupWindow(MainActivity.this, viewMain);
+		    	MainActivity.this.getMenu().toggle();
+				TimerTask task = new TimerTask(){   
+
+				    public void run(){   
+				    	if(position == 0){
+							shareToFriend(sp.getString("weather", null), shotScreen());
+						}else{
+							shareToTimeLine(shotScreen());
+						}
+
+				    }   
+
+				}; 
+				Timer timer = new Timer(); 
+
+				timer.schedule(task, 1000); 
 				
 
 			}
 		});
-
-		
-
 	}
 
 	// 截图
@@ -289,10 +318,10 @@ public class MainActivity extends Activity {
 				"com.tencent.mm.ui.tools.ShareImgUI");
 		intent.setComponent(comp);
 		intent.setAction("android.intent.action.SEND");
-
+//		intent.putExtra("Kdescription", weather);
 		intent.setType("image/jpg");
+//		 intent.putExtra(Intent.EXTRA_TEXT, weather);
 		intent.putExtra(Intent.EXTRA_STREAM, u);
-		// intent.putExtra(Intent.EXTRA_TEXT, weather);
 		startActivity(intent);
 	}
 
@@ -395,6 +424,41 @@ public class MainActivity extends Activity {
 				int colorPos = sp.getInt("colorPosition", 0);
 				setColor(colorPos);
 				break;
+			case 5:
+
+				JSONObject obj = (JSONObject) m.obj;
+				HashMap<String, String> map = new HashMap<String, String>();
+				try {
+					map.put("verCode", obj.getString("verCode"));
+					map.put("verName", obj.getString("verName"));
+					map.put("apptime", obj.getString("apptime"));
+					map.put("appurl", obj.getString("appurl"));
+					map.put("appdes", obj.getString("appdes"));
+
+					applist.add(map);
+
+					// Map map = (Map) listUpdate.get(0);
+					int urlcode = Integer.parseInt((String) map
+							.get("verCode"));
+					Log.v("wangqinqin", "    " + (urlcode > getVersion()));
+//					if(true){
+					if (urlcode > getVersion()) {
+						Log.w("sh", "需要更新");
+						Intent intentu = new Intent();
+						intentu.setClass(MainActivity.this, Update.class);
+						Bundle bundle = new Bundle();
+						bundle.putParcelableArrayList("listUpdate",
+								(ArrayList) applist);
+						intentu.putExtras(bundle);
+						startActivity(intentu);
+					}
+
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			
+				break;
 			}
 		}
 	}
@@ -433,6 +497,13 @@ public class MainActivity extends Activity {
 		listCitys.add("海盐");
 		listCitys.add("海宁");
 		return listCitys;
+	}
+	private List<String> getShare() {
+		// TODO Auto-generated method stub
+
+		listShare.add("朋友");
+		listShare.add("朋友圈");
+		return listShare;
 	}
 
 	public static boolean isNetworkAvailable(Context context) {
@@ -539,47 +610,97 @@ public class MainActivity extends Activity {
 		MobclickAgent.onResume(this);
 	}
 
-	private void SelectPicPopupWindow(Context context, View parent) {
-		LayoutInflater inflater = (LayoutInflater) context
-				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		final View vPopWindow = inflater.inflate(R.layout.menu, null, false);
-		// 宽300 高300
-		final PopupWindow popWindow = new PopupWindow(vPopWindow, 300, 300,
-				true);
-		popWindow.setAnimationStyle(R.anim.push_bottom_in);  
-		shareFriend = (Button) vPopWindow.findViewById(R.id.share_friend);
-		shareCircle = (Button) vPopWindow.findViewById(R.id.share_circle);
-		btn_cancel = (Button)vPopWindow.findViewById(R.id.btn_cancel);
-		sp = getSharedPreferences("weather", Context.MODE_PRIVATE);
-		btn_cancel.setOnClickListener(new OnClickListener() {
+//	private void SelectPicPopupWindow(Context context, View parent) {
+//		LayoutInflater inflater = (LayoutInflater) context
+//				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+//		final View vPopWindow = inflater.inflate(R.layout.menu, null, false);
+//		// 宽300 高300
+//		final PopupWindow popWindow = new PopupWindow(vPopWindow, 300, 300,
+//				true);
+//		popWindow.setAnimationStyle(R.anim.push_bottom_in);  
+//		shareFriend = (Button) vPopWindow.findViewById(R.id.share_friend);
+//		shareCircle = (Button) vPopWindow.findViewById(R.id.share_circle);
+//		btn_cancel = (Button)vPopWindow.findViewById(R.id.btn_cancel);
+//		sp = getSharedPreferences("weather", Context.MODE_PRIVATE);
+//		btn_cancel.setOnClickListener(new OnClickListener() {
+//
+//			@Override
+//			public void onClick(View v) {
+//				// TODO Auto-generated method stub
+//				 popWindow.dismiss(); 
+//			}
+//		});
+//		shareCircle.setOnClickListener(new OnClickListener() {
+//
+//			@Override
+//			public void onClick(View v) {
+//				// TODO Auto-generated method stub
+//
+//				shareToTimeLine(shotScreen());
+//				popWindow.dismiss(); 
+//			}
+//		});
+//		shareFriend.setOnClickListener(new OnClickListener() {
+//
+//			@Override
+//			public void onClick(View v) {
+//				// TODO Auto-generated method stub
+//				shareToFriend(sp.getString("weather", null), shotScreen());
+//				popWindow.dismiss();
+//			}
+//		});
+//
+//		popWindow.showAtLocation(parent, Gravity.BOTTOM, 0, 0);
+//
+//	}
+	
+	
+	private void Update() {
+		new Thread(new Runnable() {
+			public void run() {
+				HttpClient client = new DefaultHttpClient();
+				HttpParams httpParams = client.getParams();
+				HttpConnectionParams
+						.setConnectionTimeout(httpParams, 30 * 1000);
+				HttpConnectionParams.setSoTimeout(httpParams, 5000);
 
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				 popWindow.dismiss(); 
+				HttpPost request = new HttpPost(
+						"http://down.znds.com/apinew/cleanupdate.php");
+				try {
+					HttpResponse response = new DefaultHttpClient()
+							.execute(request);
+					result = EntityUtils.toString(response.getEntity(), "utf-8");
+				} catch (Exception e) {
+					// TODO: handle exception
+				}
+
+				String json = result;
+
+				JSONObject dataJson;
+				try {
+					dataJson = new JSONObject(json);
+					Message msg = new Message();
+					msg.what = 5;
+					msg.obj = dataJson;
+					handler.sendMessage(msg);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
 			}
-		});
-		shareCircle.setOnClickListener(new OnClickListener() {
+		}).start();
+	}
+	
+	public int getVersion() {
+		try {
+			PackageManager manager = this.getPackageManager();
+			PackageInfo info = manager.getPackageInfo(this.getPackageName(), 0);
+			vercode = info.versionCode;
 
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-
-				shareToTimeLine(shotScreen());
-				popWindow.dismiss();
-			}
-		});
-		shareFriend.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				shareToFriend(sp.getString("weather", null), shotScreen());
-				popWindow.dismiss();
-			}
-		});
-
-		popWindow.showAtLocation(parent, Gravity.BOTTOM, 0, 0);
-
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return vercode;
 	}
 }

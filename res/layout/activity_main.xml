@@ -41,12 +41,13 @@
             android:layout_alignParentRight="true"
             android:gravity="center"
             android:orientation="horizontal" >
-<ImageButton
+<!-- 
+            <ImageButton
                 android:id="@+id/share"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/share" />
-     
+                android:background="@drawable/share" /> -->
+
             <TextView
                 android:id="@+id/city"
                 android:layout_width="wrap_content"
@@ -67,9 +68,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/title"
-        android:paddingTop="120dip"
         android:gravity="center"
-        android:orientation="vertical" >
+        android:orientation="vertical"
+        android:paddingTop="120dip" >
 
         <TextView
             android:id="@+id/type"
@@ -78,15 +79,15 @@
             android:layout_gravity="center"
             android:gravity="center"
             android:textColor="@color/white"
-            android:textSize="100sp" />
+            android:textSize="80sp" />
 
         <TextView
             android:id="@+id/temperature"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:paddingTop="20dip"
             android:gravity="center"
+            android:paddingTop="20dip"
             android:textColor="@color/white"
             android:textSize="40sp" />
     </LinearLayout>
@@ -97,9 +98,19 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
-        android:layout_marginBottom="25dip"
+        android:layout_marginBottom="35dip"
         android:layout_marginRight="25dip"
         android:textColor="@color/white"
         android:textSize="25sp" />
+      <TextView
+        android:id="@+id/Version"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="5dip"
+        android:textColor="@color/white"
+        android:text="关于微天气   当前版本号v1.0.0"
+        android:textSize="13sp" />
 
 </RelativeLayout>

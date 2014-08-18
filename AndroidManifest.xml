@@ -25,7 +25,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-       
+         <activity
+            android:name="com.weather.view.Update">
+        </activity>
                 <meta-data
             android:name="UMENG_APPKEY"
             android:value="53eb2564fd98c50d4600d1f2" >

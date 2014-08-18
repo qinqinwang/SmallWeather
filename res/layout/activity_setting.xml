@@ -5,9 +5,8 @@
     android:layout_height="match_parent"
     android:background="@color/blacks"
     android:orientation="vertical"
-    android:paddingTop="20dip" >
-
-    <LinearLayout
+    android:paddingTop="5dip" >
+      <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical" >
@@ -19,18 +18,18 @@
             android:gravity="center"
             android:paddingBottom="5dip"
             android:paddingTop="5dip"
-            android:text="@string/color_settings"
+            android:text="@string/share_settings"
             android:textColor="@color/white"
             android:textSize="20sp" />
 
         <ListView
-            android:id="@+id/list_color"
+            android:id="@+id/list_share"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:divider="@null"
             android:listSelector="@drawable/list_selector"
-            android:padding="15dip" />
-    </LinearLayout>
+            android:padding="10dip" />
+         </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -54,9 +53,32 @@
             android:layout_height="wrap_content"
             android:divider="@null"
             android:listSelector="@drawable/list_selector"
-            android:padding="15dip" />
+            android:padding="10dip" />
     </LinearLayout>
 
-    
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" >
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/blackc"
+            android:gravity="center"
+            android:paddingBottom="5dip"
+            android:paddingTop="5dip"
+            android:text="@string/color_settings"
+            android:textColor="@color/white"
+            android:textSize="20sp" />
+
+        <ListView
+            android:id="@+id/list_color"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:divider="@null"
+            android:listSelector="@drawable/list_selector"
+            android:padding="10dip" />
+    </LinearLayout>
 
 </LinearLayout>

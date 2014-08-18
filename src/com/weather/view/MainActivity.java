@@ -6,6 +6,10 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.RandomAccessFile;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -25,11 +29,14 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -37,29 +44,24 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
-import android.graphics.Bitmap.CompressFormat;
-import android.graphics.drawable.BitmapDrawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.KeyEvent;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.PopupWindow;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -68,8 +70,11 @@ import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 import com.smallweather.R;
 import com.umeng.analytics.MobclickAgent;
 import com.weather.adapter.MyAdapter;
+import com.weather.bean.SDPATH;
+import com.weather.util.AndroidUtil;
 import com.weather.util.FontManager;
 import com.weather.util.HttpUtil;
+import com.weather.util.TestUtils;
 
 public class MainActivity extends Activity {
 	private TextView date, city, type, temperature, wind;
@@ -79,7 +84,6 @@ public class MainActivity extends Activity {
 	private String dates;
 	private MyHandler handler = new MyHandler();
 	private String json;
-	private String fileResult;
 	private SharedPreferences sp = null;
 	private ListView listColor;
 	private ListView listCity;
@@ -87,10 +91,9 @@ public class MainActivity extends Activity {
 	private List<String> listColors = new ArrayList<String>();
 	private List<String> listCitys = new ArrayList<String>();
 	private List<String> listShare = new ArrayList<String>();
-	
+
 	private RelativeLayout viewMain;
 	private SlidingMenu menu;
-	private Button shareFriend, shareCircle, btn_cancel;
 
 	private final static String FILE_NAME = "weather.txt";
 
@@ -98,17 +101,32 @@ public class MainActivity extends Activity {
 	private JSONObject obj;
 	private NotificationManager nm;
 	private final String APP_ID = "wxc1166aff17ba799b";
-//	private ImageButton share;
+	// private ImageButton share;
 
 	private int vercode;
 	private ArrayList<HashMap<String, String>> applist = new ArrayList<HashMap<String, String>>();
 
+	private String appurl, fileName;
+	private ProgressBar progress;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-
+		// 存放路径设置
+		SDPATH.sdcardExit = Environment.getExternalStorageState().equals(
+				android.os.Environment.MEDIA_MOUNTED);// 判断SDCard是否存在
+		SDPATH.sdCardPer = com.weather.util.SDPermission.checkFsWritable();// 判断SDCard权限
+		if (SDPATH.sdcardExit) {
+			if (!SDPATH.sdCardPer) {
+				SDPATH.SD_PATH = this.getCacheDir().toString();
+			} else {
+				SDPATH.SD_PATH = Environment.getExternalStorageDirectory()
+						.getPath() + "/cleaning/";
+			}
+		} else {
+			SDPATH.SD_PATH = this.getCacheDir().toString();
+		}
 		menu = new SlidingMenu(this);
 		menu.setMode(SlidingMenu.RIGHT);
 		menu.setTouchModeAbove(SlidingMenu.TOUCHMODE_FULLSCREEN);
@@ -126,9 +144,9 @@ public class MainActivity extends Activity {
 		FontManager.changeFonts(viewGroup, this);
 
 		nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-		
-		//更新
-//		Update();
+
+		// 更新
+		// Update();
 		MobclickAgent.setDebugMode(true);
 	}
 
@@ -250,26 +268,28 @@ public class MainActivity extends Activity {
 			public void onItemClick(AdapterView<?> parent, View view,
 					final int position, long id) {
 				// TODO Auto-generated method stub
-		    	MainActivity.this.getMenu().toggle();
-				TimerTask task = new TimerTask(){   
+				MainActivity.this.getMenu().toggle();
+				TimerTask task = new TimerTask() {
 
-				    public void run(){   
-				    	if(position == 0){
-							shareToFriend(sp.getString("weather", null), shotScreen());
-						}else{
+					public void run() {
+						if (position == 0) {
+							shareToFriend(sp.getString("weather", null),
+									shotScreen());
+						} else {
 							shareToTimeLine(shotScreen());
 						}
 
-				    }   
+					}
 
-				}; 
-				Timer timer = new Timer(); 
+				};
+				Timer timer = new Timer();
 
-				timer.schedule(task, 1000); 
-				
+				timer.schedule(task, 1000);
 
 			}
 		});
+
+		progress = (ProgressBar) findViewById(R.id.progress);
 	}
 
 	// 截图
@@ -318,9 +338,9 @@ public class MainActivity extends Activity {
 				"com.tencent.mm.ui.tools.ShareImgUI");
 		intent.setComponent(comp);
 		intent.setAction("android.intent.action.SEND");
-//		intent.putExtra("Kdescription", weather);
+		// intent.putExtra("Kdescription", weather);
 		intent.setType("image/jpg");
-//		 intent.putExtra(Intent.EXTRA_TEXT, weather);
+		// intent.putExtra(Intent.EXTRA_TEXT, weather);
 		intent.putExtra(Intent.EXTRA_STREAM, u);
 		startActivity(intent);
 	}
@@ -427,37 +447,74 @@ public class MainActivity extends Activity {
 			case 5:
 
 				JSONObject obj = (JSONObject) m.obj;
-				HashMap<String, String> map = new HashMap<String, String>();
+
+				// HashMap<String, String> map = new HashMap<String, String>();
 				try {
-					map.put("verCode", obj.getString("verCode"));
-					map.put("verName", obj.getString("verName"));
-					map.put("apptime", obj.getString("apptime"));
-					map.put("appurl", obj.getString("appurl"));
-					map.put("appdes", obj.getString("appdes"));
-
-					applist.add(map);
-
-					// Map map = (Map) listUpdate.get(0);
-					int urlcode = Integer.parseInt((String) map
-							.get("verCode"));
+					appurl = obj.getString("appurl");
+					fileName = TestUtils.getFileName(appurl);
+					int urlcode = Integer.parseInt(obj.getString("verCode"));
 					Log.v("wangqinqin", "    " + (urlcode > getVersion()));
-//					if(true){
+					// if(true){
 					if (urlcode > getVersion()) {
 						Log.w("sh", "需要更新");
-						Intent intentu = new Intent();
-						intentu.setClass(MainActivity.this, Update.class);
-						Bundle bundle = new Bundle();
-						bundle.putParcelableArrayList("listUpdate",
-								(ArrayList) applist);
-						intentu.putExtras(bundle);
-						startActivity(intentu);
+
+						Dialog alertDialog = new AlertDialog.Builder(
+								MainActivity.this)
+								.setTitle("更新")
+								.setMessage("您确定更新微天气吗？")
+								.setPositiveButton("确定",
+										new DialogInterface.OnClickListener() {
+
+											@Override
+											public void onClick(
+													DialogInterface dialog,
+													int which) {
+												// TODO Auto-generated method
+												// stub
+												new Thread(new Runnable() {
+													public void run() {
+														loadFile(appurl,
+																fileName);
+
+													}
+												}).start();
+											}
+										})
+								.setNegativeButton("取消",
+										new DialogInterface.OnClickListener() {
+
+											@Override
+											public void onClick(
+													DialogInterface dialog,
+													int which) {
+												// TODO Auto-generated method
+												// stub
+											}
+										}).create();
+						alertDialog.show();
+
 					}
 
 				} catch (JSONException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-			
+
+				break;
+			case 6:
+
+				progress.setVisibility(View.VISIBLE);
+				int lMax,
+				lNowSize;
+				lMax = m.arg1;
+				lNowSize = m.arg2;
+				int progressPer = lNowSize / lMax * 100;
+				progress.setProgress(progressPer);
+				break;
+			case 7:
+				progress.setVisibility(View.GONE);
+				AndroidUtil
+						.install(MainActivity.this, fileName, SDPATH.SD_PATH);
 				break;
 			}
 		}
@@ -498,6 +555,7 @@ public class MainActivity extends Activity {
 		listCitys.add("海宁");
 		return listCitys;
 	}
+
 	private List<String> getShare() {
 		// TODO Auto-generated method stub
 
@@ -610,51 +668,50 @@ public class MainActivity extends Activity {
 		MobclickAgent.onResume(this);
 	}
 
-//	private void SelectPicPopupWindow(Context context, View parent) {
-//		LayoutInflater inflater = (LayoutInflater) context
-//				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-//		final View vPopWindow = inflater.inflate(R.layout.menu, null, false);
-//		// 宽300 高300
-//		final PopupWindow popWindow = new PopupWindow(vPopWindow, 300, 300,
-//				true);
-//		popWindow.setAnimationStyle(R.anim.push_bottom_in);  
-//		shareFriend = (Button) vPopWindow.findViewById(R.id.share_friend);
-//		shareCircle = (Button) vPopWindow.findViewById(R.id.share_circle);
-//		btn_cancel = (Button)vPopWindow.findViewById(R.id.btn_cancel);
-//		sp = getSharedPreferences("weather", Context.MODE_PRIVATE);
-//		btn_cancel.setOnClickListener(new OnClickListener() {
-//
-//			@Override
-//			public void onClick(View v) {
-//				// TODO Auto-generated method stub
-//				 popWindow.dismiss(); 
-//			}
-//		});
-//		shareCircle.setOnClickListener(new OnClickListener() {
-//
-//			@Override
-//			public void onClick(View v) {
-//				// TODO Auto-generated method stub
-//
-//				shareToTimeLine(shotScreen());
-//				popWindow.dismiss(); 
-//			}
-//		});
-//		shareFriend.setOnClickListener(new OnClickListener() {
-//
-//			@Override
-//			public void onClick(View v) {
-//				// TODO Auto-generated method stub
-//				shareToFriend(sp.getString("weather", null), shotScreen());
-//				popWindow.dismiss();
-//			}
-//		});
-//
-//		popWindow.showAtLocation(parent, Gravity.BOTTOM, 0, 0);
-//
-//	}
-	
-	
+	// private void SelectPicPopupWindow(Context context, View parent) {
+	// LayoutInflater inflater = (LayoutInflater) context
+	// .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+	// final View vPopWindow = inflater.inflate(R.layout.menu, null, false);
+	// // 宽300 高300
+	// final PopupWindow popWindow = new PopupWindow(vPopWindow, 300, 300,
+	// true);
+	// popWindow.setAnimationStyle(R.anim.push_bottom_in);
+	// shareFriend = (Button) vPopWindow.findViewById(R.id.share_friend);
+	// shareCircle = (Button) vPopWindow.findViewById(R.id.share_circle);
+	// btn_cancel = (Button)vPopWindow.findViewById(R.id.btn_cancel);
+	// sp = getSharedPreferences("weather", Context.MODE_PRIVATE);
+	// btn_cancel.setOnClickListener(new OnClickListener() {
+	//
+	// @Override
+	// public void onClick(View v) {
+	// // TODO Auto-generated method stub
+	// popWindow.dismiss();
+	// }
+	// });
+	// shareCircle.setOnClickListener(new OnClickListener() {
+	//
+	// @Override
+	// public void onClick(View v) {
+	// // TODO Auto-generated method stub
+	//
+	// shareToTimeLine(shotScreen());
+	// popWindow.dismiss();
+	// }
+	// });
+	// shareFriend.setOnClickListener(new OnClickListener() {
+	//
+	// @Override
+	// public void onClick(View v) {
+	// // TODO Auto-generated method stub
+	// shareToFriend(sp.getString("weather", null), shotScreen());
+	// popWindow.dismiss();
+	// }
+	// });
+	//
+	// popWindow.showAtLocation(parent, Gravity.BOTTOM, 0, 0);
+	//
+	// }
+
 	private void Update() {
 		new Thread(new Runnable() {
 			public void run() {
@@ -691,7 +748,7 @@ public class MainActivity extends Activity {
 			}
 		}).start();
 	}
-	
+
 	public int getVersion() {
 		try {
 			PackageManager manager = this.getPackageManager();
@@ -703,4 +760,82 @@ public class MainActivity extends Activity {
 		}
 		return vercode;
 	}
+
+	public void loadFile(String URL, String fileName) {
+		InputStream is = null;
+		try {
+			// 创建、打开连接
+			URL myUrl = new URL(URL);
+			URLConnection connection = myUrl.openConnection();
+			connection.connect();
+
+			// 得到访问内容并保存在输入流中。
+			is = connection.getInputStream();
+			// 得到文件的总长度。注意这里有可能因得不到文件大小而抛出异常
+			int len = connection.getContentLength();
+			int nowSize = 0;
+			if (is != null) {
+
+				File file = new File(SDPATH.SD_PATH + fileName);
+				// 如果文件存在，则删除该文件。
+				if (file.exists()) {
+
+					file.delete();
+				}
+				// 判断文件路径的文件夹是否存在，如果没有就创建一个。
+
+				File p = new File(SDPATH.SD_PATH);
+
+				if (!p.exists()) {
+
+					p.mkdirs();
+				}
+
+				// RandomAccessFile随机访问的文件类，可以从指定访问位置，为以后实现断点下载提供支持
+				RandomAccessFile randomAccessFile = new RandomAccessFile(
+						SDPATH.SD_PATH + fileName, "rw");
+				byte[] buffer = new byte[4096];
+				int length = -1;
+				int count = 0;
+				// 储存内存时，修改APK的权限
+				Log.v("wqang@@@@@@@@@", "  3333333333  "
+						+ (!SDPATH.sdcardExit || !SDPATH.sdCardPer));
+				if (!SDPATH.sdcardExit || !SDPATH.sdCardPer) {
+					try {
+						String command = "chmod " + "777" + " "
+								+ (SDPATH.SD_PATH + fileName); // 777为permission
+						Runtime runtime = Runtime.getRuntime();
+						runtime.exec(command);
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				} else {
+
+				}
+				while ((length = is.read(buffer)) != -1) {
+					randomAccessFile.write(buffer, 0, length);
+					Message msg = new Message();
+					msg.arg1 = len;
+					msg.what = 6;
+					nowSize += length;
+					msg.arg2 = nowSize;
+					if (count % 50 == 0 || nowSize == len) {
+						handler.sendMessage(msg);
+					}
+					count++;
+				}
+				Message end = new Message();
+				end.what = 7;
+				handler.sendMessage(end);
+
+				is.close();
+				randomAccessFile.close();
+
+			}
+		} catch (Exception e) {
+		} finally {
+
+		}
+	}
+
 }

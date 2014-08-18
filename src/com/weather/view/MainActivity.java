@@ -809,9 +809,7 @@ public class MainActivity extends Activity {
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
-				} else {
-
-				}
+				} 
 				while ((length = is.read(buffer)) != -1) {
 					randomAccessFile.write(buffer, 0, length);
 					Message msg = new Message();

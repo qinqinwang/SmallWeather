@@ -101,6 +101,7 @@ public class MainActivity extends Activity {
 	private JSONObject obj;
 	private NotificationManager nm;
 	private final String APP_ID = "wxc1166aff17ba799b";
+
 	// private ImageButton share;
 
 	private int vercode;
@@ -108,6 +109,8 @@ public class MainActivity extends Activity {
 
 	private String appurl, fileName;
 	private ProgressBar progress;
+	int width;
+	int height;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -272,18 +275,14 @@ public class MainActivity extends Activity {
 				TimerTask task = new TimerTask() {
 
 					public void run() {
-						if (position == 0) {
-							shareToFriend(sp.getString("weather", null),
-									shotScreen());
-						} else {
-							shareToTimeLine(shotScreen());
-						}
-
+						Message message = new Message();
+						message.what = 8;
+						message.arg1 = position;
+						handler.sendMessage(message);
 					}
 
 				};
 				Timer timer = new Timer();
-
 				timer.schedule(task, 1000);
 
 			}
@@ -291,6 +290,7 @@ public class MainActivity extends Activity {
 
 		progress = (ProgressBar) findViewById(R.id.progress);
 	}
+	
 
 	// 截图
 	public Uri shotScreen() {
@@ -306,8 +306,8 @@ public class MainActivity extends Activity {
 		int statusBarHeight = frame.top;
 
 		// 获取屏幕长和高
-		int width = this.getWindowManager().getDefaultDisplay().getWidth();
-		int height = this.getWindowManager().getDefaultDisplay().getHeight();
+		width = this.getWindowManager().getDefaultDisplay().getWidth();
+		height = this.getWindowManager().getDefaultDisplay().getHeight();
 		// 去掉标题栏
 		Bitmap b = Bitmap.createBitmap(b1, 0, statusBarHeight, width, height
 				- statusBarHeight);
@@ -330,6 +330,28 @@ public class MainActivity extends Activity {
 		Uri u = Uri.fromFile(F);
 
 		return u;
+	}
+
+	public Bitmap shotScree() {
+		// View是你需要截图的View
+		View view = this.getWindow().getDecorView();
+		view.setDrawingCacheEnabled(true);
+		view.buildDrawingCache();
+		Bitmap b1 = view.getDrawingCache();
+
+		// 获取状态栏高度
+		Rect frame = new Rect();
+		this.getWindow().getDecorView().getWindowVisibleDisplayFrame(frame);
+		int statusBarHeight = frame.top;
+
+		// 获取屏幕长和高
+		int width = this.getWindowManager().getDefaultDisplay().getWidth();
+		int height = this.getWindowManager().getDefaultDisplay().getHeight();
+		// 去掉标题栏
+		Bitmap b = Bitmap.createBitmap(b1, 0, statusBarHeight, width, height
+				- statusBarHeight);
+
+		return b;
 	}
 
 	private void shareToFriend(String weather, Uri u) {
@@ -516,6 +538,16 @@ public class MainActivity extends Activity {
 				AndroidUtil
 						.install(MainActivity.this, fileName, SDPATH.SD_PATH);
 				break;
+			case 8:
+				int position = m.arg1;
+				Uri uri = shotScreen();
+				if (position == 0) {
+					shareToFriend(sp.getString("weather", null), uri);
+				} else {
+					shareToTimeLine(uri);
+				}
+				break;
+				
 			}
 		}
 	}
@@ -525,13 +557,6 @@ public class MainActivity extends Activity {
 		// TODO Auto-generated method stub
 		MainActivity.this.finish();
 		return super.onKeyDown(keyCode, event);
-	}
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.main, menu);
-		return true;
 	}
 
 	private List<String> getColor() {
@@ -668,50 +693,6 @@ public class MainActivity extends Activity {
 		MobclickAgent.onResume(this);
 	}
 
-	// private void SelectPicPopupWindow(Context context, View parent) {
-	// LayoutInflater inflater = (LayoutInflater) context
-	// .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-	// final View vPopWindow = inflater.inflate(R.layout.menu, null, false);
-	// // 宽300 高300
-	// final PopupWindow popWindow = new PopupWindow(vPopWindow, 300, 300,
-	// true);
-	// popWindow.setAnimationStyle(R.anim.push_bottom_in);
-	// shareFriend = (Button) vPopWindow.findViewById(R.id.share_friend);
-	// shareCircle = (Button) vPopWindow.findViewById(R.id.share_circle);
-	// btn_cancel = (Button)vPopWindow.findViewById(R.id.btn_cancel);
-	// sp = getSharedPreferences("weather", Context.MODE_PRIVATE);
-	// btn_cancel.setOnClickListener(new OnClickListener() {
-	//
-	// @Override
-	// public void onClick(View v) {
-	// // TODO Auto-generated method stub
-	// popWindow.dismiss();
-	// }
-	// });
-	// shareCircle.setOnClickListener(new OnClickListener() {
-	//
-	// @Override
-	// public void onClick(View v) {
-	// // TODO Auto-generated method stub
-	//
-	// shareToTimeLine(shotScreen());
-	// popWindow.dismiss();
-	// }
-	// });
-	// shareFriend.setOnClickListener(new OnClickListener() {
-	//
-	// @Override
-	// public void onClick(View v) {
-	// // TODO Auto-generated method stub
-	// shareToFriend(sp.getString("weather", null), shotScreen());
-	// popWindow.dismiss();
-	// }
-	// });
-	//
-	// popWindow.showAtLocation(parent, Gravity.BOTTOM, 0, 0);
-	//
-	// }
-
 	private void Update() {
 		new Thread(new Runnable() {
 			public void run() {
@@ -809,7 +790,7 @@ public class MainActivity extends Activity {
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
-				} 
+				}
 				while ((length = is.read(buffer)) != -1) {
 					randomAccessFile.write(buffer, 0, length);
 					Message msg = new Message();

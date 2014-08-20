@@ -223,7 +223,6 @@ public class MainActivity extends Activity {
 				Message msg = new Message();
 				msg.what = 2;
 				msg.arg1 = position;
-				Log.v("wang", "onItemClick" + position);
 				handler.sendMessage(msg);
 
 			}
@@ -272,18 +271,40 @@ public class MainActivity extends Activity {
 					final int position, long id) {
 				// TODO Auto-generated method stub
 				MainActivity.this.getMenu().toggle();
-				TimerTask task = new TimerTask() {
+				
+				if (isNetworkAvailable(MainActivity.this)) {
+					TimerTask task = new TimerTask() {
 
-					public void run() {
-						Message message = new Message();
-						message.what = 8;
-						message.arg1 = position;
-						handler.sendMessage(message);
+						public void run() {
+							Message message = new Message();
+							message.what = 8;
+							message.arg1 = position;
+							handler.sendMessage(message);
+						}
+
+					};
+					Timer timer = new Timer();
+					timer.schedule(task, 1000);
+				}else {
+					if ("".equals(readFile()) || readFile() == null) {
+						Toast.makeText(MainActivity.this, "请连接网络", 8000).show();
+					} else {
+						TimerTask task = new TimerTask() {
+
+							public void run() {
+								Message message = new Message();
+								message.what = 8;
+								message.arg1 = position;
+								handler.sendMessage(message);
+							}
+
+						};
+						Timer timer = new Timer();
+						timer.schedule(task, 1000);
 					}
-
-				};
-				Timer timer = new Timer();
-				timer.schedule(task, 1000);
+				}
+				
+				
 
 			}
 		});

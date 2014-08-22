@@ -9,19 +9,19 @@
 
     <Button
         android:id="@+id/share_friend"
-        android:layout_width="fill_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="分享给微信朋友" />
 
     <Button
         android:id="@+id/share_circle"
-        android:layout_width="fill_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="分享到朋友圈" />
 
     <Button
         android:id="@+id/btn_cancel"
-        android:layout_width="fill_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="取消"/>
 

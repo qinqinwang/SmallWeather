@@ -7,27 +7,21 @@
     android:gravity="center_horizontal"
     android:orientation="vertical" >
 
-    <TextView
-        android:id="@+id/share_friend"
+    <ListView
+        android:id="@+id/list_color"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="15dip"
-        android:textSize="20sp"
-        android:text="分享给微信朋友" />
-
-    <TextView
-        android:id="@+id/share_circle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="20sp"
-        android:text="分享到朋友圈" />
+        android:layout_gravity="center"
+        android:divider="@null"
+        android:listSelector="@drawable/list_selector"
+        android:padding="10dip" />
 
     <TextView
         android:id="@+id/cancel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="15dip"
         android:textSize="20sp"
-        android:text="取消"/>
+        android:text="取消"
+        android:textColor="@color/white" />
 
 </LinearLayout>

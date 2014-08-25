@@ -1,6 +1,10 @@
 package com.weather.view;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.smallweather.R;
+import com.weather.adapter.MyAdapter;
 
 import android.app.Activity;  
 import android.content.Context;  
@@ -11,26 +15,47 @@ import android.view.View;
 import android.view.View.OnClickListener;  
 import android.view.View.OnTouchListener;  
 import android.view.ViewGroup.LayoutParams;  
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;  
+import android.widget.ListView;
 import android.widget.PopupWindow; 
+import android.widget.TextView;
 
 
 public class SelectPopupWindow extends PopupWindow {  
 
 
-  private Button share_friend, share_circle, btn_cancel;  
+  private TextView share_friend, share_circle, cancel;  
   private View mMenuView;  
+  private ListView listColor;
 
-  public SelectPopupWindow(Activity context,OnClickListener itemsOnClick) {  
+	private List<String> listColors = new ArrayList<String>();
+
+  public SelectPopupWindow(Activity context,OnClickListener itemsOnClick,boolean flag,OnItemClickListener ietmclicklistener) {  
       super(context);  
       LayoutInflater inflater = (LayoutInflater) context  
-              .getSystemService(Context.LAYOUT_INFLATER_SERVICE);  
-      mMenuView = inflater.inflate(R.layout.menu, null);  
-      share_friend = (Button) mMenuView.findViewById(R.id.share_friend);  
-      share_circle = (Button) mMenuView.findViewById(R.id.share_circle);  
-      btn_cancel = (Button) mMenuView.findViewById(R.id.btn_cancel);  
-      //取消按钮  
-      btn_cancel.setOnClickListener(new OnClickListener() {  
+              .getSystemService(Context.LAYOUT_INFLATER_SERVICE); 
+      if(flag){
+    	  mMenuView = inflater.inflate(R.layout.menu, null);  
+          share_friend = (TextView) mMenuView.findViewById(R.id.share_friend);  
+          share_circle = (TextView) mMenuView.findViewById(R.id.share_circle);   
+          share_friend.setOnClickListener(itemsOnClick);  
+          share_circle.setOnClickListener(itemsOnClick);  
+      
+          this.setWidth(LayoutParams.MATCH_PARENT); 
+      }else{
+    	  mMenuView = inflater.inflate(R.layout.dialog_menu, null);  
+    	 
+    	  listColor =(ListView)mMenuView.findViewById(R.id.list_color);
+    	  listColor.setAdapter(new MyAdapter(context, getColor(),true));
+    	  listColor.setOnItemClickListener(ietmclicklistener);
+    	
+          this.setWidth(300); 
+      }
+     
+      cancel = (TextView) mMenuView.findViewById(R.id.cancel);
+     cancel.setOnClickListener(new OnClickListener() {  
 
           public void onClick(View v) {  
               //销毁弹出框  
@@ -38,12 +63,9 @@ public class SelectPopupWindow extends PopupWindow {
           }  
       });  
       //设置按钮监听  
-      share_friend.setOnClickListener(itemsOnClick);  
-      share_circle.setOnClickListener(itemsOnClick);  
+      
       //设置SelectPicPopupWindow的View  
-      this.setContentView(mMenuView);  
-      //设置SelectPicPopupWindow弹出窗体的宽  
-      this.setWidth(LayoutParams.FILL_PARENT);  
+      this.setContentView(mMenuView);   
       //设置SelectPicPopupWindow弹出窗体的高  
       this.setHeight(LayoutParams.WRAP_CONTENT);  
       //设置SelectPicPopupWindow弹出窗体可点击  
@@ -71,5 +93,14 @@ public class SelectPopupWindow extends PopupWindow {
       });  
 
   }  
+	private List<String> getColor() {
+		// TODO Auto-generated method stub
+
+		listColors.add("绿");
+		listColors.add("红");
+		listColors.add("蓝");
+		listColors.add("紫");
+		return listColors;
+	}
 
 }  

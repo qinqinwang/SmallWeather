@@ -96,7 +96,7 @@ import com.weather.util.TestUtils;
 
 public class MainActivity extends Activity {
 	private TextView date, city, type, temperature, wind;
-	private ImageButton setting;
+//	private ImageButton setting;
 	private String result;
 	private String reads;
 	private String dates;
@@ -105,10 +105,11 @@ public class MainActivity extends Activity {
 	private SharedPreferences sp = null;
 	private ListView listColor;
 	private ListView listCity;
-//	private ListView listshare;
+	// private ListView listshare;
 	private List<String> listColors = new ArrayList<String>();
 	private List<String> listCitys = new ArrayList<String>();
 	private List<String> listShare = new ArrayList<String>();
+	private List<String> listZixun = new ArrayList<String>();
 
 	private RelativeLayout viewMain;
 	private SlidingMenu menu;
@@ -130,10 +131,12 @@ public class MainActivity extends Activity {
 
 	private String appurl, fileName;
 	private ProgressBar progress;
-	int width;
-	int height;
+	private int width;
+	private int height;
 
-	private static final int THUMB_SIZE = 32;
+	private TextView beijing;
+	private TextView tixing;
+	private ListView listzixun;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -224,18 +227,70 @@ public class MainActivity extends Activity {
 		type = (TextView) findViewById(R.id.type);
 		temperature = (TextView) findViewById(R.id.temperature);
 		wind = (TextView) findViewById(R.id.wind);
-		setting = (ImageButton) findViewById(R.id.setting);
-		setting.setOnClickListener(new OnClickListener() {
+//		setting = (ImageButton) findViewById(R.id.setting);
+//		setting.setOnClickListener(new OnClickListener() {
+//
+//			@Override
+//			public void onClick(View v) {
+//				MainActivity.this.getMenu().showSecondaryMenu();
+//
+//			}
+//		});
+
+		beijing = (TextView) findViewById(R.id.beijing);
+		beijing.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
-				MainActivity.this.getMenu().showSecondaryMenu();
+				// TODO Auto-generated method stub
+
+				menuWindow = new SelectPopupWindow(MainActivity.this,
+						null,false,onitemsOnClicks);
+				// 显示窗口
+				menuWindow.showAtLocation(
+						MainActivity.this.findViewById(R.id.main),
+						Gravity.CENTER , 0, 0); //
+				
+				
+				
+//				final String[] colorItems = getResources().getStringArray(
+//						R.array.coloritem);
+//				new AlertDialog.Builder(MainActivity.this)
+//						.setItems(colorItems,
+//								new DialogInterface.OnClickListener() {
+//
+//									public void onClick(DialogInterface dialog,
+//											int which) {
+//										MainActivity.this.getMenu().toggle();
+//										Editor editor = sp.edit();
+//										editor.putInt("colorPosition", which);
+//										editor.commit();
+//										Message msg = new Message();
+//										msg.what = 2;
+//										msg.arg1 = which;
+//										handler.sendMessage(msg);
+//
+//									}
+//								}).setNegativeButton("取消", null).show();
 
 			}
 		});
-
+		tixing = (TextView)findViewById(R.id.tixing);
+		tixing.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				Intent intent = new Intent();
+				intent.setClass(MainActivity.this, Setting.class);
+				startActivity(intent);
+				finish();
+			}
+		});
+		
+		
 		listColor = (ListView) findViewById(R.id.list_color);
-		listColor.setAdapter(new MyAdapter(this, getColor()));
+		listColor.setAdapter(new MyAdapter(this, getColor(),true));
 		listColor.setOnItemClickListener(new OnItemClickListener() {
 
 			@Override
@@ -254,7 +309,7 @@ public class MainActivity extends Activity {
 			}
 		});
 		listCity = (ListView) findViewById(R.id.list_city);
-		listCity.setAdapter(new MyAdapter(this, getCity()));
+		listCity.setAdapter(new MyAdapter(this, getCity(),true));
 		listCity.setOnItemClickListener(new OnItemClickListener() {
 
 			@Override
@@ -288,50 +343,53 @@ public class MainActivity extends Activity {
 				}
 			}
 		});
-//		listshare = (ListView) findViewById(R.id.list_share);
-//		listshare.setAdapter(new MyAdapter(this, getShare()));
-//		listshare.setOnItemClickListener(new OnItemClickListener() {
-//
-//			@Override
-//			public void onItemClick(AdapterView<?> parent, View view,
-//					final int position, long id) {
-//				// TODO Auto-generated method stub
-//				MainActivity.this.getMenu().toggle();
-//
-//				if (isNetworkAvailable(MainActivity.this)) {
-//					TimerTask task = new TimerTask() {
-//
-//						public void run() {
-//							Message message = new Message();
-//							message.what = 8;
-//							message.arg1 = position;
-//							handler.sendMessage(message);
-//						}
-//
-//					};
-//					Timer timer = new Timer();
-//					timer.schedule(task, 1000);
-//				} else {
-//					if ("".equals(readFile()) || readFile() == null) {
-//						Toast.makeText(MainActivity.this, "请连接网络", 8000).show();
-//					} else {
-//						TimerTask task = new TimerTask() {
-//
-//							public void run() {
-//								Message message = new Message();
-//								message.what = 8;
-//								message.arg1 = position;
-//								handler.sendMessage(message);
-//							}
-//
-//						};
-//						Timer timer = new Timer();
-//						timer.schedule(task, 1000);
-//					}
-//				}
-//
-//			}
-//		});
+		listzixun = (ListView) findViewById(R.id.list_zixun);
+		listzixun.setAdapter(new MyAdapter(this,getzixun(),false));
+		
+		// listshare = (ListView) findViewById(R.id.list_share);
+		// listshare.setAdapter(new MyAdapter(this, getShare()));
+		// listshare.setOnItemClickListener(new OnItemClickListener() {
+		//
+		// @Override
+		// public void onItemClick(AdapterView<?> parent, View view,
+		// final int position, long id) {
+		// // TODO Auto-generated method stub
+		// MainActivity.this.getMenu().toggle();
+		//
+		// if (isNetworkAvailable(MainActivity.this)) {
+		// TimerTask task = new TimerTask() {
+		//
+		// public void run() {
+		// Message message = new Message();
+		// message.what = 8;
+		// message.arg1 = position;
+		// handler.sendMessage(message);
+		// }
+		//
+		// };
+		// Timer timer = new Timer();
+		// timer.schedule(task, 1000);
+		// } else {
+		// if ("".equals(readFile()) || readFile() == null) {
+		// Toast.makeText(MainActivity.this, "请连接网络", 8000).show();
+		// } else {
+		// TimerTask task = new TimerTask() {
+		//
+		// public void run() {
+		// Message message = new Message();
+		// message.what = 8;
+		// message.arg1 = position;
+		// handler.sendMessage(message);
+		// }
+		//
+		// };
+		// Timer timer = new Timer();
+		// timer.schedule(task, 1000);
+		// }
+		// }
+		//
+		// }
+		// });
 		share = (ImageButton) findViewById(R.id.share);
 		share.setOnClickListener(new OnClickListener() {
 
@@ -339,7 +397,7 @@ public class MainActivity extends Activity {
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
 				menuWindow = new SelectPopupWindow(MainActivity.this,
-						itemsOnClick);
+						itemsOnClick,true,null);
 				// 显示窗口
 				menuWindow.showAtLocation(
 						MainActivity.this.findViewById(R.id.main),
@@ -350,6 +408,39 @@ public class MainActivity extends Activity {
 		progress = (ProgressBar) findViewById(R.id.progress);
 	}
 
+	private List<String> getzixun() {
+		// TODO Auto-generated method stub
+		listZixun.add("女子为了照顾瘫痪男友花光积蓄 村民捐款资助");
+		listZixun.add("90后白富美感情受挫：吞100片药微信直播感受 ");
+		listZixun.add("河南一高中现八条禁令 男女拉手两次将被开除 ");
+		listZixun.add("叔嫂孽情浮出水面：男方杀7岁私生子逃亡19年");
+		listZixun.add("明星减肥食谱大曝光 杨丽萍20年坚持不吃米饭");
+		listZixun.add("揭谢霆锋八亿身家：公司暂不上市 每年赚一亿");
+		return listZixun;
+	}
+
+	private OnItemClickListener onitemsOnClicks = new OnItemClickListener() {
+
+		@Override
+		public void onItemClick(AdapterView<?> parent, View view, int position,
+				long id) {
+			// TODO Auto-generated method stub
+			MainActivity.this.getMenu().toggle();
+			Editor editor = sp.edit();
+			editor.putInt("colorPosition", position);
+			editor.commit();
+			Message msg = new Message();
+			msg.what = 2;
+			msg.arg1 = position;
+			handler.sendMessage(msg);
+			menuWindow.dismiss();
+		}
+
+	};
+	
+	
+	
+	
 	private OnClickListener itemsOnClick = new OnClickListener() {
 
 		public void onClick(View v) {
@@ -502,16 +593,17 @@ public class MainActivity extends Activity {
 
 	private void getDate() {
 		// TODO Auto-generated method stub
-		 String[] weekDays = {"星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"};
+		String[] weekDays = { "星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六" };
 		Calendar calendar = Calendar.getInstance();
 		int month = calendar.get(Calendar.MONTH) + 1;
 		int day = calendar.get(Calendar.DATE);
-        int w = calendar.get(Calendar.DAY_OF_WEEK) - 1;
-        if (w < 0){
-        	   w = 0;
-        }
-		String week =  weekDays[w];;
-		dates = month + "." + day+"/"+week;
+		int w = calendar.get(Calendar.DAY_OF_WEEK) - 1;
+		if (w < 0) {
+			w = 0;
+		}
+		String week = weekDays[w];
+		;
+		dates = month + "." + day + "/" + week;
 		Editor editor = sp.edit();
 		editor.putString("date", dates);
 		editor.commit();

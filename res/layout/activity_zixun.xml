@@ -24,7 +24,7 @@
             android:textSize="20sp" />
 
         <ListView
-            android:id="@+id/list_city"
+            android:id="@+id/list_zixun"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:divider="@null"
@@ -34,7 +34,7 @@
 
   
          
-       <TextView
+       <!-- <TextView
             android:id="@+id/Version"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -42,5 +42,5 @@
             android:gravity="center"
             android:text="关于微天气   当前版本号v1.0.0"
             android:textColor="@color/white"
-            android:textSize="13sp" />
+            android:textSize="13sp" /> -->
 </RelativeLayout>

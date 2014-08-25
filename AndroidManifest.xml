@@ -28,6 +28,9 @@
             android:name="com.weather.view.wxapi.WXEntryActivity"
             android:exported="true"
             android:theme="@android:style/Theme.Translucent" />
+           <activity
+            android:name="com.weather.view.Setting"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"/>
             <meta-data
                 android:name="UMENG_APPKEY"
                 android:value="53eb2564fd98c50d4600d1f2" >

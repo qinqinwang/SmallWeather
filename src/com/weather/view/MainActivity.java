@@ -229,7 +229,7 @@ public class MainActivity extends Activity {
 
 			@Override
 			public void onClick(View v) {
-				MainActivity.this.getMenu().toggle();
+				MainActivity.this.getMenu().showSecondaryMenu();
 
 			}
 		});

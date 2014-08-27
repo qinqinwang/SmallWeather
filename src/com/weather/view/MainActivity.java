@@ -28,6 +28,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -53,11 +54,15 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.Menu;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.GestureDetector.OnGestureListener;
 import android.view.View.OnClickListener;
+import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -65,6 +70,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.LinearLayout.LayoutParams;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -94,9 +100,10 @@ import com.weather.util.FontManager;
 import com.weather.util.HttpUtil;
 import com.weather.util.TestUtils;
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity implements OnTouchListener,
+		OnGestureListener {
 	private TextView date, city, type, temperature, wind;
-//	private ImageButton setting;
+	// private ImageButton setting;
 	private String result;
 	private String reads;
 	private String dates;
@@ -136,7 +143,14 @@ public class MainActivity extends Activity {
 
 	private TextView beijing;
 	private TextView tixing;
-	private ListView listzixun;
+	private TextView left_back;
+//	private TextView right_back;
+//	private ListView listzixun;
+	private LinearLayout viewSetting;
+
+	 private GestureDetector gestureDetector;
+	 private int verticalMinDistance =10;
+	 private int minVelocity = 0;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -159,16 +173,18 @@ public class MainActivity extends Activity {
 			SDPATH.SD_PATH = this.getCacheDir().toString();
 		}
 		menu = new SlidingMenu(this);
-		menu.setMode(SlidingMenu.LEFT_RIGHT);
+		menu.setMode(SlidingMenu.LEFT);
 		menu.setTouchModeAbove(SlidingMenu.TOUCHMODE_FULLSCREEN);
 		menu.setShadowWidthRes(R.dimen.shadow_width);
 		menu.setShadowDrawable(R.drawable.shadow);
 		menu.setBehindOffsetRes(R.dimen.slidingmenu_offset);
 		menu.setFadeDegree(0.35f);
 		menu.attachToActivity(this, SlidingMenu.SLIDING_CONTENT);
-		menu.setSecondaryMenu(R.layout.activity_setting);
-		menu.setMenu(R.layout.activity_zixun);
+//		menu.setSecondaryMenu(R.layout.activity_zixun);
+		menu.setMenu(R.layout.activity_setting);
 		sp = getSharedPreferences("weather", Context.MODE_PRIVATE);
+	
+		 gestureDetector = new GestureDetector(this);
 		setView();
 		hasNet();
 		getDate();
@@ -222,20 +238,22 @@ public class MainActivity extends Activity {
 	private void setView() {
 		// TODO Auto-generated method stub
 		viewMain = (RelativeLayout) findViewById(R.id.viewMain);
+		viewMain.setOnTouchListener(this);
+		viewMain.setLongClickable(true);
 		date = (TextView) findViewById(R.id.date);
 		city = (TextView) findViewById(R.id.city);
 		type = (TextView) findViewById(R.id.type);
 		temperature = (TextView) findViewById(R.id.temperature);
 		wind = (TextView) findViewById(R.id.wind);
-//		setting = (ImageButton) findViewById(R.id.setting);
-//		setting.setOnClickListener(new OnClickListener() {
-//
-//			@Override
-//			public void onClick(View v) {
-//				MainActivity.this.getMenu().showSecondaryMenu();
-//
-//			}
-//		});
+		// setting = (ImageButton) findViewById(R.id.setting);
+		// setting.setOnClickListener(new OnClickListener() {
+		//
+		// @Override
+		// public void onClick(View v) {
+		// MainActivity.this.getMenu().showSecondaryMenu();
+		//
+		// }
+		// });
 
 		beijing = (TextView) findViewById(R.id.beijing);
 		beijing.setOnClickListener(new OnClickListener() {
@@ -244,53 +262,52 @@ public class MainActivity extends Activity {
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
 
-				menuWindow = new SelectPopupWindow(MainActivity.this,
-						null,false,onitemsOnClicks);
+				menuWindow = new SelectPopupWindow(MainActivity.this, null,
+						false, onitemsOnClicks);
 				// 显示窗口
 				menuWindow.showAtLocation(
 						MainActivity.this.findViewById(R.id.main),
-						Gravity.CENTER , 0, 0); //
-				
-				
-				
-//				final String[] colorItems = getResources().getStringArray(
-//						R.array.coloritem);
-//				new AlertDialog.Builder(MainActivity.this)
-//						.setItems(colorItems,
-//								new DialogInterface.OnClickListener() {
-//
-//									public void onClick(DialogInterface dialog,
-//											int which) {
-//										MainActivity.this.getMenu().toggle();
-//										Editor editor = sp.edit();
-//										editor.putInt("colorPosition", which);
-//										editor.commit();
-//										Message msg = new Message();
-//										msg.what = 2;
-//										msg.arg1 = which;
-//										handler.sendMessage(msg);
-//
-//									}
-//								}).setNegativeButton("取消", null).show();
+						Gravity.BOTTOM, 0, 0); //
+
+				// final String[] colorItems = getResources().getStringArray(
+				// R.array.coloritem);
+				// new AlertDialog.Builder(MainActivity.this)
+				// .setItems(colorItems,
+				// new DialogInterface.OnClickListener() {
+				//
+				// public void onClick(DialogInterface dialog,
+				// int which) {
+				// MainActivity.this.getMenu().toggle();
+				// Editor editor = sp.edit();
+				// editor.putInt("colorPosition", which);
+				// editor.commit();
+				// Message msg = new Message();
+				// msg.what = 2;
+				// msg.arg1 = which;
+				// handler.sendMessage(msg);
+				//
+				// }
+				// }).setNegativeButton("取消", null).show();
 
 			}
 		});
-		tixing = (TextView)findViewById(R.id.tixing);
+		tixing = (TextView) findViewById(R.id.tixing);
 		tixing.setOnClickListener(new OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
 				Intent intent = new Intent();
 				intent.setClass(MainActivity.this, Setting.class);
 				startActivity(intent);
+				overridePendingTransition(R.anim.push_left_in,
+						R.anim.push_left_out);
 				finish();
 			}
 		});
-		
-		
+
 		listColor = (ListView) findViewById(R.id.list_color);
-		listColor.setAdapter(new MyAdapter(this, getColor(),true));
+		listColor.setAdapter(new MyAdapter(this, getColor(), true));
 		listColor.setOnItemClickListener(new OnItemClickListener() {
 
 			@Override
@@ -309,7 +326,7 @@ public class MainActivity extends Activity {
 			}
 		});
 		listCity = (ListView) findViewById(R.id.list_city);
-		listCity.setAdapter(new MyAdapter(this, getCity(),true));
+		listCity.setAdapter(new MyAdapter(this, getCity(), true));
 		listCity.setOnItemClickListener(new OnItemClickListener() {
 
 			@Override
@@ -343,9 +360,7 @@ public class MainActivity extends Activity {
 				}
 			}
 		});
-		listzixun = (ListView) findViewById(R.id.list_zixun);
-		listzixun.setAdapter(new MyAdapter(this,getzixun(),false));
-		
+
 		// listshare = (ListView) findViewById(R.id.list_share);
 		// listshare.setAdapter(new MyAdapter(this, getShare()));
 		// listshare.setOnItemClickListener(new OnItemClickListener() {
@@ -397,13 +412,33 @@ public class MainActivity extends Activity {
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
 				menuWindow = new SelectPopupWindow(MainActivity.this,
-						itemsOnClick,true,null);
+						itemsOnClick, true, null);
 				// 显示窗口
 				menuWindow.showAtLocation(
 						MainActivity.this.findViewById(R.id.main),
 						Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, 0); //
 			}
 		});
+		left_back = (TextView) findViewById(R.id.left_back);
+		left_back.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				MainActivity.this.getMenu().toggle();
+			}
+		});
+//		right_back = (TextView) findViewById(R.id.right_back);
+//		right_back.setOnClickListener(new OnClickListener() {
+//
+//			@Override
+//			public void onClick(View v) {
+//				// TODO Auto-generated method stub
+//				MainActivity.this.getMenu().toggle();
+//			}
+//		});
+//		listzixun = (ListView) findViewById(R.id.list_zixun);
+//		listzixun.setAdapter(new MyAdapter(this,getzixun(),false));
 
 		progress = (ProgressBar) findViewById(R.id.progress);
 	}
@@ -418,9 +453,9 @@ public class MainActivity extends Activity {
 		listZixun.add("揭谢霆锋八亿身家：公司暂不上市 每年赚一亿");
 		return listZixun;
 	}
-
 	private OnItemClickListener onitemsOnClicks = new OnItemClickListener() {
 
+		@SuppressLint("ResourceAsColor")
 		@Override
 		public void onItemClick(AdapterView<?> parent, View view, int position,
 				long id) {
@@ -437,10 +472,7 @@ public class MainActivity extends Activity {
 		}
 
 	};
-	
-	
-	
-	
+
 	private OnClickListener itemsOnClick = new OnClickListener() {
 
 		public void onClick(View v) {
@@ -772,7 +804,15 @@ public class MainActivity extends Activity {
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		// TODO Auto-generated method stub
-		MainActivity.this.finish();
+		if (keyCode == KeyEvent.KEYCODE_BACK
+				&& (MainActivity.this.getMenu().isSecondaryMenuShowing() || MainActivity.this
+						.getMenu().isMenuShowing())) {
+			MainActivity.this.getMenu().toggle();
+			return false;
+		} else {
+			finish();
+		}
+
 		return super.onKeyDown(keyCode, event);
 	}
 
@@ -836,6 +876,7 @@ public class MainActivity extends Activity {
 		} else if (colorPosition == 3) {
 			viewMain.setBackgroundColor(MainActivity.this.getResources()
 					.getColor(R.color.purple));
+
 		}
 	}
 
@@ -1073,6 +1114,56 @@ public class MainActivity extends Activity {
 	private String buildTransaction(final String type) {
 		return (type == null) ? String.valueOf(System.currentTimeMillis())
 				: type + System.currentTimeMillis();
+	}
+
+	@Override
+	public boolean onDown(MotionEvent e) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public void onShowPress(MotionEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public boolean onSingleTapUp(MotionEvent e) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX,
+			float distanceY) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public void onLongPress(MotionEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,
+			float velocityY) {
+		// TODO Auto-generated method stub
+		 if (e1.getX() - e2.getX() > verticalMinDistance &&
+		 Math.abs(velocityX) > minVelocity) {
+		
+		 Intent intent = new Intent(MainActivity.this, ZixunActivity.class);
+		 startActivity(intent);
+		 }
+		return false;
+	}
+
+	@Override
+	public boolean onTouch(View v, MotionEvent event) {
+		// TODO Auto-generated method stub
+		 return gestureDetector.onTouchEvent(event);
 	}
 
 }

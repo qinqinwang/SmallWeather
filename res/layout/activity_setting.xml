@@ -13,16 +13,35 @@
         android:layout_weight="1"
         android:orientation="vertical" >
 
-        <TextView
-            android:layout_width="fill_parent"
+        <RelativeLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/blackc"
-            android:gravity="center"
-            android:paddingBottom="5dip"
-            android:paddingTop="5dip"
-            android:text="@string/settings"
-            android:textColor="@color/white"
-            android:textSize="20sp" />
+                android:background="@color/blackc">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:gravity="center"
+                android:paddingBottom="5dip"
+                android:paddingTop="5dip"
+                android:text="@string/settings"
+                android:textColor="@color/white"
+                android:textSize="20sp" /> 
+
+            <TextView
+                android:id="@+id/left_back"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:gravity="right"
+                android:background="@color/blackc"
+                android:paddingBottom="5dip"
+                android:paddingTop="5dip"
+                android:text="@string/back"
+                android:textColor="@color/white"
+                android:textSize="20sp"/>
+        </RelativeLayout>
 
         <TextView
             android:id="@+id/tixing"
@@ -125,14 +144,5 @@
             android:padding="10dip" />
     </LinearLayout>
 
-  <!--   <TextView
-        android:id="@+id/Version"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="3dip"
-        android:gravity="center"
-        android:text="关于微天气   当前版本号v1.0.0"
-        android:textColor="@color/white"
-        android:textSize="13sp" /> -->
-
+
 </LinearLayout>

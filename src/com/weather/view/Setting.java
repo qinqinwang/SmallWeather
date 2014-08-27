@@ -30,6 +30,7 @@ public class Setting extends Activity{
 				Intent intent = new Intent();
 				intent.setClass(Setting.this, MainActivity.class);
 				startActivity(intent);
+				overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
 				finish();
 			}
 		});
@@ -37,10 +38,13 @@ public class Setting extends Activity{
 	
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		// TODO Auto-generated method stub
-		Intent intent = new Intent();
-		intent.setClass(Setting.this, MainActivity.class);
-		startActivity(intent);
-		finish();
+		if(keyCode == KeyEvent.KEYCODE_BACK){
+			Intent intent = new Intent();
+			intent.setClass(Setting.this, MainActivity.class);
+			startActivity(intent);
+			overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
+			finish();
+		}
 		return super.onKeyDown(keyCode, event);
 	}
 

@@ -1,40 +1,54 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/viewZiXun"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/blacks"
-    android:paddingTop="5dip" >
+    android:paddingTop="5dip" 
+    android:orientation="vertical">
 
-
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical" >
+        android:layout_height="wrap_content"
+        android:background="@color/blackc" >
 
         <TextView
-            android:layout_width="fill_parent"
+            android:id="@+id/right_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="left"
+            android:paddingBottom="5dip"
+             android:layout_alignParentLeft="true"
+            android:paddingTop="5dip"
+            android:text="@string/back"
+            android:textColor="@color/white"
+            android:textSize="20sp" 
+            android:clickable="true"/>
+
+        <TextView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@color/blackc"
+            
+                android:layout_centerHorizontal="true"
             android:gravity="center"
             android:paddingBottom="5dip"
             android:paddingTop="5dip"
             android:text="@string/city_zixun"
             android:textColor="@color/white"
             android:textSize="20sp" />
+    </RelativeLayout>
 
-        <ListView
-            android:id="@+id/list_zixun"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:divider="@null"
-            android:listSelector="@drawable/list_selector"
-            android:padding="10dip" />
-    </LinearLayout>
+    <ListView
+        android:id="@+id/list_zixun"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:divider="@null"
+        android:listSelector="@drawable/list_selector"
+        android:padding="10dip" />
 
-  
-         
-       <!-- <TextView
+    <!--
+            <TextView
             android:id="@+id/Version"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -42,5 +56,7 @@
             android:gravity="center"
             android:text="关于微天气   当前版本号v1.0.0"
             android:textColor="@color/white"
-            android:textSize="13sp" /> -->
-</RelativeLayout>
+            android:textSize="13sp" />
+    -->
+
+</LinearLayout>

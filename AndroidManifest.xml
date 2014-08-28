@@ -5,8 +5,7 @@
     android:versionName="1.0" >
 
     <uses-sdk
-        android:minSdkVersion="14"
-        android:targetSdkVersion="20" />
+        android:minSdkVersion="14" />
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -34,6 +33,9 @@
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen"/>
             <activity
             android:name="com.weather.view.ZixunActivity"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"/>
+            <activity
+            android:name="com.weather.view.WebViewActivity"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen"/>
             <meta-data
                 android:name="UMENG_APPKEY"

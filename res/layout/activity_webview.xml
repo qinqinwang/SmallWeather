@@ -1,18 +1,17 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/viewZiXun"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="@color/white">
+    android:orientation="vertical" >
 
     <RelativeLayout
-        android:id="@+id/zixuncolor"
+        android:id="@+id/webcolor"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        >
 
         <TextView
-            android:id="@+id/right_back"
+            android:id="@+id/web_back"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
@@ -31,19 +30,15 @@
             android:gravity="center"
             android:paddingBottom="5dip"
             android:paddingTop="5dip"
-            android:text="@string/city_zixun"
+            android:text="@string/zixun"
             android:textColor="@color/white"
             android:textSize="25sp" />
     </RelativeLayout>
 
- 
-
-    <ListView
-        android:id="@+id/list_zixun"
-        android:layout_width="wrap_content"
+    <WebView
+        android:id="@+id/webView"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:divider="@null"
-        android:listSelector="@drawable/list_selector"
-        android:padding="10dip" />
+        android:layout_weight="1.0" />
 
 </LinearLayout>

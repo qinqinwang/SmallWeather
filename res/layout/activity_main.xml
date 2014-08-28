@@ -51,6 +51,7 @@
                     android:id="@+id/share"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginRight="10dip"
                     android:background="@drawable/share" />
 
                 <TextView
@@ -60,6 +61,12 @@
                     android:layout_marginRight="5dip"
                     android:textColor="@color/white"
                     android:textSize="23sp" />
+
+                <!-- <ImageButton
+                    android:id="@+id/setting"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/setting" /> -->
             </LinearLayout>
         </RelativeLayout>
 

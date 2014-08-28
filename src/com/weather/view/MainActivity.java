@@ -46,6 +46,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Rect;
+import android.graphics.drawable.ColorDrawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -57,6 +58,7 @@ import android.util.Log;
 import android.view.GestureDetector;
 import android.view.Gravity;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MotionEvent;
 import android.view.View;
@@ -72,6 +74,7 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.ListView;
+import android.widget.PopupWindow;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -121,7 +124,7 @@ public class MainActivity extends Activity implements OnTouchListener,
 	private RelativeLayout viewMain;
 	private SlidingMenu menu;
 
-	private final static String FILE_NAME = "weather.t xt";
+	private final static String FILE_NAME = "weather.txt";
 
 	private JSONArray jsonArr;
 	private JSONObject obj;
@@ -143,14 +146,15 @@ public class MainActivity extends Activity implements OnTouchListener,
 
 	private TextView beijing;
 	private TextView tixing;
-	private TextView left_back;
-//	private TextView right_back;
-//	private ListView listzixun;
+//	private TextView left_back;
+	// private TextView right_back;
+	// private ListView listzixun;
 	private LinearLayout viewSetting;
 
-	 private GestureDetector gestureDetector;
-	 private int verticalMinDistance =10;
-	 private int minVelocity = 0;
+	private GestureDetector gestureDetector;
+	private int verticalMinDistance = 10;
+	private int minVelocity = 0;
+	private TextView share_friend, share_circle, cancel;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -180,11 +184,11 @@ public class MainActivity extends Activity implements OnTouchListener,
 		menu.setBehindOffsetRes(R.dimen.slidingmenu_offset);
 		menu.setFadeDegree(0.35f);
 		menu.attachToActivity(this, SlidingMenu.SLIDING_CONTENT);
-//		menu.setSecondaryMenu(R.layout.activity_zixun);
+		// menu.setSecondaryMenu(R.layout.activity_zixun);
 		menu.setMenu(R.layout.activity_setting);
 		sp = getSharedPreferences("weather", Context.MODE_PRIVATE);
-	
-		 gestureDetector = new GestureDetector(this);
+
+		gestureDetector = new GestureDetector(this);
 		setView();
 		hasNet();
 		getDate();
@@ -261,13 +265,13 @@ public class MainActivity extends Activity implements OnTouchListener,
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-
-				menuWindow = new SelectPopupWindow(MainActivity.this, null,
-						false, onitemsOnClicks);
-				// 显示窗口
-				menuWindow.showAtLocation(
-						MainActivity.this.findViewById(R.id.main),
-						Gravity.BOTTOM, 0, 0); //
+//				showPopupWindow(false);
+				 menuWindow = new SelectPopupWindow(MainActivity.this, null,
+				 false, onitemsOnClicks);
+				 // 显示窗口
+				 menuWindow.showAtLocation(
+				 MainActivity.this.findViewById(R.id.main),
+				 Gravity.BOTTOM, 0, 0); //
 
 				// final String[] colorItems = getResources().getStringArray(
 				// R.array.coloritem);
@@ -306,27 +310,27 @@ public class MainActivity extends Activity implements OnTouchListener,
 			}
 		});
 
-		listColor = (ListView) findViewById(R.id.list_color);
-		listColor.setAdapter(new MyAdapter(this, getColor(), true));
-		listColor.setOnItemClickListener(new OnItemClickListener() {
-
-			@Override
-			public void onItemClick(AdapterView<?> parent, View view,
-					int position, long id) {
-				// TODO Auto-generated method stub
-				MainActivity.this.getMenu().toggle();
-				Editor editor = sp.edit();
-				editor.putInt("colorPosition", position);
-				editor.commit();
-				Message msg = new Message();
-				msg.what = 2;
-				msg.arg1 = position;
-				handler.sendMessage(msg);
-
-			}
-		});
+		// listColor = (ListView) findViewById(R.id.list_color);
+		// listColor.setAdapter(new MyAdapter(this, getColor(), true));
+		// listColor.setOnItemClickListener(new OnItemClickListener() {
+		//
+		// @Override
+		// public void onItemClick(AdapterView<?> parent, View view,
+		// int position, long id) {
+		// // TODO Auto-generated method stub
+		// MainActivity.this.getMenu().toggle();
+		// Editor editor = sp.edit();
+		// editor.putInt("colorPosition", position);
+		// editor.commit();
+		// Message msg = new Message();
+		// msg.what = 2;
+		// msg.arg1 = position;
+		// handler.sendMessage(msg);
+		//
+		// }
+		// });
 		listCity = (ListView) findViewById(R.id.list_city);
-		listCity.setAdapter(new MyAdapter(this, getCity(), true));
+		listCity.setAdapter(new MyAdapter(this, getCity(), true,null));
 		listCity.setOnItemClickListener(new OnItemClickListener() {
 
 			@Override
@@ -411,25 +415,16 @@ public class MainActivity extends Activity implements OnTouchListener,
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				menuWindow = new SelectPopupWindow(MainActivity.this,
-						itemsOnClick, true, null);
-				// 显示窗口
-				menuWindow.showAtLocation(
-						MainActivity.this.findViewById(R.id.main),
-						Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, 0); //
+				 menuWindow = new SelectPopupWindow(MainActivity.this,
+				 itemsOnClick, true, null);
+				 // 显示窗口
+				 menuWindow.showAtLocation(
+				 MainActivity.this.findViewById(R.id.main),
+				 Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, 0); //
 			}
 		});
-		left_back = (TextView) findViewById(R.id.left_back);
-		left_back.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				MainActivity.this.getMenu().toggle();
-			}
-		});
-//		right_back = (TextView) findViewById(R.id.right_back);
-//		right_back.setOnClickListener(new OnClickListener() {
+//		left_back = (TextView) findViewById(R.id.left_back);
+//		left_back.setOnClickListener(new OnClickListener() {
 //
 //			@Override
 //			public void onClick(View v) {
@@ -437,8 +432,17 @@ public class MainActivity extends Activity implements OnTouchListener,
 //				MainActivity.this.getMenu().toggle();
 //			}
 //		});
-//		listzixun = (ListView) findViewById(R.id.list_zixun);
-//		listzixun.setAdapter(new MyAdapter(this,getzixun(),false));
+		// right_back = (TextView) findViewById(R.id.right_back);
+		// right_back.setOnClickListener(new OnClickListener() {
+		//
+		// @Override
+		// public void onClick(View v) {
+		// // TODO Auto-generated method stub
+		// MainActivity.this.getMenu().toggle();
+		// }
+		// });
+		// listzixun = (ListView) findViewById(R.id.list_zixun);
+		// listzixun.setAdapter(new MyAdapter(this,getzixun(),false));
 
 		progress = (ProgressBar) findViewById(R.id.progress);
 	}
@@ -453,6 +457,7 @@ public class MainActivity extends Activity implements OnTouchListener,
 		listZixun.add("揭谢霆锋八亿身家：公司暂不上市 每年赚一亿");
 		return listZixun;
 	}
+
 	private OnItemClickListener onitemsOnClicks = new OnItemClickListener() {
 
 		@SuppressLint("ResourceAsColor")
@@ -503,6 +508,20 @@ public class MainActivity extends Activity implements OnTouchListener,
 						Toast.makeText(MainActivity.this, "请连接网络", 8000).show();
 					} else {
 						shareToTimeLine(uri);
+					}
+				}
+
+				break;
+			case R.id.share_weibo:
+				if (isNetworkAvailable(MainActivity.this)) {
+
+					shareToXinLang(uri);
+
+				} else {
+					if ("".equals(readFile()) || readFile() == null) {
+						Toast.makeText(MainActivity.this, "请连接网络", 8000).show();
+					} else {
+						shareToXinLang(uri);
 					}
 				}
 
@@ -607,6 +626,9 @@ public class MainActivity extends Activity implements OnTouchListener,
 		startActivity(intent);
 	}
 
+	
+	
+	
 	private void shareToTimeLine(Uri u) {
 
 		Intent intent = new Intent();
@@ -618,6 +640,21 @@ public class MainActivity extends Activity implements OnTouchListener,
 		intent.putExtra(Intent.EXTRA_STREAM, u);
 		startActivity(intent);
 	}
+	
+	
+	
+	private void shareToXinLang(Uri u) {
+
+		Intent intent = new Intent();
+		ComponentName comp = new ComponentName("com.sina.weibo",
+				"com.sina.weibo.EditActivity");
+		intent.setComponent(comp);
+		intent.setAction(Intent.ACTION_SEND);
+		intent.setType("image/jpg");
+		intent.putExtra(Intent.EXTRA_STREAM, u);
+		startActivity(intent);
+	}
+
 
 	public SlidingMenu getMenu() {
 		return menu;
@@ -1151,19 +1188,19 @@ public class MainActivity extends Activity implements OnTouchListener,
 	public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,
 			float velocityY) {
 		// TODO Auto-generated method stub
-		 if (e1.getX() - e2.getX() > verticalMinDistance &&
-		 Math.abs(velocityX) > minVelocity) {
-		
-		 Intent intent = new Intent(MainActivity.this, ZixunActivity.class);
-		 startActivity(intent);
-		 }
+		if (e1.getX() - e2.getX() > verticalMinDistance
+				&& Math.abs(velocityX) > minVelocity) {
+
+			Intent intent = new Intent(MainActivity.this, ZixunActivity.class);
+			startActivity(intent);
+		}
 		return false;
 	}
 
 	@Override
 	public boolean onTouch(View v, MotionEvent event) {
 		// TODO Auto-generated method stub
-		 return gestureDetector.onTouchEvent(event);
+		return gestureDetector.onTouchEvent(event);
 	}
 
 }

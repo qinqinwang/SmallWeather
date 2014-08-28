@@ -12,36 +12,18 @@
         android:layout_height="0dip"
         android:layout_weight="1"
         android:orientation="vertical" >
-
-        <RelativeLayout
-            android:layout_width="match_parent"
+  <TextView
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-                android:background="@color/blackc">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:gravity="center"
-                android:paddingBottom="5dip"
-                android:paddingTop="5dip"
-                android:text="@string/settings"
-                android:textColor="@color/white"
-                android:textSize="20sp" /> 
-
-            <TextView
-                android:id="@+id/left_back"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:gravity="right"
-                android:background="@color/blackc"
-                android:paddingBottom="5dip"
-                android:paddingTop="5dip"
-                android:text="@string/back"
-                android:textColor="@color/white"
-                android:textSize="20sp"/>
-        </RelativeLayout>
+            android:background="@color/blackc"
+            android:gravity="center"
+            android:paddingBottom="5dip"
+            android:paddingTop="5dip"
+            
+            android:text="@string/settings"
+            android:textColor="@color/white"
+            android:textSize="20sp" />
+      
 
         <TextView
             android:id="@+id/tixing"
@@ -62,15 +44,6 @@
             android:text="@string/beijing"
             android:textColor="@color/white"
             android:textSize="20sp" />
-
-        <ListView
-            android:id="@+id/list_color"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:divider="@null"
-            android:listSelector="@drawable/list_selector"
-            android:padding="10dip"
-            android:visibility="gone" />
     </LinearLayout>
 
     <LinearLayout
@@ -143,7 +116,5 @@
             android:listSelector="@drawable/list_selector"
             android:padding="10dip" />
     </LinearLayout>
-
-
 
 </LinearLayout>

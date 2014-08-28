@@ -15,16 +15,16 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup.LayoutParams;
-import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
 public class SelectPopupWindow extends PopupWindow {
 
-	private TextView share_friend, share_circle, cancel;
+	private ImageView share_friend, share_circle,share_weibo;
+	private TextView cancel;
 	private View mMenuView;
 	private ListView listColor;
 
@@ -37,17 +37,19 @@ public class SelectPopupWindow extends PopupWindow {
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		if (flag) {
 			mMenuView = inflater.inflate(R.layout.menu, null);
-			share_friend = (TextView) mMenuView.findViewById(R.id.share_friend);
-			share_circle = (TextView) mMenuView.findViewById(R.id.share_circle);
+			share_friend = (ImageView) mMenuView.findViewById(R.id.share_friend);
+			share_circle = (ImageView) mMenuView.findViewById(R.id.share_circle);
+			share_weibo = (ImageView) mMenuView.findViewById(R.id.share_weibo);
 			share_friend.setOnClickListener(itemsOnClick);
 			share_circle.setOnClickListener(itemsOnClick);
+			share_weibo.setOnClickListener(itemsOnClick);
 
 			this.setWidth(LayoutParams.MATCH_PARENT);
 			this.setHeight(LayoutParams.WRAP_CONTENT);
 		} else {
 			mMenuView = inflater.inflate(R.layout.dialog_menu, null);
 			listColor = (ListView) mMenuView.findViewById(R.id.list_color);
-			listColor.setAdapter(new MyAdapter(context, getColor(), true));
+			listColor.setAdapter(new MyAdapter(context, getColor(), true,null));
 			listColor.setOnItemClickListener(ietmclicklistener);
 			this.setWidth(LayoutParams.MATCH_PARENT);
 			this.setHeight(LayoutParams.WRAP_CONTENT);

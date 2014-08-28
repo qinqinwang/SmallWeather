@@ -88,9 +88,11 @@ public class MainActivity extends Activity {
 	private ListView listColor;
 	private ListView listCity;
 	private ListView listshare;
+	private ListView listViewAbout;
 	private List<String> listColors = new ArrayList<String>();
 	private List<String> listCitys = new ArrayList<String>();
 	private List<String> listShare = new ArrayList<String>();
+	private List<String> listAbouts = new ArrayList<String>();
 
 	private RelativeLayout viewMain;
 	private SlidingMenu menu;
@@ -198,15 +200,15 @@ public class MainActivity extends Activity {
 		type = (TextView) findViewById(R.id.type);
 		temperature = (TextView) findViewById(R.id.temperature);
 		wind = (TextView) findViewById(R.id.wind);
-		setting = (ImageButton) findViewById(R.id.setting);
-		setting.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				MainActivity.this.getMenu().toggle();
-
-			}
-		});
+//		setting = (ImageButton) findViewById(R.id.setting);
+//		setting.setOnClickListener(new OnClickListener() {
+//
+//			@Override
+//			public void onClick(View v) {
+//				MainActivity.this.getMenu().toggle();
+//
+//			}
+//		});
 
 		listColor = (ListView) findViewById(R.id.list_color);
 		listColor.setAdapter(new MyAdapter(this, getColor()));
@@ -308,6 +310,9 @@ public class MainActivity extends Activity {
 
 			}
 		});
+		
+		listViewAbout = (ListView) findViewById(R.id.list_abouts);
+		listViewAbout.setAdapter(new MyAdapter(this,getAbouts()));
 
 		progress = (ProgressBar) findViewById(R.id.progress);
 	}
@@ -589,6 +594,7 @@ public class MainActivity extends Activity {
 		listColors.add("紫");
 		return listColors;
 	}
+	
 
 	private List<String> getCity() {
 		// TODO Auto-generated method stub
@@ -608,6 +614,11 @@ public class MainActivity extends Activity {
 		listShare.add("朋友");
 		listShare.add("朋友圈");
 		return listShare;
+	}
+	
+	private List<String> getAbouts() {
+		listAbouts.add("当前版本v1.0.0");
+		return listAbouts;
 	}
 
 	public static boolean isNetworkAvailable(Context context) {

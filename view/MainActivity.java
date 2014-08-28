@@ -28,7 +28,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -44,7 +43,6 @@ import android.content.SharedPreferences.Editor;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Rect;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -54,23 +52,14 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
-import android.view.GestureDetector;
-import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.Menu;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.GestureDetector.OnGestureListener;
 import android.view.View.OnClickListener;
-import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
-import android.widget.LinearLayout.LayoutParams;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -80,18 +69,7 @@ import android.widget.Toast;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 import com.smallweather.R;
 import com.tencent.mm.sdk.openapi.IWXAPI;
-import com.tencent.mm.sdk.openapi.SendMessageToWX;
 import com.tencent.mm.sdk.openapi.WXAPIFactory;
-import com.tencent.mm.sdk.openapi.WXAppExtendObject;
-import com.tencent.mm.sdk.openapi.WXEmojiObject;
-import com.tencent.mm.sdk.openapi.WXImageObject;
-import com.tencent.mm.sdk.openapi.WXMediaMessage;
-import com.tencent.mm.sdk.openapi.WXMusicObject;
-import com.tencent.mm.sdk.openapi.WXTextObject;
-import com.tencent.mm.sdk.openapi.WXVideoObject;
-import com.tencent.mm.sdk.openapi.WXWebpageObject;
-import com.tencent.mm.sdk.openapi.SendAuth;
-import com.tencent.mm.sdk.platformtools.Util;
 import com.umeng.analytics.MobclickAgent;
 import com.weather.adapter.MyAdapter;
 import com.weather.bean.SDPATH;
@@ -100,10 +78,9 @@ import com.weather.util.FontManager;
 import com.weather.util.HttpUtil;
 import com.weather.util.TestUtils;
 
-public class MainActivity extends Activity implements OnTouchListener,
-		OnGestureListener {
+public class MainActivity extends Activity {
 	private TextView date, city, type, temperature, wind;
-	// private ImageButton setting;
+	private ImageButton setting;
 	private String result;
 	private String reads;
 	private String dates;
@@ -112,51 +89,38 @@ public class MainActivity extends Activity implements OnTouchListener,
 	private SharedPreferences sp = null;
 	private ListView listColor;
 	private ListView listCity;
-	// private ListView listshare;
+	private ListView listshare;
 	private List<String> listColors = new ArrayList<String>();
 	private List<String> listCitys = new ArrayList<String>();
 	private List<String> listShare = new ArrayList<String>();
-	private List<String> listZixun = new ArrayList<String>();
 
 	private RelativeLayout viewMain;
 	private SlidingMenu menu;
 
-	private final static String FILE_NAME = "weather.t xt";
+	private final static String FILE_NAME = "weather.txt";
 
 	private JSONArray jsonArr;
 	private JSONObject obj;
 	private NotificationManager nm;
 	private final String APP_ID = "wxc1166aff17ba799b";
 	private IWXAPI wxApi;
-	// 实例化
-
-	private ImageButton share;
-	private SelectPopupWindow menuWindow;
+	//实例化
+	
+	// private ImageButton share;
 
 	private int vercode;
 	private ArrayList<HashMap<String, String>> applist = new ArrayList<HashMap<String, String>>();
 
 	private String appurl, fileName;
 	private ProgressBar progress;
-	private int width;
-	private int height;
-
-	private TextView beijing;
-	private TextView tixing;
-	private TextView left_back;
-//	private TextView right_back;
-//	private ListView listzixun;
-	private LinearLayout viewSetting;
-
-	 private GestureDetector gestureDetector;
-	 private int verticalMinDistance =10;
-	 private int minVelocity = 0;
+	int width;
+	int height;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		wxApi = WXAPIFactory.createWXAPI(this, APP_ID, true);
+		wxApi = WXAPIFactory.createWXAPI(this, APP_ID);
 		wxApi.registerApp(APP_ID);
 		// 存放路径设置
 		SDPATH.sdcardExit = Environment.getExternalStorageState().equals(
@@ -173,18 +137,15 @@ public class MainActivity extends Activity implements OnTouchListener,
 			SDPATH.SD_PATH = this.getCacheDir().toString();
 		}
 		menu = new SlidingMenu(this);
-		menu.setMode(SlidingMenu.LEFT);
+		menu.setMode(SlidingMenu.RIGHT);
 		menu.setTouchModeAbove(SlidingMenu.TOUCHMODE_FULLSCREEN);
 		menu.setShadowWidthRes(R.dimen.shadow_width);
 		menu.setShadowDrawable(R.drawable.shadow);
 		menu.setBehindOffsetRes(R.dimen.slidingmenu_offset);
 		menu.setFadeDegree(0.35f);
 		menu.attachToActivity(this, SlidingMenu.SLIDING_CONTENT);
-//		menu.setSecondaryMenu(R.layout.activity_zixun);
 		menu.setMenu(R.layout.activity_setting);
 		sp = getSharedPreferences("weather", Context.MODE_PRIVATE);
-	
-		 gestureDetector = new GestureDetector(this);
 		setView();
 		hasNet();
 		getDate();
@@ -201,7 +162,7 @@ public class MainActivity extends Activity implements OnTouchListener,
 	public void send(String citys, String s) {
 		NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 		// 构建一个通知对象(需要传递的参数有三个,分别是图标,标题和 时间)
-		Notification notification = new Notification(R.drawable.logo, s,
+		Notification notification = new Notification(R.drawable.logo, null,
 				System.currentTimeMillis());
 		Intent intent = new Intent(MainActivity.this, MainActivity.class);
 		PendingIntent pendingIntent = PendingIntent.getActivity(
@@ -238,76 +199,23 @@ public class MainActivity extends Activity implements OnTouchListener,
 	private void setView() {
 		// TODO Auto-generated method stub
 		viewMain = (RelativeLayout) findViewById(R.id.viewMain);
-		viewMain.setOnTouchListener(this);
-		viewMain.setLongClickable(true);
 		date = (TextView) findViewById(R.id.date);
 		city = (TextView) findViewById(R.id.city);
 		type = (TextView) findViewById(R.id.type);
 		temperature = (TextView) findViewById(R.id.temperature);
 		wind = (TextView) findViewById(R.id.wind);
-		// setting = (ImageButton) findViewById(R.id.setting);
-		// setting.setOnClickListener(new OnClickListener() {
-		//
-		// @Override
-		// public void onClick(View v) {
-		// MainActivity.this.getMenu().showSecondaryMenu();
-		//
-		// }
-		// });
-
-		beijing = (TextView) findViewById(R.id.beijing);
-		beijing.setOnClickListener(new OnClickListener() {
+		setting = (ImageButton) findViewById(R.id.setting);
+		setting.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
-				// TODO Auto-generated method stub
+				MainActivity.this.getMenu().toggle();
 
-				menuWindow = new SelectPopupWindow(MainActivity.this, null,
-						false, onitemsOnClicks);
-				// 显示窗口
-				menuWindow.showAtLocation(
-						MainActivity.this.findViewById(R.id.main),
-						Gravity.BOTTOM, 0, 0); //
-
-				// final String[] colorItems = getResources().getStringArray(
-				// R.array.coloritem);
-				// new AlertDialog.Builder(MainActivity.this)
-				// .setItems(colorItems,
-				// new DialogInterface.OnClickListener() {
-				//
-				// public void onClick(DialogInterface dialog,
-				// int which) {
-				// MainActivity.this.getMenu().toggle();
-				// Editor editor = sp.edit();
-				// editor.putInt("colorPosition", which);
-				// editor.commit();
-				// Message msg = new Message();
-				// msg.what = 2;
-				// msg.arg1 = which;
-				// handler.sendMessage(msg);
-				//
-				// }
-				// }).setNegativeButton("取消", null).show();
-
-			}
-		});
-		tixing = (TextView) findViewById(R.id.tixing);
-		tixing.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				Intent intent = new Intent();
-				intent.setClass(MainActivity.this, Setting.class);
-				startActivity(intent);
-				overridePendingTransition(R.anim.push_left_in,
-						R.anim.push_left_out);
-				finish();
 			}
 		});
 
 		listColor = (ListView) findViewById(R.id.list_color);
-		listColor.setAdapter(new MyAdapter(this, getColor(), true));
+		listColor.setAdapter(new MyAdapter(this, getColor()));
 		listColor.setOnItemClickListener(new OnItemClickListener() {
 
 			@Override
@@ -326,7 +234,7 @@ public class MainActivity extends Activity implements OnTouchListener,
 			}
 		});
 		listCity = (ListView) findViewById(R.id.list_city);
-		listCity.setAdapter(new MyAdapter(this, getCity(), true));
+		listCity.setAdapter(new MyAdapter(this, getCity()));
 		listCity.setOnItemClickListener(new OnItemClickListener() {
 
 			@Override
@@ -360,160 +268,56 @@ public class MainActivity extends Activity implements OnTouchListener,
 				}
 			}
 		});
-
-		// listshare = (ListView) findViewById(R.id.list_share);
-		// listshare.setAdapter(new MyAdapter(this, getShare()));
-		// listshare.setOnItemClickListener(new OnItemClickListener() {
-		//
-		// @Override
-		// public void onItemClick(AdapterView<?> parent, View view,
-		// final int position, long id) {
-		// // TODO Auto-generated method stub
-		// MainActivity.this.getMenu().toggle();
-		//
-		// if (isNetworkAvailable(MainActivity.this)) {
-		// TimerTask task = new TimerTask() {
-		//
-		// public void run() {
-		// Message message = new Message();
-		// message.what = 8;
-		// message.arg1 = position;
-		// handler.sendMessage(message);
-		// }
-		//
-		// };
-		// Timer timer = new Timer();
-		// timer.schedule(task, 1000);
-		// } else {
-		// if ("".equals(readFile()) || readFile() == null) {
-		// Toast.makeText(MainActivity.this, "请连接网络", 8000).show();
-		// } else {
-		// TimerTask task = new TimerTask() {
-		//
-		// public void run() {
-		// Message message = new Message();
-		// message.what = 8;
-		// message.arg1 = position;
-		// handler.sendMessage(message);
-		// }
-		//
-		// };
-		// Timer timer = new Timer();
-		// timer.schedule(task, 1000);
-		// }
-		// }
-		//
-		// }
-		// });
-		share = (ImageButton) findViewById(R.id.share);
-		share.setOnClickListener(new OnClickListener() {
+		listshare = (ListView) findViewById(R.id.list_share);
+		listshare.setAdapter(new MyAdapter(this, getShare()));
+		listshare.setOnItemClickListener(new OnItemClickListener() {
 
 			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				menuWindow = new SelectPopupWindow(MainActivity.this,
-						itemsOnClick, true, null);
-				// 显示窗口
-				menuWindow.showAtLocation(
-						MainActivity.this.findViewById(R.id.main),
-						Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, 0); //
-			}
-		});
-		left_back = (TextView) findViewById(R.id.left_back);
-		left_back.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
+			public void onItemClick(AdapterView<?> parent, View view,
+					final int position, long id) {
 				// TODO Auto-generated method stub
 				MainActivity.this.getMenu().toggle();
+				
+				if (isNetworkAvailable(MainActivity.this)) {
+					TimerTask task = new TimerTask() {
+
+						public void run() {
+							Message message = new Message();
+							message.what = 8;
+							message.arg1 = position;
+							handler.sendMessage(message);
+						}
+
+					};
+					Timer timer = new Timer();
+					timer.schedule(task, 1000);
+				}else {
+					if ("".equals(readFile()) || readFile() == null) {
+						Toast.makeText(MainActivity.this, "请连接网络", 8000).show();
+					} else {
+						TimerTask task = new TimerTask() {
+
+							public void run() {
+								Message message = new Message();
+								message.what = 8;
+								message.arg1 = position;
+								handler.sendMessage(message);
+							}
+
+						};
+						Timer timer = new Timer();
+						timer.schedule(task, 1000);
+					}
+				}
+				
+				
+
 			}
 		});
-//		right_back = (TextView) findViewById(R.id.right_back);
-//		right_back.setOnClickListener(new OnClickListener() {
-//
-//			@Override
-//			public void onClick(View v) {
-//				// TODO Auto-generated method stub
-//				MainActivity.this.getMenu().toggle();
-//			}
-//		});
-//		listzixun = (ListView) findViewById(R.id.list_zixun);
-//		listzixun.setAdapter(new MyAdapter(this,getzixun(),false));
 
 		progress = (ProgressBar) findViewById(R.id.progress);
 	}
-
-	private List<String> getzixun() {
-		// TODO Auto-generated method stub
-		listZixun.add("女子为了照顾瘫痪男友花光积蓄 村民捐款资助");
-		listZixun.add("90后白富美感情受挫：吞100片药微信直播感受 ");
-		listZixun.add("河南一高中现八条禁令 男女拉手两次将被开除 ");
-		listZixun.add("叔嫂孽情浮出水面：男方杀7岁私生子逃亡19年");
-		listZixun.add("明星减肥食谱大曝光 杨丽萍20年坚持不吃米饭");
-		listZixun.add("揭谢霆锋八亿身家：公司暂不上市 每年赚一亿");
-		return listZixun;
-	}
-	private OnItemClickListener onitemsOnClicks = new OnItemClickListener() {
-
-		@SuppressLint("ResourceAsColor")
-		@Override
-		public void onItemClick(AdapterView<?> parent, View view, int position,
-				long id) {
-			// TODO Auto-generated method stub
-			MainActivity.this.getMenu().toggle();
-			Editor editor = sp.edit();
-			editor.putInt("colorPosition", position);
-			editor.commit();
-			Message msg = new Message();
-			msg.what = 2;
-			msg.arg1 = position;
-			handler.sendMessage(msg);
-			menuWindow.dismiss();
-		}
-
-	};
-
-	private OnClickListener itemsOnClick = new OnClickListener() {
-
-		public void onClick(View v) {
-			menuWindow.dismiss();
-			Uri uri = shotScreen();
-			switch (v.getId()) {
-			case R.id.share_friend:
-
-				if (isNetworkAvailable(MainActivity.this)) {
-
-					shareToFriend(sp.getString("weather", null), uri);
-
-				} else {
-					if ("".equals(readFile()) || readFile() == null) {
-						Toast.makeText(MainActivity.this, "请连接网络", 8000).show();
-					} else {
-						shareToFriend(sp.getString("weather", null), uri);
-					}
-				}
-				break;
-			case R.id.share_circle:
-				if (isNetworkAvailable(MainActivity.this)) {
-
-					shareToTimeLine(uri);
-
-				} else {
-					if ("".equals(readFile()) || readFile() == null) {
-						Toast.makeText(MainActivity.this, "请连接网络", 8000).show();
-					} else {
-						shareToTimeLine(uri);
-					}
-				}
-
-				break;
-			default:
-				break;
-			}
-
-		}
-
-	};
+	
 
 	// 截图
 	public Uri shotScreen() {
@@ -555,7 +359,7 @@ public class MainActivity extends Activity implements OnTouchListener,
 		return u;
 	}
 
-	public File shotScree() {
+	public Bitmap shotScree() {
 		// View是你需要截图的View
 		View view = this.getWindow().getDecorView();
 		view.setDrawingCacheEnabled(true);
@@ -568,30 +372,13 @@ public class MainActivity extends Activity implements OnTouchListener,
 		int statusBarHeight = frame.top;
 
 		// 获取屏幕长和高
-		width = this.getWindowManager().getDefaultDisplay().getWidth();
-		height = this.getWindowManager().getDefaultDisplay().getHeight();
+		int width = this.getWindowManager().getDefaultDisplay().getWidth();
+		int height = this.getWindowManager().getDefaultDisplay().getHeight();
 		// 去掉标题栏
 		Bitmap b = Bitmap.createBitmap(b1, 0, statusBarHeight, width, height
 				- statusBarHeight);
-		view.destroyDrawingCache();
 
-		FileOutputStream Os;
-		try {
-			Os = this.openFileOutput("Img" + ".png",
-					Context.MODE_WORLD_READABLE);
-			b.compress(Bitmap.CompressFormat.JPEG, 100, Os);
-			Os.close();
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		File F = this.getFileStreamPath("Img" + ".png");
-		Uri u = Uri.fromFile(F);
-
-		return F;
+		return b;
 	}
 
 	private void shareToFriend(String weather, Uri u) {
@@ -601,7 +388,7 @@ public class MainActivity extends Activity implements OnTouchListener,
 		intent.setComponent(comp);
 		intent.setAction("android.intent.action.SEND");
 		// intent.putExtra("Kdescription", weather);
-		intent.setType("image/*");
+		intent.setType("image/jpg");
 		// intent.putExtra(Intent.EXTRA_TEXT, weather);
 		intent.putExtra(Intent.EXTRA_STREAM, u);
 		startActivity(intent);
@@ -625,17 +412,10 @@ public class MainActivity extends Activity implements OnTouchListener,
 
 	private void getDate() {
 		// TODO Auto-generated method stub
-		String[] weekDays = { "星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六" };
 		Calendar calendar = Calendar.getInstance();
 		int month = calendar.get(Calendar.MONTH) + 1;
 		int day = calendar.get(Calendar.DATE);
-		int w = calendar.get(Calendar.DAY_OF_WEEK) - 1;
-		if (w < 0) {
-			w = 0;
-		}
-		String week = weekDays[w];
-		;
-		dates = month + "." + day + "/" + week;
+		dates = month + "." + day;
 		Editor editor = sp.edit();
 		editor.putString("date", dates);
 		editor.commit();
@@ -785,18 +565,16 @@ public class MainActivity extends Activity implements OnTouchListener,
 				AndroidUtil
 						.install(MainActivity.this, fileName, SDPATH.SD_PATH);
 				break;
-			// case 8:
-			// int position = m.arg1;
-			// Uri uri = shotScreen();
-			// if (position == 0) {
-			// wechatShare(0);
-			// shareToFriend(sp.getString("weather", null), uri);
-			// } else {
-			// // wechatShare(1);
-			// shareToTimeLine(uri);
-			// }
-			// break;
-
+			case 8:
+				int position = m.arg1;
+				Uri uri = shotScreen();
+				if (position == 0) {
+					shareToFriend(sp.getString("weather", null), uri);
+				} else {
+					shareToTimeLine(uri);
+				}
+				break;
+				
 			}
 		}
 	}
@@ -804,15 +582,7 @@ public class MainActivity extends Activity implements OnTouchListener,
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		// TODO Auto-generated method stub
-		if (keyCode == KeyEvent.KEYCODE_BACK
-				&& (MainActivity.this.getMenu().isSecondaryMenuShowing() || MainActivity.this
-						.getMenu().isMenuShowing())) {
-			MainActivity.this.getMenu().toggle();
-			return false;
-		} else {
-			finish();
-		}
-
+		MainActivity.this.finish();
 		return super.onKeyDown(keyCode, event);
 	}
 
@@ -876,7 +646,6 @@ public class MainActivity extends Activity implements OnTouchListener,
 		} else if (colorPosition == 3) {
 			viewMain.setBackgroundColor(MainActivity.this.getResources()
 					.getColor(R.color.purple));
-
 		}
 	}
 
@@ -1074,96 +843,23 @@ public class MainActivity extends Activity implements OnTouchListener,
 
 		}
 	}
-
-	private void wechatShare(int flag) {
-		String text = "dffsgfdg";
-		// 初始化一个WXTextObject对象
-		WXTextObject textObj = new WXTextObject();
-		textObj.text = text;
-
-		// 用WXTextObject对象初始化一个WXMediaMessage对象
-		WXMediaMessage msg = new WXMediaMessage();
-		msg.mediaObject = textObj;
-		// 发送文本类型的消息时，title字段不起作用
-		// msg.title = "Will be ignored";
-		msg.description = text;
-		SendMessageToWX.Req req = new SendMessageToWX.Req();
-		req.transaction = buildTransaction("text"); // transaction字段用于唯一标识一个请求
-		req.message = msg;
-		// String path = shotScree().toString();
-		// WXImageObject imgObj = new WXImageObject();
-		// imgObj.setImagePath(path);
-		//
-		// WXMediaMessage msg = new WXMediaMessage();
-		// msg.mediaObject = imgObj;
-		//
-		// Bitmap bmp = BitmapFactory.decodeFile(path);
-		// Bitmap thumbBmp = Bitmap.createScaledBitmap(bmp, THUMB_SIZE,
-		// THUMB_SIZE, true);
-		// bmp.recycle();
-		// msg.thumbData = Util.bmpToByteArray(thumbBmp, true);
-		//
-		// SendMessageToWX.Req req = new SendMessageToWX.Req();
-		// req.transaction = buildTransaction("img");
-		// req.message = msg;
-		req.scene = flag == 0 ? SendMessageToWX.Req.WXSceneSession
-				: SendMessageToWX.Req.WXSceneTimeline;
-		wxApi.sendReq(req);
-	}
-
-	private String buildTransaction(final String type) {
-		return (type == null) ? String.valueOf(System.currentTimeMillis())
-				: type + System.currentTimeMillis();
-	}
-
-	@Override
-	public boolean onDown(MotionEvent e) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public void onShowPress(MotionEvent e) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public boolean onSingleTapUp(MotionEvent e) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX,
-			float distanceY) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public void onLongPress(MotionEvent e) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,
-			float velocityY) {
-		// TODO Auto-generated method stub
-		 if (e1.getX() - e2.getX() > verticalMinDistance &&
-		 Math.abs(velocityX) > minVelocity) {
-		
-		 Intent intent = new Intent(MainActivity.this, ZixunActivity.class);
-		 startActivity(intent);
-		 }
-		return false;
-	}
-
-	@Override
-	public boolean onTouch(View v, MotionEvent event) {
-		// TODO Auto-generated method stub
-		 return gestureDetector.onTouchEvent(event);
+	
+	
+	private void wechatShare(int flag){
+	    WXWebpageObject webpage = new WXWebpageObject();
+	    webpage.webpageUrl = 这里填写链接url;
+	    WXMediaMessage msg = new WXMediaMessage(webpage);
+	    msg.title = 这里填写标题;
+	    msg.description = 这里填写内容;
+	    //这里替换一张自己工程里的图片资源
+	    Bitmap thumb = BitmapFactory.decodeResource(getResources(), R.drawable.share_logo);
+	    msg.setThumbImage(thumb);
+	     
+	    SendMessageToWX.Req req = new SendMessageToWX.Req();
+	    req.transaction = String.valueOf(System.currentTimeMillis());
+	    req.message = msg;
+	    req.scene = flag==0?SendMessageToWX.Req.WXSceneSession:SendMessageToWX.Req.WXSceneTimeline;
+	    wxApi.sendReq(req);
 	}
 
 }

@@ -1,11 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">微天气</string>
+    <string name="app_name">哎呦天气</string>
+    <string name="guanyu">关于</string>
+    <string name="settings">设置</string>
+    <string name="tixing">提醒设置</string>
+    <string name="beijing">背景设置</string>
+    <string name="banben">版本更新</string>
+    <string name="yijian">意见反馈</string>
+    <string name="city_settings">城市</string>
+    <string name="errcode_success">发送成功</string>
+    <string name="errcode_cancel">发送取消</string>
+    <string name="errcode_deny">发送被拒绝</string>
+    <string name="errcode_unknown">发送返回</string>
+    <string name="city_zixun">资讯列表</string>
     
-    <string name="share_settings">分享到</string> 
-    <string name="color_settings">颜色选择</string>
-     <string name="city_settings">城市选择</string>
-    
- 
+    <string name="back">返回</string>
+
+    <string-array name="coloritem">
+        <item>绿</item>
+        <item>红</item>
+        <item>蓝</item>
+        <item>紫</item>
+    </string-array>
+
 </resources>

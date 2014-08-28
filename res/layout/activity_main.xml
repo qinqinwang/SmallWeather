@@ -1,5 +1,6 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.smallweather.MainActivity" >
@@ -46,13 +47,11 @@
                 android:gravity="center"
                 android:orientation="horizontal" >
 
-                <!--
-            <ImageButton
-                android:id="@+id/share"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/share" />
-                -->
+                <ImageButton
+                    android:id="@+id/share"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/share" />
 
                 <TextView
                     android:id="@+id/city"
@@ -61,12 +60,6 @@
                     android:layout_marginRight="5dip"
                     android:textColor="@color/white"
                     android:textSize="23sp" />
-
-             <!--    <ImageButton
-                    android:id="@+id/setting"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/setting" /> -->
             </LinearLayout>
         </RelativeLayout>
 
@@ -85,7 +78,7 @@
                 android:layout_gravity="center"
                 android:gravity="center"
                 android:textColor="@color/white"
-                android:textSize="80sp" />
+                android:textSize="60sp" />
 
             <TextView
                 android:id="@+id/temperature"
@@ -96,20 +89,29 @@
                 android:paddingTop="20dip"
                 android:textColor="@color/white"
                 android:textSize="40sp" />
+
+            <TextView
+                android:id="@+id/wind"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:paddingTop="20dip"
+                android:textColor="@color/white"
+                android:textSize="30sp" />
         </LinearLayout>
 
         <TextView
-            android:id="@+id/wind"
+            android:id="@+id/tuchao"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:layout_alignParentRight="true"
+            android:layout_alignParentLeft="true"
             android:layout_marginBottom="20dip"
-            android:layout_marginRight="25dip"
+            android:layout_marginLeft="25dip"
+            android:text="吐槽"
             android:textColor="@color/white"
             android:textSize="25sp" />
-
-       
     </RelativeLayout>
 
     <ProgressBar

@@ -12,18 +12,17 @@
         android:layout_height="0dip"
         android:layout_weight="1"
         android:orientation="vertical" >
-  <TextView
+
+        <TextView
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:background="@color/blackc"
             android:gravity="center"
             android:paddingBottom="5dip"
             android:paddingTop="5dip"
-            
             android:text="@string/settings"
             android:textColor="@color/white"
             android:textSize="20sp" />
-      
 
         <TextView
             android:id="@+id/tixing"

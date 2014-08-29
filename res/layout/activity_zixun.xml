@@ -3,46 +3,42 @@
     android:id="@+id/viewZiXun"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="@color/white">
+    android:background="@color/white"
+    android:orientation="vertical" >
 
     <RelativeLayout
         android:id="@+id/zixuncolor"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content" >
 
-        <TextView
-            android:id="@+id/right_back"
+        <ImageView
+            android:id="@+id/zixun_back"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:clickable="true"
             android:gravity="left"
-            android:paddingBottom="5dip"
-            android:paddingTop="5dip"
-            android:text="@string/back"
-            android:textColor="@color/white"
-            android:textSize="25sp" />
+            android:paddingBottom="15dip"
+            android:paddingLeft="10dip"
+            android:paddingTop="15dip"
+            android:src="@drawable/back" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:gravity="center"
-            android:paddingBottom="5dip"
-            android:paddingTop="5dip"
+            android:paddingBottom="15dip"
+            android:paddingTop="15dip"
             android:text="@string/city_zixun"
             android:textColor="@color/white"
             android:textSize="25sp" />
     </RelativeLayout>
 
- 
-
     <ListView
         android:id="@+id/list_zixun"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:divider="@null"
         android:listSelector="@drawable/list_selector"
         android:padding="10dip" />
 

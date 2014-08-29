@@ -16,7 +16,7 @@ import android.util.Log;
 
 public class HttpUtil {
 	private static Context context;
-
+	private String reads;
 	public HttpUtil(Context context) {
 		this.context = context;
 	}
@@ -60,6 +60,43 @@ public class HttpUtil {
 		}
 		return jsonStr;
 	}
+	public void saveFile(String str,String fileName) {
+		FileOutputStream fos;
+		try {
+			fos =context.openFileOutput(fileName, Context.MODE_WORLD_READABLE);
+			fos.write(str.getBytes());
+			fos.flush();
+			fos.close();
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
+	}
+
+	public String readFile(String fileName) {
+		try {
+			FileInputStream fis = context.openFileInput(fileName);
+			byte[] b = new byte[1024];
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			while (fis.read(b) != -1) {
+				baos.write(b, 0, b.length);
+			}
+			baos.close();
+			fis.close();
+			reads = baos.toString();
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return reads;
+
+	}
 
 }

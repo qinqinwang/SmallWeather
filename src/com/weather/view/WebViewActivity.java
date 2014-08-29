@@ -12,13 +12,14 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.webkit.WebView;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 
 public class WebViewActivity extends Activity {
 	private WebView webView;
-	private TextView back;
+	private ImageView back;
 	private SharedPreferences sp = null;
 	private RelativeLayout webcolor;
 
@@ -32,7 +33,7 @@ public class WebViewActivity extends Activity {
 		webcolor = (RelativeLayout)findViewById(R.id.webcolor);
 		setColor(colorPo);
 		webView = (WebView)findViewById(R.id.webView);
-		back = (TextView)findViewById(R.id.web_back);
+		back = (ImageView)findViewById(R.id.web_back);
 		back.setOnClickListener(new OnClickListener() {
 			
 			@Override

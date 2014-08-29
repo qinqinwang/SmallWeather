@@ -99,6 +99,7 @@ import com.umeng.analytics.MobclickAgent;
 import com.weather.adapter.MyAdapter;
 import com.weather.bean.SDPATH;
 import com.weather.util.AndroidUtil;
+import com.weather.util.Constant;
 import com.weather.util.FontManager;
 import com.weather.util.HttpUtil;
 import com.weather.util.TestUtils;
@@ -124,8 +125,6 @@ public class MainActivity extends Activity implements OnTouchListener,
 	private RelativeLayout viewMain;
 	private SlidingMenu menu;
 
-	private final static String FILE_NAME = "weather.txt";
-
 	private JSONArray jsonArr;
 	private JSONObject obj;
 	private NotificationManager nm;
@@ -146,7 +145,7 @@ public class MainActivity extends Activity implements OnTouchListener,
 
 	private TextView beijing;
 	private TextView tixing;
-//	private TextView left_back;
+	// private TextView left_back;
 	// private TextView right_back;
 	// private ListView listzixun;
 	private LinearLayout viewSetting;
@@ -155,6 +154,7 @@ public class MainActivity extends Activity implements OnTouchListener,
 	private int verticalMinDistance = 10;
 	private int minVelocity = 0;
 	private TextView share_friend, share_circle, cancel;
+	private HttpUtil httpUtil;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -188,6 +188,7 @@ public class MainActivity extends Activity implements OnTouchListener,
 		menu.setMenu(R.layout.activity_setting);
 		sp = getSharedPreferences("weather", Context.MODE_PRIVATE);
 
+		httpUtil = new HttpUtil(MainActivity.this);
 		gestureDetector = new GestureDetector(this);
 		setView();
 		hasNet();
@@ -224,7 +225,8 @@ public class MainActivity extends Activity implements OnTouchListener,
 			// getDate();
 			getData();
 		} else {
-			if ("".equals(readFile()) || readFile() == null) {
+			if ("".equals(httpUtil.readFile(Constant.WEATHER_FILE_NAME))
+					|| httpUtil.readFile(Constant.WEATHER_FILE_NAME) == null) {
 				Toast.makeText(MainActivity.this, "无网络，无法获取数据", 8000).show();
 				Message msg = new Message();
 				msg.what = 4;
@@ -233,7 +235,7 @@ public class MainActivity extends Activity implements OnTouchListener,
 				Toast.makeText(MainActivity.this, "连接网络，可更新数据", 8000).show();
 				Message msg = new Message();
 				msg.what = 0;
-				msg.obj = readFile();
+				msg.obj = httpUtil.readFile(Constant.WEATHER_FILE_NAME);
 				handler.sendMessage(msg);
 			}
 		}
@@ -265,13 +267,13 @@ public class MainActivity extends Activity implements OnTouchListener,
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-//				showPopupWindow(false);
-				 menuWindow = new SelectPopupWindow(MainActivity.this, null,
-				 false, onitemsOnClicks);
-				 // 显示窗口
-				 menuWindow.showAtLocation(
-				 MainActivity.this.findViewById(R.id.main),
-				 Gravity.BOTTOM, 0, 0); //
+				// showPopupWindow(false);
+				menuWindow = new SelectPopupWindow(MainActivity.this, null,
+						false, onitemsOnClicks);
+				// 显示窗口
+				menuWindow.showAtLocation(
+						MainActivity.this.findViewById(R.id.main),
+						Gravity.BOTTOM, 0, 0); //
 
 				// final String[] colorItems = getResources().getStringArray(
 				// R.array.coloritem);
@@ -330,7 +332,7 @@ public class MainActivity extends Activity implements OnTouchListener,
 		// }
 		// });
 		listCity = (ListView) findViewById(R.id.list_city);
-		listCity.setAdapter(new MyAdapter(this, getCity(), true,null));
+		listCity.setAdapter(new MyAdapter(this, getCity(), true, null));
 		listCity.setOnItemClickListener(new OnItemClickListener() {
 
 			@Override
@@ -347,7 +349,8 @@ public class MainActivity extends Activity implements OnTouchListener,
 					msg.arg1 = position;
 					handler.sendMessage(msg);
 				} else {
-					if ("".equals(readFile()) || readFile() == null) {
+					if ("".equals(httpUtil.readFile(Constant.WEATHER_FILE_NAME))
+							|| httpUtil.readFile(Constant.WEATHER_FILE_NAME) == null) {
 						Toast.makeText(MainActivity.this, "请连接网络", 8000).show();
 						Message msg = new Message();
 						msg.what = 4;
@@ -415,23 +418,23 @@ public class MainActivity extends Activity implements OnTouchListener,
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				 menuWindow = new SelectPopupWindow(MainActivity.this,
-				 itemsOnClick, true, null);
-				 // 显示窗口
-				 menuWindow.showAtLocation(
-				 MainActivity.this.findViewById(R.id.main),
-				 Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, 0); //
+				menuWindow = new SelectPopupWindow(MainActivity.this,
+						itemsOnClick, true, null);
+				// 显示窗口
+				menuWindow.showAtLocation(
+						MainActivity.this.findViewById(R.id.main),
+						Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, 0); //
 			}
 		});
-//		left_back = (TextView) findViewById(R.id.left_back);
-//		left_back.setOnClickListener(new OnClickListener() {
-//
-//			@Override
-//			public void onClick(View v) {
-//				// TODO Auto-generated method stub
-//				MainActivity.this.getMenu().toggle();
-//			}
-//		});
+		// left_back = (TextView) findViewById(R.id.left_back);
+		// left_back.setOnClickListener(new OnClickListener() {
+		//
+		// @Override
+		// public void onClick(View v) {
+		// // TODO Auto-generated method stub
+		// MainActivity.this.getMenu().toggle();
+		// }
+		// });
 		// right_back = (TextView) findViewById(R.id.right_back);
 		// right_back.setOnClickListener(new OnClickListener() {
 		//
@@ -445,17 +448,6 @@ public class MainActivity extends Activity implements OnTouchListener,
 		// listzixun.setAdapter(new MyAdapter(this,getzixun(),false));
 
 		progress = (ProgressBar) findViewById(R.id.progress);
-	}
-
-	private List<String> getzixun() {
-		// TODO Auto-generated method stub
-		listZixun.add("女子为了照顾瘫痪男友花光积蓄 村民捐款资助");
-		listZixun.add("90后白富美感情受挫：吞100片药微信直播感受 ");
-		listZixun.add("河南一高中现八条禁令 男女拉手两次将被开除 ");
-		listZixun.add("叔嫂孽情浮出水面：男方杀7岁私生子逃亡19年");
-		listZixun.add("明星减肥食谱大曝光 杨丽萍20年坚持不吃米饭");
-		listZixun.add("揭谢霆锋八亿身家：公司暂不上市 每年赚一亿");
-		return listZixun;
 	}
 
 	private OnItemClickListener onitemsOnClicks = new OnItemClickListener() {
@@ -491,7 +483,8 @@ public class MainActivity extends Activity implements OnTouchListener,
 					shareToFriend(sp.getString("weather", null), uri);
 
 				} else {
-					if ("".equals(readFile()) || readFile() == null) {
+					if ("".equals(httpUtil.readFile(Constant.WEATHER_FILE_NAME))
+							|| httpUtil.readFile(Constant.WEATHER_FILE_NAME) == null) {
 						Toast.makeText(MainActivity.this, "请连接网络", 8000).show();
 					} else {
 						shareToFriend(sp.getString("weather", null), uri);
@@ -504,7 +497,8 @@ public class MainActivity extends Activity implements OnTouchListener,
 					shareToTimeLine(uri);
 
 				} else {
-					if ("".equals(readFile()) || readFile() == null) {
+					if ("".equals(httpUtil.readFile(Constant.WEATHER_FILE_NAME))
+							|| httpUtil.readFile(Constant.WEATHER_FILE_NAME) == null) {
 						Toast.makeText(MainActivity.this, "请连接网络", 8000).show();
 					} else {
 						shareToTimeLine(uri);
@@ -518,7 +512,8 @@ public class MainActivity extends Activity implements OnTouchListener,
 					shareToXinLang(uri);
 
 				} else {
-					if ("".equals(readFile()) || readFile() == null) {
+					if ("".equals(httpUtil.readFile(Constant.WEATHER_FILE_NAME))
+							|| httpUtil.readFile(Constant.WEATHER_FILE_NAME) == null) {
 						Toast.makeText(MainActivity.this, "请连接网络", 8000).show();
 					} else {
 						shareToXinLang(uri);
@@ -626,9 +621,6 @@ public class MainActivity extends Activity implements OnTouchListener,
 		startActivity(intent);
 	}
 
-	
-	
-	
 	private void shareToTimeLine(Uri u) {
 
 		Intent intent = new Intent();
@@ -640,9 +632,7 @@ public class MainActivity extends Activity implements OnTouchListener,
 		intent.putExtra(Intent.EXTRA_STREAM, u);
 		startActivity(intent);
 	}
-	
-	
-	
+
 	private void shareToXinLang(Uri u) {
 
 		Intent intent = new Intent();
@@ -654,7 +644,6 @@ public class MainActivity extends Activity implements OnTouchListener,
 		intent.putExtra(Intent.EXTRA_STREAM, u);
 		startActivity(intent);
 	}
-
 
 	public SlidingMenu getMenu() {
 		return menu;
@@ -686,11 +675,8 @@ public class MainActivity extends Activity implements OnTouchListener,
 			@Override
 			public void run() {
 				// TODO Auto-generated method stub
-
-				HttpUtil httpUtil = new HttpUtil(MainActivity.this);
-				result = httpUtil
-						.getJsonContent("http://tianqi.iyoo.me/weather/");
-				saveFile(result);
+				result = httpUtil.getJsonContent(Constant.weatherUrl);
+				httpUtil.saveFile(result, Constant.WEATHER_FILE_NAME);
 
 				Calendar calendar = Calendar.getInstance();
 				int year = calendar.get(Calendar.YEAR);
@@ -875,14 +861,6 @@ public class MainActivity extends Activity implements OnTouchListener,
 		return listCitys;
 	}
 
-	private List<String> getShare() {
-		// TODO Auto-generated method stub
-
-		listShare.add("朋友");
-		listShare.add("朋友圈");
-		return listShare;
-	}
-
 	public static boolean isNetworkAvailable(Context context) {
 		ConnectivityManager cm = (ConnectivityManager) context
 				.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -942,44 +920,44 @@ public class MainActivity extends Activity implements OnTouchListener,
 		send(citys, s);
 	}
 
-	private void saveFile(String str) {
-		FileOutputStream fos;
-		try {
-			fos = this.openFileOutput(FILE_NAME, MODE_PRIVATE);
-			fos.write(str.getBytes());
-			fos.flush();
-			fos.close();
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-	}
-
-	public String readFile() {
-		try {
-			FileInputStream fis = openFileInput(FILE_NAME);
-			byte[] b = new byte[1024];
-			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			while (fis.read(b) != -1) {
-				baos.write(b, 0, b.length);
-			}
-			baos.close();
-			fis.close();
-			reads = baos.toString();
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return reads;
-
-	}
+	// private void saveFile(String str) {
+	// FileOutputStream fos;
+	// try {
+	// fos = this.openFileOutput(Constant.WEATHER_FILE_NAME, MODE_PRIVATE);
+	// fos.write(str.getBytes());
+	// fos.flush();
+	// fos.close();
+	// } catch (FileNotFoundException e) {
+	// // TODO Auto-generated catch block
+	// e.printStackTrace();
+	// } catch (IOException e) {
+	// // TODO Auto-generated catch block
+	// e.printStackTrace();
+	// }
+	//
+	// }
+	//
+	// public String readFile() {
+	// try {
+	// FileInputStream fis = openFileInput(Constant.WEATHER_FILE_NAME);
+	// byte[] b = new byte[1024];
+	// ByteArrayOutputStream baos = new ByteArrayOutputStream();
+	// while (fis.read(b) != -1) {
+	// baos.write(b, 0, b.length);
+	// }
+	// baos.close();
+	// fis.close();
+	// reads = baos.toString();
+	// } catch (FileNotFoundException e) {
+	// // TODO Auto-generated catch block
+	// e.printStackTrace();
+	// } catch (IOException e) {
+	// // TODO Auto-generated catch block
+	// e.printStackTrace();
+	// }
+	// return reads;
+	//
+	// }
 
 	@Override
 	protected void onResume() {
@@ -997,8 +975,7 @@ public class MainActivity extends Activity implements OnTouchListener,
 						.setConnectionTimeout(httpParams, 30 * 1000);
 				HttpConnectionParams.setSoTimeout(httpParams, 5000);
 
-				HttpPost request = new HttpPost(
-						"http://down.znds.com/apinew/cleanupdate.php");
+				HttpPost request = new HttpPost(Constant.updateUrl);
 				try {
 					HttpResponse response = new DefaultHttpClient()
 							.execute(request);

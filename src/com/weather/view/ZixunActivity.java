@@ -12,6 +12,7 @@ import com.smallweather.R;
 import com.weather.adapter.MyAdapter;
 import com.weather.bean.SDPATH;
 import com.weather.util.AndroidUtil;
+import com.weather.util.Constant;
 import com.weather.util.FontManager;
 import com.weather.util.HttpUtil;
 import com.weather.util.TestUtils;
@@ -49,6 +50,7 @@ import android.view.View.OnTouchListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
@@ -62,13 +64,12 @@ public class ZixunActivity extends Activity implements OnTouchListener,
 	private LinearLayout viewZiXun;
 	private int verticalMinDistance = 10;
 	private int minVelocity = 0;
-	private TextView back;
+	private ImageView back;
 	private String json;
 
 	private MyHandler handler = new MyHandler();
 	private String result;
 	private JSONArray Jsonarr;
-//	private TextView zixun;
 	private SpannableString ss;
 	private List<String> listTitle = new ArrayList<String>();
 	private List<String> listHref = new ArrayList<String>();
@@ -85,7 +86,7 @@ public class ZixunActivity extends Activity implements OnTouchListener,
 		zixuncolor = (RelativeLayout)findViewById(R.id.zixuncolor);
 		setColor(colorPo);
 		gestureDetector = new GestureDetector(this);
-		back = (TextView) findViewById(R.id.right_back);
+		back = (ImageView) findViewById(R.id.zixun_back);
 		back.setOnClickListener(new OnClickListener() {
 
 			@Override
@@ -118,17 +119,11 @@ public class ZixunActivity extends Activity implements OnTouchListener,
 						R.anim.push_left_out);
 			}
 		});
+		listzixun.setOnTouchListener(this);
+		listzixun.setLongClickable(true);
 		viewZiXun.setOnTouchListener(this);
 		viewZiXun.setLongClickable(true);
-//		zixun = (TextView) findViewById(R.id.zixun);
-//		listzixun.setOnItemClickListener(new OnItemClickListener() {
-//
-//			@Override
-//			public void onItemClick(AdapterView<?> parent, View view,
-//					int position, long id) {
-//				// TODO Auto-generated method stub
-//
-//		});
+
 		ViewGroup viewGroup = (ViewGroup) findViewById(android.R.id.content);
 		FontManager.changeFonts(viewGroup, this);
 		getData();
@@ -160,7 +155,8 @@ public class ZixunActivity extends Activity implements OnTouchListener,
 
 				HttpUtil httpUtil = new HttpUtil(ZixunActivity.this);
 				result = httpUtil
-						.getJsonContent("http://tianqi.iyoo.me/weather/news/");
+						.getJsonContent(Constant.newsUrl);
+				httpUtil.saveFile(result,Constant.NEWS_FILE_NAME);
 				Message msg = new Message();
 				msg.what = 0;
 				msg.obj = result;
@@ -171,16 +167,6 @@ public class ZixunActivity extends Activity implements OnTouchListener,
 		}).start();
 	}
 
-	private List<String> getzixun() {
-		// TODO Auto-generated method stub
-		listZixun.add("女子为了照顾瘫痪男友花光积蓄 村民捐款资助");
-		listZixun.add("90后白富美感情受挫：吞100片药微信直播感受 ");
-		listZixun.add("河南一高中现八条禁令 男女拉手两次将被开除 ");
-		listZixun.add("叔嫂孽情浮出水面：男方杀7岁私生子逃亡19年");
-		listZixun.add("明星减肥食谱大曝光 杨丽萍20年坚持不吃米饭");
-		listZixun.add("揭谢霆锋八亿身家：公司暂不上市 每年赚一亿");
-		return listZixun;
-	}
 
 	@Override
 	public boolean onDown(MotionEvent e) {

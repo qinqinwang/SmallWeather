@@ -7,29 +7,27 @@
     <RelativeLayout
         android:id="@+id/webcolor"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        >
+        android:layout_height="wrap_content" >
 
-        <TextView
+        <ImageView
             android:id="@+id/web_back"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:clickable="true"
             android:gravity="left"
-            android:paddingBottom="5dip"
-            android:paddingTop="5dip"
-            android:text="@string/back"
-            android:textColor="@color/white"
-            android:textSize="25sp" />
+            android:paddingBottom="15dip"
+            android:paddingLeft="10dip"
+            android:paddingTop="15dip"
+            android:src="@drawable/back" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:gravity="center"
-            android:paddingBottom="5dip"
-            android:paddingTop="5dip"
+            android:paddingBottom="15dip"
+            android:paddingTop="15dip"
             android:text="@string/zixun"
             android:textColor="@color/white"
             android:textSize="25sp" />

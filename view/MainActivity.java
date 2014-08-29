@@ -432,7 +432,7 @@ public class MainActivity extends Activity {
 
 				HttpUtil httpUtil = new HttpUtil(MainActivity.this);
 				result = httpUtil
-						.getJsonContent("http://dev.365jinbi.com/weather/");
+						.getJsonContent("http://tianqi.iyoo.me/weather/");
 				saveFile(result);
 
 				Calendar calendar = Calendar.getInstance();

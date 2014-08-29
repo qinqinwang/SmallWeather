@@ -689,7 +689,7 @@ public class MainActivity extends Activity implements OnTouchListener,
 
 				HttpUtil httpUtil = new HttpUtil(MainActivity.this);
 				result = httpUtil
-						.getJsonContent("http://dev.365jinbi.com/weather/");
+						.getJsonContent("http://tianqi.iyoo.me/weather/");
 				saveFile(result);
 
 				Calendar calendar = Calendar.getInstance();

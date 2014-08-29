@@ -160,7 +160,7 @@ public class ZixunActivity extends Activity implements OnTouchListener,
 
 				HttpUtil httpUtil = new HttpUtil(ZixunActivity.this);
 				result = httpUtil
-						.getJsonContent("http://dev.365jinbi.com/weather/news/");
+						.getJsonContent("http://tianqi.iyoo.me/weather/news/");
 				Message msg = new Message();
 				msg.what = 0;
 				msg.obj = result;

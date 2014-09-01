@@ -56,7 +56,7 @@ public class ZiXunActivity extends Activity implements OnTouchListener,
 	private SharedPreferences sp = null;
 	private RelativeLayout zixuncolor;
 	private HttpUtil httpUtil;
-	private int showtime = 5000; 
+	private int showtime = 5000;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -98,8 +98,8 @@ public class ZiXunActivity extends Activity implements OnTouchListener,
 						R.anim.push_left_out);
 			}
 		});
-		listzixun.setOnTouchListener(this);
-		listzixun.setLongClickable(true);
+//		listzixun.setOnTouchListener(this);
+//		listzixun.setLongClickable(true);
 		viewZiXun.setOnTouchListener(this);
 		viewZiXun.setLongClickable(true);
 
@@ -107,7 +107,6 @@ public class ZiXunActivity extends Activity implements OnTouchListener,
 		FontManager.changeFonts(viewGroup, this);
 		httpUtil = new HttpUtil(ZiXunActivity.this);
 		hasNet();
-//		getData();
 
 	}
 
@@ -127,7 +126,7 @@ public class ZiXunActivity extends Activity implements OnTouchListener,
 
 		}
 	}
-	
+
 	private void hasNet() {
 		// TODO Auto-generated method stub
 		if (isNetworkAvailable(ZiXunActivity.this)) {
@@ -135,11 +134,15 @@ public class ZiXunActivity extends Activity implements OnTouchListener,
 		} else {
 			if ("".equals(httpUtil.readFile(Constant.NEWS_FILE_NAME))
 					|| httpUtil.readFile(Constant.NEWS_FILE_NAME) == null) {
-				Toast.makeText(ZiXunActivity.this, ZiXunActivity.this.getResources().getString(
-						R.string.nonet), showtime).show();
+				Toast.makeText(
+						ZiXunActivity.this,
+						ZiXunActivity.this.getResources().getString(
+								R.string.nonet), showtime).show();
 			} else {
-				Toast.makeText(ZiXunActivity.this, ZiXunActivity.this.getResources().getString(
-						R.string.linknet), showtime).show();
+				Toast.makeText(
+						ZiXunActivity.this,
+						ZiXunActivity.this.getResources().getString(
+								R.string.linknet), showtime).show();
 				Message msg = new Message();
 				msg.what = 0;
 				msg.obj = httpUtil.readFile(Constant.NEWS_FILE_NAME);
@@ -147,7 +150,7 @@ public class ZiXunActivity extends Activity implements OnTouchListener,
 			}
 		}
 	}
-	
+
 	public static boolean isNetworkAvailable(Context context) {
 		ConnectivityManager cm = (ConnectivityManager) context
 				.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -164,6 +167,7 @@ public class ZiXunActivity extends Activity implements OnTouchListener,
 		}
 		return false;
 	}
+
 	private void getData() {
 		// TODO Auto-generated method stub
 		new Thread(new Runnable() {
@@ -243,6 +247,7 @@ public class ZiXunActivity extends Activity implements OnTouchListener,
 				json = (String) m.obj;
 				try {
 					Jsonarr = new JSONArray(json);
+					Log.v("@@@@@@@@@@", " @@@@@@@  "+Jsonarr.length());
 					for (int i = 0; i < Jsonarr.length(); i++) {
 						JSONObject obj = (JSONObject) Jsonarr.get(i);
 						listTitle.add(obj.getString("title"));
@@ -254,7 +259,6 @@ public class ZiXunActivity extends Activity implements OnTouchListener,
 							handler.sendMessage(msg);
 						}
 					}
-
 				} catch (JSONException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
@@ -264,7 +268,6 @@ public class ZiXunActivity extends Activity implements OnTouchListener,
 				listzixun.setAdapter(new ZiXunAdapter(ZiXunActivity.this,
 						listTitle, listHref));
 				break;
-
 			}
 		}
 	}

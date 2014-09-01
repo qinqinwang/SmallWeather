@@ -51,6 +51,8 @@ public class ZiXunAdapter extends BaseAdapter {
 		Typeface typeface = Typeface.create(mContext.getResources().getString(R.string.font), Typeface.NORMAL);
 		title.setTypeface(typeface);
 		title.setText(lists);
+		TextView content = (TextView)convertView.findViewById(R.id.content);
+		content.setText(lists);
 
 		return convertView;
 	}

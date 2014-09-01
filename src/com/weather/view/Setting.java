@@ -10,10 +10,11 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.View.OnClickListener;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 public class Setting extends Activity{
-	private TextView back;
+	private ImageView back;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -21,7 +22,7 @@ public class Setting extends Activity{
 		setContentView(R.layout.tixing_setting);
 		ViewGroup viewGroup = (ViewGroup) findViewById(android.R.id.content);
 		FontManager.changeFonts(viewGroup, this);
-		back = (TextView)findViewById(R.id.back);
+		back = (ImageView)findViewById(R.id.back);
 		back.setOnClickListener(new OnClickListener() {
 			
 			@Override

@@ -7,32 +7,32 @@
     android:orientation="vertical"
     android:paddingTop="5dip" >
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/blackc"
-        android:orientation="horizontal" >
+        android:background="@color/blackc" >
 
         <TextView
-            android:id="@+id/back"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="left"
-            android:paddingBottom="5dip"
-            android:paddingTop="5dip"
-            android:text="@string/back"
-            android:textColor="@color/white"
-            android:textSize="20sp" />
-
-        <TextView
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
             android:gravity="center"
-            android:paddingBottom="5dip"
-            android:paddingTop="5dip"
+            android:paddingBottom="10dip"
+            android:paddingTop="10dip"
             android:text="@string/tixing"
             android:textColor="@color/white"
             android:textSize="20sp" />
-    </LinearLayout>
-
+
+        <ImageView
+            android:id="@+id/back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:clickable="true"
+            android:paddingBottom="10dip"
+            android:paddingRight="10dip"
+            android:paddingTop="10dip"
+            android:src="@drawable/backright" />
+    </RelativeLayout>
+
 </LinearLayout>

@@ -31,6 +31,7 @@ import org.json.JSONObject;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Application;
 import android.app.Dialog;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -41,6 +42,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -306,8 +308,8 @@ public class MainActivity extends Activity implements OnTouchListener,
 				Intent intent = new Intent();
 				intent.setClass(MainActivity.this, Setting.class);
 				startActivity(intent);
-				overridePendingTransition(R.anim.push_left_in,
-						R.anim.push_left_out);
+				overridePendingTransition(R.anim.push_right_in,
+						R.anim.push_right_out);
 				finish();
 			}
 		});
@@ -479,8 +481,12 @@ public class MainActivity extends Activity implements OnTouchListener,
 			case R.id.share_friend:
 
 				if (isNetworkAvailable(MainActivity.this)) {
-
-					shareToFriend(sp.getString("weather", null), uri);
+					if(checkApkExist("com.tencent.mm")){
+						shareToFriend(sp.getString("weather", null), uri);
+					}else{
+						Toast.makeText(MainActivity.this, "您没有安装微信，无法分享！", 3000).show();
+					}
+					
 
 				} else {
 					if ("".equals(httpUtil.readFile(Constant.WEATHER_FILE_NAME))
@@ -493,30 +499,45 @@ public class MainActivity extends Activity implements OnTouchListener,
 				break;
 			case R.id.share_circle:
 				if (isNetworkAvailable(MainActivity.this)) {
-
-					shareToTimeLine(uri);
+					if(checkApkExist("com.tencent.mm")){
+						shareToTimeLine(uri);
+					}else{
+						Toast.makeText(MainActivity.this, "您没有安装微信，无法分享！", 3000).show();
+					}
+					
 
 				} else {
 					if ("".equals(httpUtil.readFile(Constant.WEATHER_FILE_NAME))
 							|| httpUtil.readFile(Constant.WEATHER_FILE_NAME) == null) {
 						Toast.makeText(MainActivity.this, "请连接网络", 8000).show();
 					} else {
-						shareToTimeLine(uri);
+						if(checkApkExist("com.tencent.mm")){
+							shareToTimeLine(uri);
+						}else{
+							Toast.makeText(MainActivity.this, "您没有安装微信，无法分享！", 3000).show();
+						}
 					}
 				}
 
 				break;
 			case R.id.share_weibo:
 				if (isNetworkAvailable(MainActivity.this)) {
-
-					shareToXinLang(uri);
+					if(checkApkExist("com.sina.weibo")){
+						shareToXinLang(uri);
+					}else{
+						Toast.makeText(MainActivity.this, "您没有安装新浪微博，无法分享！", 3000).show();
+					}
 
 				} else {
 					if ("".equals(httpUtil.readFile(Constant.WEATHER_FILE_NAME))
 							|| httpUtil.readFile(Constant.WEATHER_FILE_NAME) == null) {
 						Toast.makeText(MainActivity.this, "请连接网络", 8000).show();
 					} else {
-						shareToXinLang(uri);
+						if(checkApkExist("com.sina.weibo")){
+							shareToXinLang(uri);
+						}else{
+							Toast.makeText(MainActivity.this, "您没有安装新浪微博，无法分享！", 3000).show();
+						}
 					}
 				}
 
@@ -529,6 +550,19 @@ public class MainActivity extends Activity implements OnTouchListener,
 
 	};
 
+	private boolean checkApkExist(String packageName){
+		if(packageName == null ||"".equals(packageName)){
+			return false;
+		}
+		try {
+			ApplicationInfo info = this.getPackageManager().getApplicationInfo(packageName, PackageManager.GET_UNINSTALLED_PACKAGES);
+			return true;
+		} catch (Exception e) {
+			// TODO: handle exception
+			return false;
+		}
+	}
+	
 	// 截图
 	public Uri shotScreen() {
 		// View是你需要截图的View
@@ -634,7 +668,6 @@ public class MainActivity extends Activity implements OnTouchListener,
 	}
 
 	private void shareToXinLang(Uri u) {
-
 		Intent intent = new Intent();
 		ComponentName comp = new ComponentName("com.sina.weibo",
 				"com.sina.weibo.EditActivity");

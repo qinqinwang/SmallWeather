@@ -32,7 +32,7 @@
             android:name="com.weather.view.Setting"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen"/>
             <activity
-            android:name="com.weather.view.ZixunActivity"
+            android:name="com.weather.view.ZiXunActivity"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen"/>
             <activity
             android:name="com.weather.view.WebViewActivity"

@@ -40,7 +40,7 @@ public class WebViewActivity extends Activity {
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
 				Intent intent = new Intent(WebViewActivity.this,
-						ZixunActivity.class);
+						ZiXunActivity.class);
 				intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 				startActivity(intent);
 				overridePendingTransition(R.anim.push_right_in,

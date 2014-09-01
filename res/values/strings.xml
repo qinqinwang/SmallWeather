@@ -14,16 +14,41 @@
     <string name="errcode_deny">发送被拒绝</string>
     <string name="errcode_unknown">发送返回</string>
     <string name="city_zixun">资讯列表</string>
-    
     <string name="zixun">资讯内容</string>
-    
     <string name="back">返回</string>
+    <string name="noweixin">您没有安装微信，无法分享!</string>
+    <string name="noweibo">您没有安装新浪微博，无法分享!</string>
+    <string name="nonet"> 无网络，无法获取天气!</string>
+    <string name="linknet"> 连接网络，可更新天气!</string>
+    <string name="linknets"> 请连接网络!</string>
+    <string name="update"> 更新</string>
+    <string name="sure"> 您确定更新微天气吗?</string>
+    <string name="ok">确定</string>
+    <string name="no">取消</string>
+    <string name="font">黑体</string>
 
     <string-array name="coloritem">
         <item>绿</item>
         <item>红</item>
         <item>蓝</item>
         <item>紫</item>
+    </string-array>
+    <string-array name="cityitem">
+        <item>嘉善</item>
+        <item>平湖</item>
+        <item>嘉兴</item>
+        <item>桐乡</item>
+        <item>海盐</item>
+        <item>海宁</item>
+    </string-array>
+    <string-array name="weekitem">
+        <item>星期日</item>
+        <item>星期一</item>
+        <item>星期二</item>
+        <item>星期三</item>
+        <item>星期四</item>
+        <item>星期五</item>
+        <item>星期六</item>
     </string-array>
 
 </resources>

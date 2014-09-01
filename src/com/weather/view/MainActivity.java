@@ -1,8 +1,6 @@
 package com.weather.view;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -10,12 +8,7 @@ import java.io.InputStream;
 import java.io.RandomAccessFile;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -31,7 +24,6 @@ import org.json.JSONObject;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Application;
 import android.app.Dialog;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -46,9 +38,7 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Rect;
-import android.graphics.drawable.ColorDrawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -60,8 +50,6 @@ import android.util.Log;
 import android.view.GestureDetector;
 import android.view.Gravity;
 import android.view.KeyEvent;
-import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.GestureDetector.OnGestureListener;
@@ -70,13 +58,8 @@ import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
-import android.widget.LinearLayout.LayoutParams;
 import android.widget.ListView;
-import android.widget.PopupWindow;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -87,16 +70,8 @@ import com.smallweather.R;
 import com.tencent.mm.sdk.openapi.IWXAPI;
 import com.tencent.mm.sdk.openapi.SendMessageToWX;
 import com.tencent.mm.sdk.openapi.WXAPIFactory;
-import com.tencent.mm.sdk.openapi.WXAppExtendObject;
-import com.tencent.mm.sdk.openapi.WXEmojiObject;
-import com.tencent.mm.sdk.openapi.WXImageObject;
 import com.tencent.mm.sdk.openapi.WXMediaMessage;
-import com.tencent.mm.sdk.openapi.WXMusicObject;
 import com.tencent.mm.sdk.openapi.WXTextObject;
-import com.tencent.mm.sdk.openapi.WXVideoObject;
-import com.tencent.mm.sdk.openapi.WXWebpageObject;
-import com.tencent.mm.sdk.openapi.SendAuth;
-import com.tencent.mm.sdk.platformtools.Util;
 import com.umeng.analytics.MobclickAgent;
 import com.weather.adapter.MyAdapter;
 import com.weather.bean.SDPATH;
@@ -111,18 +86,11 @@ public class MainActivity extends Activity implements OnTouchListener,
 	private TextView date, city, type, temperature, wind;
 	// private ImageButton setting;
 	private String result;
-	private String reads;
 	private String dates;
 	private MyHandler handler = new MyHandler();
 	private String json;
 	private SharedPreferences sp = null;
-	private ListView listColor;
 	private ListView listCity;
-	// private ListView listshare;
-	private List<String> listColors = new ArrayList<String>();
-	private List<String> listCitys = new ArrayList<String>();
-	private List<String> listShare = new ArrayList<String>();
-	private List<String> listZixun = new ArrayList<String>();
 
 	private RelativeLayout viewMain;
 	private SlidingMenu menu;
@@ -138,7 +106,6 @@ public class MainActivity extends Activity implements OnTouchListener,
 	private SelectPopupWindow menuWindow;
 
 	private int vercode;
-	private ArrayList<HashMap<String, String>> applist = new ArrayList<HashMap<String, String>>();
 
 	private String appurl, fileName;
 	private ProgressBar progress;
@@ -147,16 +114,12 @@ public class MainActivity extends Activity implements OnTouchListener,
 
 	private TextView beijing;
 	private TextView tixing;
-	// private TextView left_back;
-	// private TextView right_back;
-	// private ListView listzixun;
-	private LinearLayout viewSetting;
 
 	private GestureDetector gestureDetector;
 	private int verticalMinDistance = 10;
 	private int minVelocity = 0;
-	private TextView share_friend, share_circle, cancel;
 	private HttpUtil httpUtil;
+	private int showtime = 5000; 
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -229,12 +192,14 @@ public class MainActivity extends Activity implements OnTouchListener,
 		} else {
 			if ("".equals(httpUtil.readFile(Constant.WEATHER_FILE_NAME))
 					|| httpUtil.readFile(Constant.WEATHER_FILE_NAME) == null) {
-				Toast.makeText(MainActivity.this, "无网络，无法获取数据", 8000).show();
+				Toast.makeText(MainActivity.this, MainActivity.this.getResources().getString(
+						R.string.nonet), showtime).show();
 				Message msg = new Message();
 				msg.what = 4;
 				handler.sendMessage(msg);
 			} else {
-				Toast.makeText(MainActivity.this, "连接网络，可更新数据", 8000).show();
+				Toast.makeText(MainActivity.this, MainActivity.this.getResources().getString(
+						R.string.linknet), showtime).show();
 				Message msg = new Message();
 				msg.what = 0;
 				msg.obj = httpUtil.readFile(Constant.WEATHER_FILE_NAME);
@@ -253,15 +218,6 @@ public class MainActivity extends Activity implements OnTouchListener,
 		type = (TextView) findViewById(R.id.type);
 		temperature = (TextView) findViewById(R.id.temperature);
 		wind = (TextView) findViewById(R.id.wind);
-		// setting = (ImageButton) findViewById(R.id.setting);
-		// setting.setOnClickListener(new OnClickListener() {
-		//
-		// @Override
-		// public void onClick(View v) {
-		// MainActivity.this.getMenu().showSecondaryMenu();
-		//
-		// }
-		// });
 
 		beijing = (TextView) findViewById(R.id.beijing);
 		beijing.setOnClickListener(new OnClickListener() {
@@ -276,26 +232,6 @@ public class MainActivity extends Activity implements OnTouchListener,
 				menuWindow.showAtLocation(
 						MainActivity.this.findViewById(R.id.main),
 						Gravity.BOTTOM, 0, 0); //
-
-				// final String[] colorItems = getResources().getStringArray(
-				// R.array.coloritem);
-				// new AlertDialog.Builder(MainActivity.this)
-				// .setItems(colorItems,
-				// new DialogInterface.OnClickListener() {
-				//
-				// public void onClick(DialogInterface dialog,
-				// int which) {
-				// MainActivity.this.getMenu().toggle();
-				// Editor editor = sp.edit();
-				// editor.putInt("colorPosition", which);
-				// editor.commit();
-				// Message msg = new Message();
-				// msg.what = 2;
-				// msg.arg1 = which;
-				// handler.sendMessage(msg);
-				//
-				// }
-				// }).setNegativeButton("取消", null).show();
 
 			}
 		});
@@ -313,28 +249,9 @@ public class MainActivity extends Activity implements OnTouchListener,
 				finish();
 			}
 		});
-
-		// listColor = (ListView) findViewById(R.id.list_color);
-		// listColor.setAdapter(new MyAdapter(this, getColor(), true));
-		// listColor.setOnItemClickListener(new OnItemClickListener() {
-		//
-		// @Override
-		// public void onItemClick(AdapterView<?> parent, View view,
-		// int position, long id) {
-		// // TODO Auto-generated method stub
-		// MainActivity.this.getMenu().toggle();
-		// Editor editor = sp.edit();
-		// editor.putInt("colorPosition", position);
-		// editor.commit();
-		// Message msg = new Message();
-		// msg.what = 2;
-		// msg.arg1 = position;
-		// handler.sendMessage(msg);
-		//
-		// }
-		// });
 		listCity = (ListView) findViewById(R.id.list_city);
-		listCity.setAdapter(new MyAdapter(this, getCity(), true, null));
+		listCity.setAdapter(new MyAdapter(this, this.getResources()
+				.getStringArray(R.array.cityitem)));
 		listCity.setOnItemClickListener(new OnItemClickListener() {
 
 			@Override
@@ -353,7 +270,8 @@ public class MainActivity extends Activity implements OnTouchListener,
 				} else {
 					if ("".equals(httpUtil.readFile(Constant.WEATHER_FILE_NAME))
 							|| httpUtil.readFile(Constant.WEATHER_FILE_NAME) == null) {
-						Toast.makeText(MainActivity.this, "请连接网络", 8000).show();
+						Toast.makeText(MainActivity.this, MainActivity.this.getResources().getString(
+								R.string.linknets), showtime).show();
 						Message msg = new Message();
 						msg.what = 4;
 						handler.sendMessage(msg);
@@ -370,50 +288,6 @@ public class MainActivity extends Activity implements OnTouchListener,
 			}
 		});
 
-		// listshare = (ListView) findViewById(R.id.list_share);
-		// listshare.setAdapter(new MyAdapter(this, getShare()));
-		// listshare.setOnItemClickListener(new OnItemClickListener() {
-		//
-		// @Override
-		// public void onItemClick(AdapterView<?> parent, View view,
-		// final int position, long id) {
-		// // TODO Auto-generated method stub
-		// MainActivity.this.getMenu().toggle();
-		//
-		// if (isNetworkAvailable(MainActivity.this)) {
-		// TimerTask task = new TimerTask() {
-		//
-		// public void run() {
-		// Message message = new Message();
-		// message.what = 8;
-		// message.arg1 = position;
-		// handler.sendMessage(message);
-		// }
-		//
-		// };
-		// Timer timer = new Timer();
-		// timer.schedule(task, 1000);
-		// } else {
-		// if ("".equals(readFile()) || readFile() == null) {
-		// Toast.makeText(MainActivity.this, "请连接网络", 8000).show();
-		// } else {
-		// TimerTask task = new TimerTask() {
-		//
-		// public void run() {
-		// Message message = new Message();
-		// message.what = 8;
-		// message.arg1 = position;
-		// handler.sendMessage(message);
-		// }
-		//
-		// };
-		// Timer timer = new Timer();
-		// timer.schedule(task, 1000);
-		// }
-		// }
-		//
-		// }
-		// });
 		share = (ImageButton) findViewById(R.id.share);
 		share.setOnClickListener(new OnClickListener() {
 
@@ -428,26 +302,6 @@ public class MainActivity extends Activity implements OnTouchListener,
 						Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, 0); //
 			}
 		});
-		// left_back = (TextView) findViewById(R.id.left_back);
-		// left_back.setOnClickListener(new OnClickListener() {
-		//
-		// @Override
-		// public void onClick(View v) {
-		// // TODO Auto-generated method stub
-		// MainActivity.this.getMenu().toggle();
-		// }
-		// });
-		// right_back = (TextView) findViewById(R.id.right_back);
-		// right_back.setOnClickListener(new OnClickListener() {
-		//
-		// @Override
-		// public void onClick(View v) {
-		// // TODO Auto-generated method stub
-		// MainActivity.this.getMenu().toggle();
-		// }
-		// });
-		// listzixun = (ListView) findViewById(R.id.list_zixun);
-		// listzixun.setAdapter(new MyAdapter(this,getzixun(),false));
 
 		progress = (ProgressBar) findViewById(R.id.progress);
 	}
@@ -481,40 +335,55 @@ public class MainActivity extends Activity implements OnTouchListener,
 			case R.id.share_friend:
 
 				if (isNetworkAvailable(MainActivity.this)) {
-					if(checkApkExist("com.tencent.mm")){
-						shareToFriend(sp.getString("weather", null), uri);
-					}else{
-						Toast.makeText(MainActivity.this, "您没有安装微信，无法分享！", 3000).show();
+					if (checkApkExist(Constant.pkgweixin)) {
+						share(uri,Constant.pkgweixin,Constant.weixinfriend);
+					} else {
+						Toast.makeText(
+								MainActivity.this,
+								MainActivity.this.getResources().getString(
+										R.string.noweixin), showtime).show();
 					}
-					
-
 				} else {
 					if ("".equals(httpUtil.readFile(Constant.WEATHER_FILE_NAME))
 							|| httpUtil.readFile(Constant.WEATHER_FILE_NAME) == null) {
-						Toast.makeText(MainActivity.this, "请连接网络", 8000).show();
+						Toast.makeText(MainActivity.this, MainActivity.this.getResources().getString(
+								R.string.linknets), showtime).show();
 					} else {
-						shareToFriend(sp.getString("weather", null), uri);
+						if (checkApkExist(Constant.pkgweixin)) {
+							share(uri,Constant.pkgweixin,Constant.weixinfriend);
+						} else {
+							Toast.makeText(
+									MainActivity.this,
+									MainActivity.this.getResources().getString(
+											R.string.noweixin), showtime).show();
+						}
 					}
 				}
 				break;
 			case R.id.share_circle:
 				if (isNetworkAvailable(MainActivity.this)) {
-					if(checkApkExist("com.tencent.mm")){
-						shareToTimeLine(uri);
-					}else{
-						Toast.makeText(MainActivity.this, "您没有安装微信，无法分享！", 3000).show();
+					if (checkApkExist(Constant.pkgweixin)) {
+						share(uri,Constant.pkgweixin,Constant.weixincircle);
+					} else {
+						Toast.makeText(
+								MainActivity.this,
+								MainActivity.this.getResources().getString(
+										R.string.noweixin), showtime).show();
 					}
-					
 
 				} else {
 					if ("".equals(httpUtil.readFile(Constant.WEATHER_FILE_NAME))
 							|| httpUtil.readFile(Constant.WEATHER_FILE_NAME) == null) {
-						Toast.makeText(MainActivity.this, "请连接网络", 8000).show();
+						Toast.makeText(MainActivity.this, MainActivity.this.getResources().getString(
+								R.string.linknets), showtime).show();
 					} else {
-						if(checkApkExist("com.tencent.mm")){
-							shareToTimeLine(uri);
-						}else{
-							Toast.makeText(MainActivity.this, "您没有安装微信，无法分享！", 3000).show();
+						if (checkApkExist(Constant.pkgweixin)) {
+							share(uri,Constant.pkgweixin,Constant.weixincircle);
+						} else {
+							Toast.makeText(
+									MainActivity.this,
+									MainActivity.this.getResources().getString(
+											R.string.noweixin), showtime).show();
 						}
 					}
 				}
@@ -522,21 +391,28 @@ public class MainActivity extends Activity implements OnTouchListener,
 				break;
 			case R.id.share_weibo:
 				if (isNetworkAvailable(MainActivity.this)) {
-					if(checkApkExist("com.sina.weibo")){
-						shareToXinLang(uri);
-					}else{
-						Toast.makeText(MainActivity.this, "您没有安装新浪微博，无法分享！", 3000).show();
+					if (checkApkExist(Constant.pkgweibo)) {
+						share(uri,Constant.pkgweibo,Constant.weibowhere);
+					} else {
+						Toast.makeText(
+								MainActivity.this,
+								MainActivity.this.getResources().getString(
+										R.string.noweibo), showtime).show();
 					}
 
 				} else {
 					if ("".equals(httpUtil.readFile(Constant.WEATHER_FILE_NAME))
 							|| httpUtil.readFile(Constant.WEATHER_FILE_NAME) == null) {
-						Toast.makeText(MainActivity.this, "请连接网络", 8000).show();
+						Toast.makeText(MainActivity.this, MainActivity.this.getResources().getString(
+								R.string.linknets), showtime).show();
 					} else {
-						if(checkApkExist("com.sina.weibo")){
-							shareToXinLang(uri);
-						}else{
-							Toast.makeText(MainActivity.this, "您没有安装新浪微博，无法分享！", 3000).show();
+						if (checkApkExist(Constant.pkgweibo)) {
+							share(uri,Constant.pkgweibo,Constant.weibowhere);
+						} else {
+							Toast.makeText(
+									MainActivity.this,
+									MainActivity.this.getResources().getString(
+											R.string.noweibo), showtime).show();
 						}
 					}
 				}
@@ -550,19 +426,20 @@ public class MainActivity extends Activity implements OnTouchListener,
 
 	};
 
-	private boolean checkApkExist(String packageName){
-		if(packageName == null ||"".equals(packageName)){
+	private boolean checkApkExist(String packageName) {
+		if (packageName == null || "".equals(packageName)) {
 			return false;
 		}
 		try {
-			ApplicationInfo info = this.getPackageManager().getApplicationInfo(packageName, PackageManager.GET_UNINSTALLED_PACKAGES);
+			ApplicationInfo info = this.getPackageManager().getApplicationInfo(
+					packageName, PackageManager.GET_UNINSTALLED_PACKAGES);
 			return true;
 		} catch (Exception e) {
 			// TODO: handle exception
 			return false;
 		}
 	}
-	
+
 	// 截图
 	public Uri shotScreen() {
 		// View是你需要截图的View
@@ -604,21 +481,18 @@ public class MainActivity extends Activity implements OnTouchListener,
 	}
 
 	public File shotScree() {
-		// View是你需要截图的View
 		View view = this.getWindow().getDecorView();
 		view.setDrawingCacheEnabled(true);
 		view.buildDrawingCache();
 		Bitmap b1 = view.getDrawingCache();
 
-		// 获取状态栏高度
 		Rect frame = new Rect();
 		this.getWindow().getDecorView().getWindowVisibleDisplayFrame(frame);
 		int statusBarHeight = frame.top;
 
-		// 获取屏幕长和高
 		width = this.getWindowManager().getDefaultDisplay().getWidth();
 		height = this.getWindowManager().getDefaultDisplay().getHeight();
-		// 去掉标题栏
+
 		Bitmap b = Bitmap.createBitmap(b1, 0, statusBarHeight, width, height
 				- statusBarHeight);
 		view.destroyDrawingCache();
@@ -641,11 +515,11 @@ public class MainActivity extends Activity implements OnTouchListener,
 
 		return F;
 	}
-
-	private void shareToFriend(String weather, Uri u) {
+	
+	private void share(Uri u ,String pkgName,String where) {
 		Intent intent = new Intent();
-		ComponentName comp = new ComponentName("com.tencent.mm",
-				"com.tencent.mm.ui.tools.ShareImgUI");
+		ComponentName comp = new ComponentName(pkgName,
+				where);
 		intent.setComponent(comp);
 		intent.setAction("android.intent.action.SEND");
 		// intent.putExtra("Kdescription", weather);
@@ -655,28 +529,41 @@ public class MainActivity extends Activity implements OnTouchListener,
 		startActivity(intent);
 	}
 
-	private void shareToTimeLine(Uri u) {
+//	private void shareToFriend(Uri u) {
+//		Intent intent = new Intent();
+//		ComponentName comp = new ComponentName("com.tencent.mm",
+//				"com.tencent.mm.ui.tools.ShareImgUI");
+//		intent.setComponent(comp);
+//		intent.setAction("android.intent.action.SEND");
+//		// intent.putExtra("Kdescription", weather);
+//		intent.setType("image/*");
+//		// intent.putExtra(Intent.EXTRA_TEXT, weather);
+//		intent.putExtra(Intent.EXTRA_STREAM, u);
+//		startActivity(intent);
+//	}
+//
+//	private void shareToTimeLine(Uri u) {
+//
+//		Intent intent = new Intent();
+//		ComponentName comp = new ComponentName("com.tencent.mm",
+//				"com.tencent.mm.ui.tools.ShareToTimeLineUI");
+//		intent.setComponent(comp);
+//		intent.setAction("android.intent.action.SEND");
+//		intent.setType("image/jpg");
+//		intent.putExtra(Intent.EXTRA_STREAM, u);
+//		startActivity(intent);
+//	}
 
-		Intent intent = new Intent();
-		ComponentName comp = new ComponentName("com.tencent.mm",
-				"com.tencent.mm.ui.tools.ShareToTimeLineUI");
-		intent.setComponent(comp);
-		intent.setAction("android.intent.action.SEND");
-		intent.setType("image/jpg");
-		intent.putExtra(Intent.EXTRA_STREAM, u);
-		startActivity(intent);
-	}
-
-	private void shareToXinLang(Uri u) {
-		Intent intent = new Intent();
-		ComponentName comp = new ComponentName("com.sina.weibo",
-				"com.sina.weibo.EditActivity");
-		intent.setComponent(comp);
-		intent.setAction(Intent.ACTION_SEND);
-		intent.setType("image/jpg");
-		intent.putExtra(Intent.EXTRA_STREAM, u);
-		startActivity(intent);
-	}
+//	private void shareToXinLang(Uri u) {
+//		Intent intent = new Intent();
+//		ComponentName comp = new ComponentName("com.sina.weibo",
+//				"com.sina.weibo.EditActivity");
+//		intent.setComponent(comp);
+//		intent.setAction(Intent.ACTION_SEND);
+//		intent.setType("image/jpg");
+//		intent.putExtra(Intent.EXTRA_STREAM, u);
+//		startActivity(intent);
+//	}
 
 	public SlidingMenu getMenu() {
 		return menu;
@@ -684,7 +571,8 @@ public class MainActivity extends Activity implements OnTouchListener,
 
 	private void getDate() {
 		// TODO Auto-generated method stub
-		String[] weekDays = { "星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六" };
+		String[] weekDays = this.getResources()
+				.getStringArray(R.array.weekitem);
 		Calendar calendar = Calendar.getInstance();
 		int month = calendar.get(Calendar.MONTH) + 1;
 		int day = calendar.get(Calendar.DATE);
@@ -693,7 +581,6 @@ public class MainActivity extends Activity implements OnTouchListener,
 			w = 0;
 		}
 		String week = weekDays[w];
-		;
 		dates = month + "." + day + "/" + week;
 		Editor editor = sp.edit();
 		editor.putString("date", dates);
@@ -781,13 +668,14 @@ public class MainActivity extends Activity implements OnTouchListener,
 					Log.v("wangqinqin", "    " + (urlcode > getVersion()));
 					// if(true){
 					if (urlcode > getVersion()) {
-						Log.w("sh", "需要更新");
-
 						Dialog alertDialog = new AlertDialog.Builder(
 								MainActivity.this)
-								.setTitle("更新")
-								.setMessage("您确定更新微天气吗？")
-								.setPositiveButton("确定",
+								.setTitle(MainActivity.this.getResources().getString(
+										R.string.update))
+								.setMessage(MainActivity.this.getResources().getString(
+										R.string.sure))
+								.setPositiveButton(MainActivity.this.getResources().getString(
+										R.string.ok),
 										new DialogInterface.OnClickListener() {
 
 											@Override
@@ -800,12 +688,12 @@ public class MainActivity extends Activity implements OnTouchListener,
 													public void run() {
 														loadFile(appurl,
 																fileName);
-
 													}
 												}).start();
 											}
 										})
-								.setNegativeButton("取消",
+								.setNegativeButton(MainActivity.this.getResources().getString(
+										R.string.no),
 										new DialogInterface.OnClickListener() {
 
 											@Override
@@ -841,18 +729,6 @@ public class MainActivity extends Activity implements OnTouchListener,
 				AndroidUtil
 						.install(MainActivity.this, fileName, SDPATH.SD_PATH);
 				break;
-			// case 8:
-			// int position = m.arg1;
-			// Uri uri = shotScreen();
-			// if (position == 0) {
-			// wechatShare(0);
-			// shareToFriend(sp.getString("weather", null), uri);
-			// } else {
-			// // wechatShare(1);
-			// shareToTimeLine(uri);
-			// }
-			// break;
-
 			}
 		}
 	}
@@ -870,28 +746,6 @@ public class MainActivity extends Activity implements OnTouchListener,
 		}
 
 		return super.onKeyDown(keyCode, event);
-	}
-
-	private List<String> getColor() {
-		// TODO Auto-generated method stub
-
-		listColors.add("绿");
-		listColors.add("红");
-		listColors.add("蓝");
-		listColors.add("紫");
-		return listColors;
-	}
-
-	private List<String> getCity() {
-		// TODO Auto-generated method stub
-
-		listCitys.add("嘉善");
-		listCitys.add("平湖");
-		listCitys.add("嘉兴");
-		listCitys.add("桐乡");
-		listCitys.add("海盐");
-		listCitys.add("海宁");
-		return listCitys;
 	}
 
 	public static boolean isNetworkAvailable(Context context) {
@@ -952,45 +806,6 @@ public class MainActivity extends Activity implements OnTouchListener,
 		}
 		send(citys, s);
 	}
-
-	// private void saveFile(String str) {
-	// FileOutputStream fos;
-	// try {
-	// fos = this.openFileOutput(Constant.WEATHER_FILE_NAME, MODE_PRIVATE);
-	// fos.write(str.getBytes());
-	// fos.flush();
-	// fos.close();
-	// } catch (FileNotFoundException e) {
-	// // TODO Auto-generated catch block
-	// e.printStackTrace();
-	// } catch (IOException e) {
-	// // TODO Auto-generated catch block
-	// e.printStackTrace();
-	// }
-	//
-	// }
-	//
-	// public String readFile() {
-	// try {
-	// FileInputStream fis = openFileInput(Constant.WEATHER_FILE_NAME);
-	// byte[] b = new byte[1024];
-	// ByteArrayOutputStream baos = new ByteArrayOutputStream();
-	// while (fis.read(b) != -1) {
-	// baos.write(b, 0, b.length);
-	// }
-	// baos.close();
-	// fis.close();
-	// reads = baos.toString();
-	// } catch (FileNotFoundException e) {
-	// // TODO Auto-generated catch block
-	// e.printStackTrace();
-	// } catch (IOException e) {
-	// // TODO Auto-generated catch block
-	// e.printStackTrace();
-	// }
-	// return reads;
-	//
-	// }
 
 	@Override
 	protected void onResume() {
@@ -1083,9 +898,6 @@ public class MainActivity extends Activity implements OnTouchListener,
 				byte[] buffer = new byte[4096];
 				int length = -1;
 				int count = 0;
-				// 储存内存时，修改APK的权限
-				Log.v("wqang@@@@@@@@@", "  3333333333  "
-						+ (!SDPATH.sdcardExit || !SDPATH.sdCardPer));
 				if (!SDPATH.sdcardExit || !SDPATH.sdCardPer) {
 					try {
 						String command = "chmod " + "777" + " "
@@ -1201,7 +1013,7 @@ public class MainActivity extends Activity implements OnTouchListener,
 		if (e1.getX() - e2.getX() > verticalMinDistance
 				&& Math.abs(velocityX) > minVelocity) {
 
-			Intent intent = new Intent(MainActivity.this, ZixunActivity.class);
+			Intent intent = new Intent(MainActivity.this, ZiXunActivity.class);
 			startActivity(intent);
 		}
 		return false;

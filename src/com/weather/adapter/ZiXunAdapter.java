@@ -1,5 +1,6 @@
 package com.weather.adapter;
 
+import java.util.List;
 
 import com.smallweather.R;
 
@@ -12,24 +13,25 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
-public class MyAdapter extends BaseAdapter {
+public class ZiXunAdapter extends BaseAdapter {
 
 	private Context mContext;
-	private String[] list;
+	private List<String> list, listhref;
 	SpannableString ss;
-	String listhrefs;
 
-	public MyAdapter(Context mContext, String[] list) {
+	public ZiXunAdapter(Context mContext, List<String> list,
+			List<String> listhref) {
 		this.mContext = mContext;
 		this.list = list;
+		this.listhref = listhref;
 	}
 
 	public int getCount() {
-		return list.length;
+		return list.size();
 	}
 
 	public Object getItem(int position) {
-		return this.list[position];
+		return this.list.get(position);
 	}
 
 	public long getItemId(int position) {
@@ -37,17 +39,18 @@ public class MyAdapter extends BaseAdapter {
 	}
 
 	public View getView(int position, View convertView, ViewGroup parent) {
-		String lists = list[position];
+		String lists = list.get(position);
+		String listhrefs = listhref.get(position);
 		if (convertView == null) {
 			convertView = ((LayoutInflater) this.mContext
 					.getSystemService(Context.LAYOUT_INFLATER_SERVICE))
-					.inflate(R.layout.list_item, null);
+					.inflate(R.layout.zixun_item, null);
+
 		}
-		TextView weatherInfo = (TextView) convertView
-				.findViewById(R.id.list_item);
-		weatherInfo.setTypeface(Typeface.createFromAsset(mContext.getAssets(),
-				"fonts/font.ttf"));
-		weatherInfo.setText(lists);
+		TextView title = (TextView) convertView.findViewById(R.id.title);
+		Typeface typeface = Typeface.create(mContext.getResources().getString(R.string.font), Typeface.NORMAL);
+		title.setTypeface(typeface);
+		title.setText(lists);
 
 		return convertView;
 	}

@@ -49,7 +49,7 @@ public class SelectPopupWindow extends PopupWindow {
 		} else {
 			mMenuView = inflater.inflate(R.layout.dialog_menu, null);
 			listColor = (ListView) mMenuView.findViewById(R.id.list_color);
-			listColor.setAdapter(new MyAdapter(context, getColor(), true,null));
+			listColor.setAdapter(new MyAdapter(context, context.getResources().getStringArray(R.array.coloritem)));
 			listColor.setOnItemClickListener(ietmclicklistener);
 			this.setWidth(LayoutParams.MATCH_PARENT);
 			this.setHeight(LayoutParams.WRAP_CONTENT);

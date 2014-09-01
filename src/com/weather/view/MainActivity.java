@@ -100,8 +100,6 @@ public class MainActivity extends Activity implements OnTouchListener,
 	private NotificationManager nm;
 	private final String APP_ID = "wxc1166aff17ba799b";
 	private IWXAPI wxApi;
-	// 实例化
-
 	private ImageButton share;
 	private SelectPopupWindow menuWindow;
 
@@ -178,7 +176,7 @@ public class MainActivity extends Activity implements OnTouchListener,
 				MainActivity.this, 0, intent, 0);
 		notification.setLatestEventInfo(getApplicationContext(), citys, s,
 				pendingIntent);
-		notification.flags = Notification.FLAG_AUTO_CANCEL;// 点击后自动消失
+		notification.flags = Notification.FLAG_ONGOING_EVENT;//消息不可取消
 		// notification.defaults = Notification.DEFAULT_SOUND;//声音默认
 		manager.notify(0, notification);
 

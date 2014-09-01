@@ -124,14 +124,5 @@
             android:padding="10dip" />
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/Version"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="3dip"
-        android:gravity="center"
-        android:text="关于微天气   当前版本号v1.0.0"
-        android:textColor="@color/white"
-        android:textSize="13sp" />
 
 </LinearLayout>

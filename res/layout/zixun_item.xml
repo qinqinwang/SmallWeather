@@ -14,11 +14,5 @@
         android:paddingTop="10dip"
         android:textColor="@color/black"
         android:textSize="20sp" />
-    <!--
-         <TextView 
-        android:id="@+id/href"
-        android:layout_width="0dip"
-        android:layout_height="0dip"/>
-    -->
 
 </LinearLayout>

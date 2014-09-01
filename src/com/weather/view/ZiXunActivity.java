@@ -17,6 +17,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -34,6 +36,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 public class ZiXunActivity extends Activity implements OnTouchListener,
 		OnGestureListener {
@@ -52,6 +55,8 @@ public class ZiXunActivity extends Activity implements OnTouchListener,
 	private List<String> listHref = new ArrayList<String>();
 	private SharedPreferences sp = null;
 	private RelativeLayout zixuncolor;
+	private HttpUtil httpUtil;
+	private int showtime = 5000; 
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -84,9 +89,6 @@ public class ZiXunActivity extends Activity implements OnTouchListener,
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
-				Log.v("wangqoqon",
-						"   listHref.get(position)  = "
-								+ listHref.get(position));
 				// TODO Auto-generated method stub
 				Intent intent = new Intent();
 				intent.setClass(ZiXunActivity.this, WebViewActivity.class);
@@ -103,7 +105,9 @@ public class ZiXunActivity extends Activity implements OnTouchListener,
 
 		ViewGroup viewGroup = (ViewGroup) findViewById(android.R.id.content);
 		FontManager.changeFonts(viewGroup, this);
-		getData();
+		httpUtil = new HttpUtil(ZiXunActivity.this);
+		hasNet();
+//		getData();
 
 	}
 
@@ -123,7 +127,43 @@ public class ZiXunActivity extends Activity implements OnTouchListener,
 
 		}
 	}
-
+	
+	private void hasNet() {
+		// TODO Auto-generated method stub
+		if (isNetworkAvailable(ZiXunActivity.this)) {
+			getData();
+		} else {
+			if ("".equals(httpUtil.readFile(Constant.NEWS_FILE_NAME))
+					|| httpUtil.readFile(Constant.NEWS_FILE_NAME) == null) {
+				Toast.makeText(ZiXunActivity.this, ZiXunActivity.this.getResources().getString(
+						R.string.nonet), showtime).show();
+			} else {
+				Toast.makeText(ZiXunActivity.this, ZiXunActivity.this.getResources().getString(
+						R.string.linknet), showtime).show();
+				Message msg = new Message();
+				msg.what = 0;
+				msg.obj = httpUtil.readFile(Constant.NEWS_FILE_NAME);
+				handler.sendMessage(msg);
+			}
+		}
+	}
+	
+	public static boolean isNetworkAvailable(Context context) {
+		ConnectivityManager cm = (ConnectivityManager) context
+				.getSystemService(Context.CONNECTIVITY_SERVICE);
+		if (cm == null) {
+		} else {
+			NetworkInfo[] info = cm.getAllNetworkInfo();
+			if (info != null) {
+				for (int i = 0; i < info.length; i++) {
+					if (info[i].getState() == NetworkInfo.State.CONNECTED) {
+						return true;
+					}
+				}
+			}
+		}
+		return false;
+	}
 	private void getData() {
 		// TODO Auto-generated method stub
 		new Thread(new Runnable() {
@@ -131,7 +171,6 @@ public class ZiXunActivity extends Activity implements OnTouchListener,
 			@Override
 			public void run() {
 				// TODO Auto-generated method stub
-
 				HttpUtil httpUtil = new HttpUtil(ZiXunActivity.this);
 				result = httpUtil.getJsonContent(Constant.newsUrl);
 				httpUtil.saveFile(result, Constant.NEWS_FILE_NAME);
@@ -187,7 +226,6 @@ public class ZiXunActivity extends Activity implements OnTouchListener,
 			startActivity(intent);
 			overridePendingTransition(R.anim.push_right_in,
 					R.anim.push_right_out);
-			// finish();
 		}
 		return false;
 	}
@@ -205,23 +243,16 @@ public class ZiXunActivity extends Activity implements OnTouchListener,
 				json = (String) m.obj;
 				try {
 					Jsonarr = new JSONArray(json);
-					Log.v("wang    ", "   " + Jsonarr);
 					for (int i = 0; i < Jsonarr.length(); i++) {
 						JSONObject obj = (JSONObject) Jsonarr.get(i);
 						listTitle.add(obj.getString("title"));
 						listHref.add(obj.getString("href"));
-						Log.v("wang ", "   i = " + i + "Jsonarr.length()  =  "
-								+ Jsonarr.length());
 						if (i == Jsonarr.length() - 1) {
 							Message msg = new Message();
 							msg.what = 1;
 							msg.obj = listTitle;
 							handler.sendMessage(msg);
 						}
-						Log.v("wangqinqin",
-								"   i  =  " + i + "  title =      "
-										+ obj.getString("title")
-										+ "   href  = " + obj.getString("href"));
 					}
 
 				} catch (JSONException e1) {

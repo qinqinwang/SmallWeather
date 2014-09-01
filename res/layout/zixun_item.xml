@@ -21,6 +21,6 @@
         android:layout_margin="5dip"
         android:paddingBottom="10dip"
         android:textColor="@color/black"
-        android:textSize="15sp" />
+        android:textSize="17sp" />
 
 </LinearLayout>

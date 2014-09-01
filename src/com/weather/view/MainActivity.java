@@ -112,12 +112,13 @@ public class MainActivity extends Activity implements OnTouchListener,
 
 	private TextView beijing;
 	private TextView tixing;
+	private TextView banben;
 
 	private GestureDetector gestureDetector;
 	private int verticalMinDistance = 10;
 	private int minVelocity = 0;
 	private HttpUtil httpUtil;
-	private int showtime = 5000; 
+	private int showtime = 5000;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -162,21 +163,21 @@ public class MainActivity extends Activity implements OnTouchListener,
 		nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
 		// 更新
-		// Update();
+//		Update(0);
 		MobclickAgent.setDebugMode(true);
 	}
 
-	public void send(String citys, String s) {
+	public void sendMessage(String citys, String message) {
 		NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 		// 构建一个通知对象(需要传递的参数有三个,分别是图标,标题和 时间)
-		Notification notification = new Notification(R.drawable.logo, s,
+		Notification notification = new Notification(R.drawable.logo, message,
 				System.currentTimeMillis());
 		Intent intent = new Intent(MainActivity.this, MainActivity.class);
 		PendingIntent pendingIntent = PendingIntent.getActivity(
 				MainActivity.this, 0, intent, 0);
-		notification.setLatestEventInfo(getApplicationContext(), citys, s,
-				pendingIntent);
-		notification.flags = Notification.FLAG_ONGOING_EVENT;//消息不可取消
+		notification.setLatestEventInfo(getApplicationContext(), citys,
+				message, pendingIntent);
+		notification.flags = Notification.FLAG_ONGOING_EVENT;// 消息不可取消
 		// notification.defaults = Notification.DEFAULT_SOUND;//声音默认
 		manager.notify(0, notification);
 
@@ -190,14 +191,18 @@ public class MainActivity extends Activity implements OnTouchListener,
 		} else {
 			if ("".equals(httpUtil.readFile(Constant.WEATHER_FILE_NAME))
 					|| httpUtil.readFile(Constant.WEATHER_FILE_NAME) == null) {
-				Toast.makeText(MainActivity.this, MainActivity.this.getResources().getString(
-						R.string.nonet), showtime).show();
+				Toast.makeText(
+						MainActivity.this,
+						MainActivity.this.getResources().getString(
+								R.string.nonet), showtime).show();
 				Message msg = new Message();
 				msg.what = 4;
 				handler.sendMessage(msg);
 			} else {
-				Toast.makeText(MainActivity.this, MainActivity.this.getResources().getString(
-						R.string.linknet), showtime).show();
+				Toast.makeText(
+						MainActivity.this,
+						MainActivity.this.getResources().getString(
+								R.string.linknet), showtime).show();
 				Message msg = new Message();
 				msg.what = 0;
 				msg.obj = httpUtil.readFile(Constant.WEATHER_FILE_NAME);
@@ -240,11 +245,20 @@ public class MainActivity extends Activity implements OnTouchListener,
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
 				Intent intent = new Intent();
-				intent.setClass(MainActivity.this, Setting.class);
+				intent.setClass(MainActivity.this, TiXingSetting.class);
 				startActivity(intent);
 				overridePendingTransition(R.anim.push_right_in,
 						R.anim.push_right_out);
 				finish();
+			}
+		});
+		banben = (TextView) findViewById(R.id.banben);
+		banben.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				Update(1);
 			}
 		});
 		listCity = (ListView) findViewById(R.id.list_city);
@@ -268,8 +282,10 @@ public class MainActivity extends Activity implements OnTouchListener,
 				} else {
 					if ("".equals(httpUtil.readFile(Constant.WEATHER_FILE_NAME))
 							|| httpUtil.readFile(Constant.WEATHER_FILE_NAME) == null) {
-						Toast.makeText(MainActivity.this, MainActivity.this.getResources().getString(
-								R.string.linknets), showtime).show();
+						Toast.makeText(
+								MainActivity.this,
+								MainActivity.this.getResources().getString(
+										R.string.linknets), showtime).show();
 						Message msg = new Message();
 						msg.what = 4;
 						handler.sendMessage(msg);
@@ -334,7 +350,7 @@ public class MainActivity extends Activity implements OnTouchListener,
 
 				if (isNetworkAvailable(MainActivity.this)) {
 					if (checkApkExist(Constant.pkgweixin)) {
-						share(uri,Constant.pkgweixin,Constant.weixinfriend);
+						share(uri, Constant.pkgweixin, Constant.weixinfriend);
 					} else {
 						Toast.makeText(
 								MainActivity.this,
@@ -344,16 +360,20 @@ public class MainActivity extends Activity implements OnTouchListener,
 				} else {
 					if ("".equals(httpUtil.readFile(Constant.WEATHER_FILE_NAME))
 							|| httpUtil.readFile(Constant.WEATHER_FILE_NAME) == null) {
-						Toast.makeText(MainActivity.this, MainActivity.this.getResources().getString(
-								R.string.linknets), showtime).show();
+						Toast.makeText(
+								MainActivity.this,
+								MainActivity.this.getResources().getString(
+										R.string.linknets), showtime).show();
 					} else {
 						if (checkApkExist(Constant.pkgweixin)) {
-							share(uri,Constant.pkgweixin,Constant.weixinfriend);
+							share(uri, Constant.pkgweixin,
+									Constant.weixinfriend);
 						} else {
 							Toast.makeText(
 									MainActivity.this,
 									MainActivity.this.getResources().getString(
-											R.string.noweixin), showtime).show();
+											R.string.noweixin), showtime)
+									.show();
 						}
 					}
 				}
@@ -361,7 +381,7 @@ public class MainActivity extends Activity implements OnTouchListener,
 			case R.id.share_circle:
 				if (isNetworkAvailable(MainActivity.this)) {
 					if (checkApkExist(Constant.pkgweixin)) {
-						share(uri,Constant.pkgweixin,Constant.weixincircle);
+						share(uri, Constant.pkgweixin, Constant.weixincircle);
 					} else {
 						Toast.makeText(
 								MainActivity.this,
@@ -372,16 +392,20 @@ public class MainActivity extends Activity implements OnTouchListener,
 				} else {
 					if ("".equals(httpUtil.readFile(Constant.WEATHER_FILE_NAME))
 							|| httpUtil.readFile(Constant.WEATHER_FILE_NAME) == null) {
-						Toast.makeText(MainActivity.this, MainActivity.this.getResources().getString(
-								R.string.linknets), showtime).show();
+						Toast.makeText(
+								MainActivity.this,
+								MainActivity.this.getResources().getString(
+										R.string.linknets), showtime).show();
 					} else {
 						if (checkApkExist(Constant.pkgweixin)) {
-							share(uri,Constant.pkgweixin,Constant.weixincircle);
+							share(uri, Constant.pkgweixin,
+									Constant.weixincircle);
 						} else {
 							Toast.makeText(
 									MainActivity.this,
 									MainActivity.this.getResources().getString(
-											R.string.noweixin), showtime).show();
+											R.string.noweixin), showtime)
+									.show();
 						}
 					}
 				}
@@ -390,7 +414,7 @@ public class MainActivity extends Activity implements OnTouchListener,
 			case R.id.share_weibo:
 				if (isNetworkAvailable(MainActivity.this)) {
 					if (checkApkExist(Constant.pkgweibo)) {
-						share(uri,Constant.pkgweibo,Constant.weibowhere);
+						share(uri, Constant.pkgweibo, Constant.weibowhere);
 					} else {
 						Toast.makeText(
 								MainActivity.this,
@@ -401,11 +425,13 @@ public class MainActivity extends Activity implements OnTouchListener,
 				} else {
 					if ("".equals(httpUtil.readFile(Constant.WEATHER_FILE_NAME))
 							|| httpUtil.readFile(Constant.WEATHER_FILE_NAME) == null) {
-						Toast.makeText(MainActivity.this, MainActivity.this.getResources().getString(
-								R.string.linknets), showtime).show();
+						Toast.makeText(
+								MainActivity.this,
+								MainActivity.this.getResources().getString(
+										R.string.linknets), showtime).show();
 					} else {
 						if (checkApkExist(Constant.pkgweibo)) {
-							share(uri,Constant.pkgweibo,Constant.weibowhere);
+							share(uri, Constant.pkgweibo, Constant.weibowhere);
 						} else {
 							Toast.makeText(
 									MainActivity.this,
@@ -513,55 +539,16 @@ public class MainActivity extends Activity implements OnTouchListener,
 
 		return F;
 	}
-	
-	private void share(Uri u ,String pkgName,String where) {
+
+	private void share(Uri u, String pkgName, String where) {
 		Intent intent = new Intent();
-		ComponentName comp = new ComponentName(pkgName,
-				where);
+		ComponentName comp = new ComponentName(pkgName, where);
 		intent.setComponent(comp);
 		intent.setAction("android.intent.action.SEND");
-		// intent.putExtra("Kdescription", weather);
 		intent.setType("image/*");
-		// intent.putExtra(Intent.EXTRA_TEXT, weather);
 		intent.putExtra(Intent.EXTRA_STREAM, u);
 		startActivity(intent);
 	}
-
-//	private void shareToFriend(Uri u) {
-//		Intent intent = new Intent();
-//		ComponentName comp = new ComponentName("com.tencent.mm",
-//				"com.tencent.mm.ui.tools.ShareImgUI");
-//		intent.setComponent(comp);
-//		intent.setAction("android.intent.action.SEND");
-//		// intent.putExtra("Kdescription", weather);
-//		intent.setType("image/*");
-//		// intent.putExtra(Intent.EXTRA_TEXT, weather);
-//		intent.putExtra(Intent.EXTRA_STREAM, u);
-//		startActivity(intent);
-//	}
-//
-//	private void shareToTimeLine(Uri u) {
-//
-//		Intent intent = new Intent();
-//		ComponentName comp = new ComponentName("com.tencent.mm",
-//				"com.tencent.mm.ui.tools.ShareToTimeLineUI");
-//		intent.setComponent(comp);
-//		intent.setAction("android.intent.action.SEND");
-//		intent.setType("image/jpg");
-//		intent.putExtra(Intent.EXTRA_STREAM, u);
-//		startActivity(intent);
-//	}
-
-//	private void shareToXinLang(Uri u) {
-//		Intent intent = new Intent();
-//		ComponentName comp = new ComponentName("com.sina.weibo",
-//				"com.sina.weibo.EditActivity");
-//		intent.setComponent(comp);
-//		intent.setAction(Intent.ACTION_SEND);
-//		intent.setType("image/jpg");
-//		intent.putExtra(Intent.EXTRA_STREAM, u);
-//		startActivity(intent);
-//	}
 
 	public SlidingMenu getMenu() {
 		return menu;
@@ -655,55 +642,25 @@ public class MainActivity extends Activity implements OnTouchListener,
 				setColor(colorPos);
 				break;
 			case 5:
-
 				JSONObject obj = (JSONObject) m.obj;
-
-				// HashMap<String, String> map = new HashMap<String, String>();
+				int flag = m.arg1;
 				try {
 					appurl = obj.getString("appurl");
 					fileName = TestUtils.getFileName(appurl);
 					int urlcode = Integer.parseInt(obj.getString("verCode"));
 					Log.v("wangqinqin", "    " + (urlcode > getVersion()));
-					// if(true){
-					if (urlcode > getVersion()) {
-						Dialog alertDialog = new AlertDialog.Builder(
-								MainActivity.this)
-								.setTitle(MainActivity.this.getResources().getString(
-										R.string.update))
-								.setMessage(MainActivity.this.getResources().getString(
-										R.string.sure))
-								.setPositiveButton(MainActivity.this.getResources().getString(
-										R.string.ok),
-										new DialogInterface.OnClickListener() {
-
-											@Override
-											public void onClick(
-													DialogInterface dialog,
-													int which) {
-												// TODO Auto-generated method
-												// stub
-												new Thread(new Runnable() {
-													public void run() {
-														loadFile(appurl,
-																fileName);
-													}
-												}).start();
-											}
-										})
-								.setNegativeButton(MainActivity.this.getResources().getString(
-										R.string.no),
-										new DialogInterface.OnClickListener() {
-
-											@Override
-											public void onClick(
-													DialogInterface dialog,
-													int which) {
-												// TODO Auto-generated method
-												// stub
-											}
-										}).create();
-						alertDialog.show();
-
+//					if (urlcode > getVersion()) {
+//						if (flag == 1) {
+//							MainActivity.this.getMenu().toggle();
+//						}
+//						showUpdateDialog();
+//					} else {
+						if (flag == 1) {
+							Toast.makeText(
+									MainActivity.this,
+									MainActivity.this.getResources().getString(
+											R.string.zuixin), showtime).show();
+//						}
 					}
 
 				} catch (JSONException e) {
@@ -729,6 +686,44 @@ public class MainActivity extends Activity implements OnTouchListener,
 				break;
 			}
 		}
+	}
+
+	private void showUpdateDialog() {
+		Dialog alertDialog = new AlertDialog.Builder(MainActivity.this)
+				.setTitle(
+						MainActivity.this.getResources().getString(
+								R.string.update))
+				.setMessage(
+						MainActivity.this.getResources().getString(
+								R.string.sure))
+				.setPositiveButton(
+						MainActivity.this.getResources().getString(R.string.ok),
+						new DialogInterface.OnClickListener() {
+
+							@Override
+							public void onClick(DialogInterface dialog,
+									int which) {
+								// TODO Auto-generated method
+								// stub
+								new Thread(new Runnable() {
+									public void run() {
+										loadFile(appurl, fileName);
+									}
+								}).start();
+							}
+						})
+				.setNegativeButton(
+						MainActivity.this.getResources().getString(R.string.no),
+						new DialogInterface.OnClickListener() {
+
+							@Override
+							public void onClick(DialogInterface dialog,
+									int which) {
+								// TODO Auto-generated method
+								// stub
+							}
+						}).create();
+		alertDialog.show();
 	}
 
 	@Override
@@ -781,7 +776,7 @@ public class MainActivity extends Activity implements OnTouchListener,
 	}
 
 	private void setCity(int cityPosotion) {
-		String s = null;
+		String message = null;
 		String citys = null;
 		try {
 			jsonArr = new JSONArray(json);
@@ -793,16 +788,21 @@ public class MainActivity extends Activity implements OnTouchListener,
 					+ obj.getString("wind_force"));
 			citys = obj.getString("city");
 
-			s = obj.getString("type") + "  " + obj.getString("temperature");
-			String weather = citys + "  " + s;
+			message = obj.getString("type") + "  "
+					+ obj.getString("temperature");
+			String weather = citys + "  " + message;
 			Editor editor = sp.edit();
 			editor.putString("weather", weather);
+			editor.putString("citys", citys);
+			editor.putString("message", message);
 			editor.commit();
 		} catch (JSONException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		send(citys, s);
+		if (sp.getBoolean("show", false)) {
+			sendMessage(citys, message);
+		}
 	}
 
 	@Override
@@ -812,7 +812,7 @@ public class MainActivity extends Activity implements OnTouchListener,
 		MobclickAgent.onResume(this);
 	}
 
-	private void Update() {
+	private void Update(final int flag) {
 		new Thread(new Runnable() {
 			public void run() {
 				HttpClient client = new DefaultHttpClient();
@@ -820,7 +820,6 @@ public class MainActivity extends Activity implements OnTouchListener,
 				HttpConnectionParams
 						.setConnectionTimeout(httpParams, 30 * 1000);
 				HttpConnectionParams.setSoTimeout(httpParams, 5000);
-
 				HttpPost request = new HttpPost(Constant.updateUrl);
 				try {
 					HttpResponse response = new DefaultHttpClient()
@@ -829,14 +828,13 @@ public class MainActivity extends Activity implements OnTouchListener,
 				} catch (Exception e) {
 					// TODO: handle exception
 				}
-
 				String json = result;
-
 				JSONObject dataJson;
 				try {
 					dataJson = new JSONObject(json);
 					Message msg = new Message();
 					msg.what = 5;
+					msg.arg1 = flag;
 					msg.obj = dataJson;
 					handler.sendMessage(msg);
 				} catch (Exception e) {

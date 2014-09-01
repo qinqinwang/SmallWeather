@@ -29,7 +29,7 @@
             android:exported="true"
             android:theme="@android:style/Theme.Translucent" />
            <activity
-            android:name="com.weather.view.Setting"
+            android:name="com.weather.view.TiXingSetting"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen"/>
             <activity
             android:name="com.weather.view.ZiXunActivity"

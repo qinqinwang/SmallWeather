@@ -35,4 +35,24 @@
             android:src="@drawable/backright" />
     </RelativeLayout>
 
+    <TextView
+        android:id="@+id/xianshi"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="15dip"
+        android:text="@string/xianshi"
+        android:textColor="@color/white"
+        android:textSize="20sp" />
+
+    <!-- <TextView
+        android:id="@+id/shengyin"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="15dip"
+        android:text="@string/shengyin"
+        android:textColor="@color/white"
+        android:textSize="20sp" /> -->
+
 </LinearLayout>

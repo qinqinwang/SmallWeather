@@ -1,128 +1,58 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/viewSetting"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/blacks"
-    android:orientation="vertical"
-    android:paddingTop="5dip" >
+    android:layout_height="match_parent" >
 
-    <LinearLayout
+    <RelativeLayout
+        android:id="@+id/shou"
         android:layout_width="match_parent"
-        android:layout_height="0dip"
-        android:layout_weight="1"
-        android:orientation="vertical" >
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:background="@color/blackc" >
 
         <TextView
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/blackc"
-            android:gravity="center"
-            android:paddingBottom="5dip"
-            android:paddingTop="5dip"
-            android:text="@string/settings"
-            android:textColor="@color/white"
-            android:textSize="20sp" />
-
-        <TextView
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_margin="15dip"
-            android:text="@string/tixing"
-            android:textColor="@color/white"
-            android:textSize="20sp" />
-
-        <TextView
-            android:id="@+id/beijing"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_margin="15dip"
-            android:text="@string/beijing"
-            android:textColor="@color/white"
-            android:textSize="20sp" />
-
-        <ListView
-            android:id="@+id/list_color"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:divider="@null"
-            android:listSelector="@drawable/list_selector"
-            android:padding="10dip"
-            android:visibility="gone" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dip"
-        android:layout_weight="1"
-        android:orientation="vertical" >
-
-        <TextView
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/blackc"
+            android:layout_centerHorizontal="true"
             android:gravity="center"
-            android:paddingBottom="5dip"
-            android:paddingTop="5dip"
-            android:text="@string/guanyu"
-            android:textColor="@color/white"
-            android:textSize="20sp" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_margin="15dip"
-            android:text="@string/banben"
-            android:textColor="@color/white"
-            android:textSize="20sp" />
-
-        <TextView
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_margin="15dip"
+            android:paddingBottom="10dip"
+            android:paddingTop="10dip"
             android:text="@string/yijian"
             android:textColor="@color/white"
             android:textSize="20sp" />
 
-        <ListView
-            android:id="@+id/list_share"
+        <ImageView
+            android:id="@+id/back_yijian"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:divider="@null"
-            android:listSelector="@drawable/list_selector"
-            android:padding="10dip"
-            android:visibility="gone" />
-    </LinearLayout>
+            android:layout_alignParentRight="true"
+            android:clickable="true"
+            android:paddingBottom="10dip"
+            android:paddingRight="10dip"
+            android:paddingTop="10dip"
+            android:src="@drawable/backright" />
+    </RelativeLayout>
 
     <LinearLayout
+        android:id="@+id/edits"
         android:layout_width="match_parent"
-        android:layout_height="0dip"
-        android:layout_weight="2"
-        android:orientation="vertical" >
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true" >
 
-        <TextView
-            android:layout_width="fill_parent"
+        <EditText
+            android:id="@+id/edit"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/blackc"
-            android:gravity="center"
-            android:paddingBottom="5dip"
-            android:paddingTop="5dip"
-            android:text="@string/city_settings"
-            android:textColor="@color/white"
-            android:textSize="20sp" />
-
-        <ListView
-            android:id="@+id/list_city"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:divider="@null"
-            android:listSelector="@drawable/list_selector"
-            android:padding="10dip" />
+            android:inputType="textCapCharacters"
+            android:singleLine="true" />
     </LinearLayout>
 
+    <TextView
+        android:id="@+id/yijian"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/edits"
+        android:layout_below="@id/shou"
+        android:background="@color/white" />
 
-</LinearLayout>
+</RelativeLayout>

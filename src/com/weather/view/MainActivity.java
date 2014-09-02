@@ -84,41 +84,37 @@ import com.weather.util.TestUtils;
 public class MainActivity extends Activity implements OnTouchListener,
 		OnGestureListener {
 	private TextView date, city, type, temperature, wind;
-	// private ImageButton setting;
+	private ListView listCity;private TextView beijing;
+	private TextView tixing;
+	private TextView banben;
+	private TextView yijian;
+	private ImageButton share;
+	private ProgressBar progress;
+	private RelativeLayout viewMain;
+
+	private final String APP_ID = "wxc1166aff17ba799b";
 	private String result;
 	private String dates;
-	private MyHandler handler = new MyHandler();
 	private String json;
-	private SharedPreferences sp = null;
-	private ListView listCity;
-
-	private RelativeLayout viewMain;
-	private SlidingMenu menu;
-
+	private String appurl, fileName;
+	
 	private JSONArray jsonArr;
 	private JSONObject obj;
 	private NotificationManager nm;
-	private final String APP_ID = "wxc1166aff17ba799b";
 	private IWXAPI wxApi;
-	private ImageButton share;
 	private SelectPopupWindow menuWindow;
-
+	private HttpUtil httpUtil;
+	private SharedPreferences sp = null;
+	private GestureDetector gestureDetector;
+	private SlidingMenu menu;
+	
+	private int width;
+	private int height;private int verticalMinDistance = 10;
+	private int minVelocity = 0;
+	private int showtime = 5000;
 	private int vercode;
 
-	private String appurl, fileName;
-	private ProgressBar progress;
-	private int width;
-	private int height;
-
-	private TextView beijing;
-	private TextView tixing;
-	private TextView banben;
-
-	private GestureDetector gestureDetector;
-	private int verticalMinDistance = 10;
-	private int minVelocity = 0;
-	private HttpUtil httpUtil;
-	private int showtime = 5000;
+	private MyHandler handler = new MyHandler();
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -126,16 +122,15 @@ public class MainActivity extends Activity implements OnTouchListener,
 		setContentView(R.layout.activity_main);
 		wxApi = WXAPIFactory.createWXAPI(this, APP_ID, true);
 		wxApi.registerApp(APP_ID);
-		// 存放路径设置
 		SDPATH.sdcardExit = Environment.getExternalStorageState().equals(
-				android.os.Environment.MEDIA_MOUNTED);// 判断SDCard是否存在
-		SDPATH.sdCardPer = com.weather.util.SDPermission.checkFsWritable();// 判断SDCard权限
+				android.os.Environment.MEDIA_MOUNTED);
+		SDPATH.sdCardPer = com.weather.util.SDPermission.checkFsWritable();
 		if (SDPATH.sdcardExit) {
 			if (!SDPATH.sdCardPer) {
 				SDPATH.SD_PATH = this.getCacheDir().toString();
 			} else {
 				SDPATH.SD_PATH = Environment.getExternalStorageDirectory()
-						.getPath() + "/cleaning/";
+						.getPath() + "/SmallWeather/";
 			}
 		} else {
 			SDPATH.SD_PATH = this.getCacheDir().toString();
@@ -169,7 +164,6 @@ public class MainActivity extends Activity implements OnTouchListener,
 
 	public void sendMessage(String citys, String message) {
 		NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-		// 构建一个通知对象(需要传递的参数有三个,分别是图标,标题和 时间)
 		Notification notification = new Notification(R.drawable.logo, message,
 				System.currentTimeMillis());
 		Intent intent = new Intent(MainActivity.this, MainActivity.class);
@@ -228,10 +222,8 @@ public class MainActivity extends Activity implements OnTouchListener,
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				// showPopupWindow(false);
 				menuWindow = new SelectPopupWindow(MainActivity.this, null,
 						false, onitemsOnClicks);
-				// 显示窗口
 				menuWindow.showAtLocation(
 						MainActivity.this.findViewById(R.id.main),
 						Gravity.BOTTOM, 0, 0); //
@@ -259,6 +251,20 @@ public class MainActivity extends Activity implements OnTouchListener,
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
 				Update(1);
+			}
+		});
+		yijian = (TextView)findViewById(R.id.yijian);
+		yijian.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				Intent intent = new Intent();
+				intent.setClass(MainActivity.this, YiJianSetting.class);
+				startActivity(intent);
+				overridePendingTransition(R.anim.push_right_in,
+						R.anim.push_right_out);
+				finish();
 			}
 		});
 		listCity = (ListView) findViewById(R.id.list_city);
@@ -310,13 +316,11 @@ public class MainActivity extends Activity implements OnTouchListener,
 				// TODO Auto-generated method stub
 				menuWindow = new SelectPopupWindow(MainActivity.this,
 						itemsOnClick, true, null);
-				// 显示窗口
 				menuWindow.showAtLocation(
 						MainActivity.this.findViewById(R.id.main),
-						Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, 0); //
+						Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, 0); 
 			}
 		});
-
 		progress = (ProgressBar) findViewById(R.id.progress);
 	}
 
@@ -337,7 +341,6 @@ public class MainActivity extends Activity implements OnTouchListener,
 			handler.sendMessage(msg);
 			menuWindow.dismiss();
 		}
-
 	};
 
 	private OnClickListener itemsOnClick = new OnClickListener() {
@@ -388,7 +391,6 @@ public class MainActivity extends Activity implements OnTouchListener,
 								MainActivity.this.getResources().getString(
 										R.string.noweixin), showtime).show();
 					}
-
 				} else {
 					if ("".equals(httpUtil.readFile(Constant.WEATHER_FILE_NAME))
 							|| httpUtil.readFile(Constant.WEATHER_FILE_NAME) == null) {
@@ -409,7 +411,6 @@ public class MainActivity extends Activity implements OnTouchListener,
 						}
 					}
 				}
-
 				break;
 			case R.id.share_weibo:
 				if (isNetworkAvailable(MainActivity.this)) {
@@ -421,7 +422,6 @@ public class MainActivity extends Activity implements OnTouchListener,
 								MainActivity.this.getResources().getString(
 										R.string.noweibo), showtime).show();
 					}
-
 				} else {
 					if ("".equals(httpUtil.readFile(Constant.WEATHER_FILE_NAME))
 							|| httpUtil.readFile(Constant.WEATHER_FILE_NAME) == null) {
@@ -440,14 +440,11 @@ public class MainActivity extends Activity implements OnTouchListener,
 						}
 					}
 				}
-
 				break;
 			default:
 				break;
 			}
-
 		}
-
 	};
 
 	private boolean checkApkExist(String packageName) {
@@ -464,23 +461,19 @@ public class MainActivity extends Activity implements OnTouchListener,
 		}
 	}
 
-	// 截图
+	
 	public Uri shotScreen() {
-		// View是你需要截图的View
 		View view = this.getWindow().getDecorView();
 		view.setDrawingCacheEnabled(true);
 		view.buildDrawingCache();
 		Bitmap b1 = view.getDrawingCache();
 
-		// 获取状态栏高度
 		Rect frame = new Rect();
 		this.getWindow().getDecorView().getWindowVisibleDisplayFrame(frame);
 		int statusBarHeight = frame.top;
 
-		// 获取屏幕长和高
 		width = this.getWindowManager().getDefaultDisplay().getWidth();
 		height = this.getWindowManager().getDefaultDisplay().getHeight();
-		// 去掉标题栏
 		Bitmap b = Bitmap.createBitmap(b1, 0, statusBarHeight, width, height
 				- statusBarHeight);
 		view.destroyDrawingCache();
@@ -536,7 +529,6 @@ public class MainActivity extends Activity implements OnTouchListener,
 		}
 		File F = this.getFileStreamPath("Img" + ".png");
 		Uri u = Uri.fromFile(F);
-
 		return F;
 	}
 
@@ -861,25 +853,20 @@ public class MainActivity extends Activity implements OnTouchListener,
 	public void loadFile(String URL, String fileName) {
 		InputStream is = null;
 		try {
-			// 创建、打开连接
 			URL myUrl = new URL(URL);
 			URLConnection connection = myUrl.openConnection();
 			connection.connect();
 
-			// 得到访问内容并保存在输入流中。
 			is = connection.getInputStream();
-			// 得到文件的总长度。注意这里有可能因得不到文件大小而抛出异常
 			int len = connection.getContentLength();
 			int nowSize = 0;
 			if (is != null) {
 
 				File file = new File(SDPATH.SD_PATH + fileName);
-				// 如果文件存在，则删除该文件。
 				if (file.exists()) {
 
 					file.delete();
 				}
-				// 判断文件路径的文件夹是否存在，如果没有就创建一个。
 
 				File p = new File(SDPATH.SD_PATH);
 
@@ -888,7 +875,6 @@ public class MainActivity extends Activity implements OnTouchListener,
 					p.mkdirs();
 				}
 
-				// RandomAccessFile随机访问的文件类，可以从指定访问位置，为以后实现断点下载提供支持
 				RandomAccessFile randomAccessFile = new RandomAccessFile(
 						SDPATH.SD_PATH + fileName, "rw");
 				byte[] buffer = new byte[4096];
@@ -897,7 +883,7 @@ public class MainActivity extends Activity implements OnTouchListener,
 				if (!SDPATH.sdcardExit || !SDPATH.sdCardPer) {
 					try {
 						String command = "chmod " + "777" + " "
-								+ (SDPATH.SD_PATH + fileName); // 777为permission
+								+ (SDPATH.SD_PATH + fileName); 
 						Runtime runtime = Runtime.getRuntime();
 						runtime.exec(command);
 					} catch (IOException e) {
@@ -1008,7 +994,6 @@ public class MainActivity extends Activity implements OnTouchListener,
 		// TODO Auto-generated method stub
 		if (e1.getX() - e2.getX() > verticalMinDistance
 				&& Math.abs(velocityX) > minVelocity) {
-
 			Intent intent = new Intent(MainActivity.this, ZiXunActivity.class);
 			startActivity(intent);
 		}

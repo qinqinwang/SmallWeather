@@ -2,7 +2,6 @@ package com.weather.util;
 
 import android.app.Activity;  
 import android.graphics.Typeface;  
-import android.util.Log;
 import android.view.View;  
 import android.view.ViewGroup;  
 import android.widget.Button;  
@@ -15,8 +14,6 @@ public class FontManager {
     
        Typeface tf = Typeface.createFromAsset(act.getAssets(),  
               "fonts/font.ttf");  
-    
-       Log.v("wangqiqnin", "fontmanage");
        for (int i = 0; i < root.getChildCount(); i++) {  
            View v = root.getChildAt(i);  
            if (v instanceof TextView) {  
@@ -29,6 +26,5 @@ public class FontManager {
               changeFonts((ViewGroup) v, act);  
            }  
        }  
-    
     }  
 }  

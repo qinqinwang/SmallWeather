@@ -1,7 +1,6 @@
 package com.weather.view;
 
-import java.util.ArrayList;
-import java.util.List;
+
 
 import com.smallweather.R;
 import com.weather.adapter.MyAdapter;
@@ -9,6 +8,7 @@ import com.weather.adapter.MyAdapter;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -27,8 +27,6 @@ public class SelectPopupWindow extends PopupWindow {
 	private TextView cancel;
 	private View mMenuView;
 	private ListView listColor;
-
-	private List<String> listColors = new ArrayList<String>();
 
 	public SelectPopupWindow(Activity context, OnClickListener itemsOnClick,
 			boolean flag, OnItemClickListener ietmclicklistener) {
@@ -59,7 +57,6 @@ public class SelectPopupWindow extends PopupWindow {
 		cancel.setOnClickListener(new OnClickListener() {
 
 			public void onClick(View v) {
-				// 销毁弹出框
 				dismiss();
 			}
 		});
@@ -68,33 +65,20 @@ public class SelectPopupWindow extends PopupWindow {
 		this.setAnimationStyle(R.style.AnimBottom);
 		ColorDrawable dw = new ColorDrawable(0xb0000000);
 		this.setBackgroundDrawable(dw);
-		mMenuView.setOnTouchListener(new OnTouchListener() {
-
-			public boolean onTouch(View v, MotionEvent event) {
-
-				int height = mMenuView.findViewById(R.id.pop_layout).getTop();
-				int y = (int) event.getY();
-				if (event.getAction() == MotionEvent.ACTION_UP) {
-					if (y < height) {
-						dismiss();
-					}
-				}
-				return true;
-			}
-		});
-
+//		mMenuView.setOnTouchListener(new OnTouchListener() {
+//
+//			public boolean onTouch(View v, MotionEvent event) {
+//
+//				int height = mMenuView.findViewById(R.id.pop_layout).getTop();
+//				int y = (int) event.getY();
+//				if (event.getAction() == MotionEvent.ACTION_UP) {
+//					if (y < height) {
+//						Log.v("wangqinqin", "  height  = "+height+"  y = "+ y);
+//						dismiss();
+//					}
+//				}
+//				return true;
+//			}
+//		});
 	}
-
-
-
-	private List<String> getColor() {
-		// TODO Auto-generated method stub
-
-		listColors.add("绿");
-		listColors.add("红");
-		listColors.add("蓝");
-		listColors.add("紫");
-		return listColors;
-	}
-
 }

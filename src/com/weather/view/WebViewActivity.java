@@ -1,6 +1,7 @@
 package com.weather.view;
 
 import com.smallweather.R;
+import com.weather.util.Constant;
 import com.weather.util.FontManager;
 
 import android.app.Activity;
@@ -48,7 +49,11 @@ public class WebViewActivity extends Activity {
 			}
 		});
 		Intent intent = getIntent();
-		webView.loadUrl(intent.getStringExtra("href"));
+		if(intent.getStringExtra("id") == null){
+			webView.loadUrl(Constant.newsUrls+("1"));
+		}else{
+			webView.loadUrl(Constant.newsUrls+intent.getStringExtra("id"));
+		}
 		ViewGroup viewGroup = (ViewGroup) findViewById(android.R.id.content);
 		FontManager.changeFonts(viewGroup, this);
 	}

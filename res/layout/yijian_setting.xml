@@ -33,25 +33,19 @@
             android:src="@drawable/backright" />
     </RelativeLayout>
 
-    <LinearLayout
-        android:id="@+id/edits"
+    <EditText
+        android:id="@+id/edit"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true" >
-
-        <EditText
-            android:id="@+id/edit"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="textCapCharacters"
-            android:singleLine="true" />
-    </LinearLayout>
+        android:layout_alignParentBottom="true"
+        android:inputType="textCapCharacters"
+        android:singleLine="true" />
 
     <TextView
         android:id="@+id/yijian"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@id/edits"
+        android:layout_above="@id/edit"
         android:layout_below="@id/shou"
         android:background="@color/white" />
 

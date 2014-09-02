@@ -5,7 +5,7 @@
     <string name="guanyu">关于</string>
     <string name="settings">设置</string>
     <string name="tixing">提醒设置</string>
-    <string name="beijing">背景设置</string>
+    <string name="beijing">主题设置</string>
     <string name="banben">版本更新</string>
     <string name="yijian">意见反馈</string>
     <string name="city_settings">城市</string>
@@ -26,11 +26,17 @@
     <string name="ok">确定</string>
     <string name="no">取消</string>
     <string name="font">黑体</string>
-    <string name="xianshi">通知栏显示</string>
+    <string name="xianshi">在通知栏显示</string>
+     <string name="jiudian">每天九点通知</string>
     <string name="shengyin">声音</string>
     <string name="yxianshi">通知栏已显示</string>
     <string name="bxianshi">通知栏不显示</string>
     <string name="zuixin">已是最新版本！</string>
+    <string name="share">分享到</string>
+    <string name="circle">朋友圈</string>
+    <string name="friend">微信</string>
+    <string name="weibo">微博</string>
+    <string name="jingxi">左滑有惊喜！</string>
 
     <string-array name="coloritem">
         <item>绿</item>

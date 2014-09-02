@@ -16,13 +16,15 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.View.OnClickListener;
+import android.webkit.WebView;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 public class TiXingSetting extends Activity {
-	private ImageView back;
+//	private ImageView back;
 	private TextView xianshi;
+	private TextView tianqi;
 	private NotificationManager nm;
 	private SharedPreferences sp = null;
 	private int duration = 5000;
@@ -36,20 +38,22 @@ public class TiXingSetting extends Activity {
 		sp = getSharedPreferences("weather", Context.MODE_PRIVATE);
 		ViewGroup viewGroup = (ViewGroup) findViewById(android.R.id.content);
 		FontManager.changeFonts(viewGroup, this);
-		back = (ImageView) findViewById(R.id.back);
-		back.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				Intent intent = new Intent();
-				intent.setClass(TiXingSetting.this, MainActivity.class);
-				startActivity(intent);
-				overridePendingTransition(R.anim.push_left_in,
-						R.anim.push_left_out);
-				finish();
-			}
-		});
+//		back = (ImageView) findViewById(R.id.back);
+//		back.setOnClickListener(new OnClickListener() {
+//
+//			@Override
+//			public void onClick(View v) {
+//				// TODO Auto-generated method stub
+//				Intent intent = new Intent();
+//				intent.setClass(TiXingSetting.this, MainActivity.class);
+//				startActivity(intent);
+//				overridePendingTransition(R.anim.push_left_in,
+//						R.anim.push_left_out);
+//				finish();
+//			}
+//		});
+//		tianqi = (TextView) findViewById(R.id.tianqi);
+//		tianqi.setText(sp.getString("citys","")+sp.getString("message",""));
 		xianshi = (TextView) findViewById(R.id.xianshi);
 		xianshi.setOnClickListener(new OnClickListener() {
 

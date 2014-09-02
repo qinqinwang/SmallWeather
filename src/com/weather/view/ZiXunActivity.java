@@ -17,6 +17,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -52,7 +53,7 @@ public class ZiXunActivity extends Activity implements OnTouchListener,
 	private String result;
 	private JSONArray Jsonarr;
 	private List<String> listTitle = new ArrayList<String>();
-	private List<String> listHref = new ArrayList<String>();
+	private List<String> listId = new ArrayList<String>();
 	private SharedPreferences sp = null;
 	private RelativeLayout zixuncolor;
 	private HttpUtil httpUtil;
@@ -92,14 +93,14 @@ public class ZiXunActivity extends Activity implements OnTouchListener,
 				// TODO Auto-generated method stub
 				Intent intent = new Intent();
 				intent.setClass(ZiXunActivity.this, WebViewActivity.class);
-				intent.putExtra("href", listHref.get(position));
+				intent.putExtra("id", listId.get(position));
 				startActivity(intent);
 				overridePendingTransition(R.anim.push_left_in,
 						R.anim.push_left_out);
 			}
 		});
-//		listzixun.setOnTouchListener(this);
-//		listzixun.setLongClickable(true);
+		// listzixun.setOnTouchListener(this);
+		// listzixun.setLongClickable(true);
 		viewZiXun.setOnTouchListener(this);
 		viewZiXun.setLongClickable(true);
 
@@ -247,11 +248,24 @@ public class ZiXunActivity extends Activity implements OnTouchListener,
 				json = (String) m.obj;
 				try {
 					Jsonarr = new JSONArray(json);
-					Log.v("@@@@@@@@@@", " @@@@@@@  "+Jsonarr.length());
+					// JSONObject obj = (JSONObject) Jsonarr.get(0);
+					// Log.v("wangqinqin",
+					// " id=  " + obj.getString("id") + " title=  "
+					// + obj.getString("title") + " source=  "
+					// + obj.getString("source") + " hits=  "
+					// + obj.getString("hits") + " created_at=  "
+					// + obj.getString("created_at") + " href=  "
+					// + obj.getString("href") + " content=  "
+					// + obj.getString("content"));
 					for (int i = 0; i < Jsonarr.length(); i++) {
 						JSONObject obj = (JSONObject) Jsonarr.get(i);
+						Editor editor = sp.edit();
+						if(i == 0){
+							editor.putString("title", obj.getString("title"));
+						}
+						editor.commit();
 						listTitle.add(obj.getString("title"));
-						listHref.add(obj.getString("href"));
+						listId.add(obj.getString("id"));
 						if (i == Jsonarr.length() - 1) {
 							Message msg = new Message();
 							msg.what = 1;
@@ -266,7 +280,7 @@ public class ZiXunActivity extends Activity implements OnTouchListener,
 				break;
 			case 1:
 				listzixun.setAdapter(new ZiXunAdapter(ZiXunActivity.this,
-						listTitle, listHref));
+						listTitle, listId));
 				break;
 			}
 		}

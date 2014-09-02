@@ -84,7 +84,8 @@ import com.weather.util.TestUtils;
 public class MainActivity extends Activity implements OnTouchListener,
 		OnGestureListener {
 	private TextView date, city, type, temperature, wind;
-	private ListView listCity;private TextView beijing;
+	private ListView listCity;
+	private TextView beijing;
 	private TextView tixing;
 	private TextView banben;
 	private TextView yijian;
@@ -97,7 +98,7 @@ public class MainActivity extends Activity implements OnTouchListener,
 	private String dates;
 	private String json;
 	private String appurl, fileName;
-	
+
 	private JSONArray jsonArr;
 	private JSONObject obj;
 	private NotificationManager nm;
@@ -107,9 +108,10 @@ public class MainActivity extends Activity implements OnTouchListener,
 	private SharedPreferences sp = null;
 	private GestureDetector gestureDetector;
 	private SlidingMenu menu;
-	
+
 	private int width;
-	private int height;private int verticalMinDistance = 10;
+	private int height;
+	private int verticalMinDistance = 10;
 	private int minVelocity = 0;
 	private int showtime = 5000;
 	private int vercode;
@@ -158,23 +160,54 @@ public class MainActivity extends Activity implements OnTouchListener,
 		nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
 		// 更新
-//		Update(0);
+		// Update(0);
 		MobclickAgent.setDebugMode(true);
 	}
 
 	public void sendMessage(String citys, String message) {
+		String title = sp.getString("title", "");
 		NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-		Notification notification = new Notification(R.drawable.logo, message,
-				System.currentTimeMillis());
-		Intent intent = new Intent(MainActivity.this, MainActivity.class);
-		PendingIntent pendingIntent = PendingIntent.getActivity(
-				MainActivity.this, 0, intent, 0);
-		notification.setLatestEventInfo(getApplicationContext(), citys,
-				message, pendingIntent);
-		notification.flags = Notification.FLAG_ONGOING_EVENT;// 消息不可取消
-		// notification.defaults = Notification.DEFAULT_SOUND;//声音默认
-		manager.notify(0, notification);
+		// Notification notification;
+		// Intent intent;
+		if (title == null || "".equals(title)) {
+			Notification notification = new Notification(R.drawable.logo,
+					message, System.currentTimeMillis());
+			Intent intent = new Intent(MainActivity.this, MainActivity.class);
+			PendingIntent pendingIntent = PendingIntent.getActivity(
+					MainActivity.this, 0, intent, 0);
+			notification.setLatestEventInfo(getApplicationContext(), citys,
+					message, pendingIntent);
+			notification.flags = Notification.FLAG_ONGOING_EVENT;// 消息不可取消
+			// notification.defaults = Notification.DEFAULT_SOUND;//声音默认
+			manager.notify(0, notification);
+		} else {
+			Notification notification = new Notification(R.drawable.logo,
+					title, System.currentTimeMillis());
+			Intent intent = new Intent(MainActivity.this, WebViewActivity.class);
+			PendingIntent pendingIntent = PendingIntent.getActivity(
+					MainActivity.this, 0, intent, 0);
+			notification.setLatestEventInfo(getApplicationContext(), citys
+					+ message, title, pendingIntent);
+			notification.flags = Notification.FLAG_ONGOING_EVENT;// 消息不可取消
+			// notification.defaults = Notification.DEFAULT_SOUND;//声音默认
+			manager.notify(0, notification);
+		}
+		// Notification notification = new Notification(R.drawable.logo,
+		// message,
+		// System.currentTimeMillis());
 
+		// PendingIntent pendingIntent = PendingIntent.getActivity(
+		// MainActivity.this, 0, intent, 0);
+		// if (title == null && "".equals(title)) {
+		// notification.setLatestEventInfo(getApplicationContext(), citys,
+		// message, pendingIntent);
+		// } else {
+		// notification.setLatestEventInfo(getApplicationContext(), citys
+		// + message, title, pendingIntent);
+		// }
+		// notification.flags = Notification.FLAG_ONGOING_EVENT;// 消息不可取消
+		// // notification.defaults = Notification.DEFAULT_SOUND;//声音默认
+		// manager.notify(0, notification);
 	}
 
 	private void hasNet() {
@@ -223,7 +256,7 @@ public class MainActivity extends Activity implements OnTouchListener,
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
 				menuWindow = new SelectPopupWindow(MainActivity.this, null,
-						false, onitemsOnClicks);
+						onitemsOnClicks, 1);
 				menuWindow.showAtLocation(
 						MainActivity.this.findViewById(R.id.main),
 						Gravity.BOTTOM, 0, 0); //
@@ -236,12 +269,18 @@ public class MainActivity extends Activity implements OnTouchListener,
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				Intent intent = new Intent();
-				intent.setClass(MainActivity.this, TiXingSetting.class);
-				startActivity(intent);
-				overridePendingTransition(R.anim.push_right_in,
-						R.anim.push_right_out);
-				finish();
+				menuWindow = new SelectPopupWindow(MainActivity.this,
+						itemsOnClick, null, 2);
+				menuWindow.showAtLocation(
+						MainActivity.this.findViewById(R.id.main),
+						Gravity.BOTTOM, 0, 0);
+
+				// Intent intent = new Intent();
+				// intent.setClass(MainActivity.this, TiXingSetting.class);
+				// startActivity(intent);
+				// overridePendingTransition(R.anim.push_right_in,
+				// R.anim.push_right_out);
+				// finish();
 			}
 		});
 		banben = (TextView) findViewById(R.id.banben);
@@ -253,9 +292,9 @@ public class MainActivity extends Activity implements OnTouchListener,
 				Update(1);
 			}
 		});
-		yijian = (TextView)findViewById(R.id.yijian);
+		yijian = (TextView) findViewById(R.id.yijian);
 		yijian.setOnClickListener(new OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
@@ -269,7 +308,7 @@ public class MainActivity extends Activity implements OnTouchListener,
 		});
 		listCity = (ListView) findViewById(R.id.list_city);
 		listCity.setAdapter(new MyAdapter(this, this.getResources()
-				.getStringArray(R.array.cityitem)));
+				.getStringArray(R.array.cityitem), 1));
 		listCity.setOnItemClickListener(new OnItemClickListener() {
 
 			@Override
@@ -315,10 +354,10 @@ public class MainActivity extends Activity implements OnTouchListener,
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
 				menuWindow = new SelectPopupWindow(MainActivity.this,
-						itemsOnClick, true, null);
+						itemsOnClick, null, 0);
 				menuWindow.showAtLocation(
 						MainActivity.this.findViewById(R.id.main),
-						Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, 0); 
+						Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, 0);
 			}
 		});
 		progress = (ProgressBar) findViewById(R.id.progress);
@@ -350,7 +389,7 @@ public class MainActivity extends Activity implements OnTouchListener,
 			Uri uri = shotScreen();
 			switch (v.getId()) {
 			case R.id.share_friend:
-
+				menuWindow.dismiss();
 				if (isNetworkAvailable(MainActivity.this)) {
 					if (checkApkExist(Constant.pkgweixin)) {
 						share(uri, Constant.pkgweixin, Constant.weixinfriend);
@@ -441,6 +480,30 @@ public class MainActivity extends Activity implements OnTouchListener,
 					}
 				}
 				break;
+			case R.id.xianshi:
+				if (sp.getBoolean("showxianshi", false)) {
+					nm.cancel(0);
+					Editor editor = sp.edit();
+					editor.putBoolean("showxianshi", false);
+					editor.commit();
+					Toast.makeText(
+							MainActivity.this,
+							MainActivity.this.getResources().getString(
+									R.string.bxianshi), showtime).show();
+				} else {
+					sendMessage(sp.getString("citys", ""),
+							sp.getString("message", ""));
+					Editor editor = sp.edit();
+					editor.putBoolean("showxianshi", true);
+					editor.commit();
+					Toast.makeText(
+							MainActivity.this,
+							MainActivity.this.getResources().getString(
+									R.string.yxianshi), showtime).show();
+				}
+				break;
+			case R.id.jiudian:
+				break;
 			default:
 				break;
 			}
@@ -461,7 +524,6 @@ public class MainActivity extends Activity implements OnTouchListener,
 		}
 	}
 
-	
 	public Uri shotScreen() {
 		View view = this.getWindow().getDecorView();
 		view.setDrawingCacheEnabled(true);
@@ -641,18 +703,18 @@ public class MainActivity extends Activity implements OnTouchListener,
 					fileName = TestUtils.getFileName(appurl);
 					int urlcode = Integer.parseInt(obj.getString("verCode"));
 					Log.v("wangqinqin", "    " + (urlcode > getVersion()));
-//					if (urlcode > getVersion()) {
-//						if (flag == 1) {
-//							MainActivity.this.getMenu().toggle();
-//						}
-//						showUpdateDialog();
-//					} else {
-						if (flag == 1) {
-							Toast.makeText(
-									MainActivity.this,
-									MainActivity.this.getResources().getString(
-											R.string.zuixin), showtime).show();
-//						}
+					// if (urlcode > getVersion()) {
+					// if (flag == 1) {
+					// MainActivity.this.getMenu().toggle();
+					// }
+					// showUpdateDialog();
+					// } else {
+					if (flag == 1) {
+						Toast.makeText(
+								MainActivity.this,
+								MainActivity.this.getResources().getString(
+										R.string.zuixin), showtime).show();
+						// }
 					}
 
 				} catch (JSONException e) {
@@ -792,7 +854,7 @@ public class MainActivity extends Activity implements OnTouchListener,
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		if (sp.getBoolean("show", false)) {
+		if (sp.getBoolean("showxianshi", false)) {
 			sendMessage(citys, message);
 		}
 	}
@@ -883,7 +945,7 @@ public class MainActivity extends Activity implements OnTouchListener,
 				if (!SDPATH.sdcardExit || !SDPATH.sdCardPer) {
 					try {
 						String command = "chmod " + "777" + " "
-								+ (SDPATH.SD_PATH + fileName); 
+								+ (SDPATH.SD_PATH + fileName);
 						Runtime runtime = Runtime.getRuntime();
 						runtime.exec(command);
 					} catch (IOException e) {

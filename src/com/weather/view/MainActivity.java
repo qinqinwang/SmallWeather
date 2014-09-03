@@ -916,13 +916,13 @@ public class MainActivity extends Activity implements OnTouchListener,
 			jsonArr = new JSONArray(json);
 			obj = (JSONObject) jsonArr.get(cityPosotion);
 			city.setText(obj.getString("city"));
-			type.setText(obj.getString("type"));
+			type.setText(obj.getString("content"));
 			temperature.setText(obj.getString("temperature"));
 			wind.setText(obj.getString("wind_direction") + " "
 					+ obj.getString("wind_force"));
 			citys = obj.getString("city");
 
-			message = obj.getString("type") + "  "
+			message = obj.getString("content") + "  "
 					+ obj.getString("temperature");
 			String weather =  message;
 			Editor editor = sp.edit();

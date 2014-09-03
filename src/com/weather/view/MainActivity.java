@@ -87,6 +87,7 @@ import com.weather.util.HttpUtil;
 import com.weather.util.PollingService;
 import com.weather.util.PollingUtils;
 import com.weather.util.TestUtils;
+import com.weather.util.TextImage;
 
 public class MainActivity extends Activity implements OnTouchListener,
 		OnGestureListener {
@@ -270,7 +271,7 @@ public class MainActivity extends Activity implements OnTouchListener,
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
 				menuWindow = new SelectPopupWindow(MainActivity.this, null,
-						onitemsOnClicks, null, 1);
+						onitemsOnClicks,1);
 				menuWindow.showAtLocation(
 						MainActivity.this.findViewById(R.id.main),
 						Gravity.BOTTOM, 0, 0); //
@@ -284,7 +285,7 @@ public class MainActivity extends Activity implements OnTouchListener,
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
 				menuWindow = new SelectPopupWindow(MainActivity.this,
-						itemsOnClick, null, itemsOnTouch, 2);
+						itemsOnClick, null, 2);
 				menuWindow.showAtLocation(
 						MainActivity.this.findViewById(R.id.main),
 						Gravity.BOTTOM, 0, 0);
@@ -368,7 +369,7 @@ public class MainActivity extends Activity implements OnTouchListener,
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
 				menuWindow = new SelectPopupWindow(MainActivity.this,
-						itemsOnClick, null, null, 0);
+						itemsOnClick, null, 0);
 				menuWindow.showAtLocation(
 						MainActivity.this.findViewById(R.id.main),
 						Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, 0);
@@ -395,71 +396,6 @@ public class MainActivity extends Activity implements OnTouchListener,
 			menuWindow.dismiss();
 		}
 	};
-
-	private OnTouchListener itemsOnTouch = new OnTouchListener() {
-
-		@Override
-		public boolean onTouch(View v, MotionEvent event) {
-			// TODO Auto-generated method stub
-			switch (v.getId()) {
-			case R.id.xianshi_img:
-				if (sp.getBoolean("showxianshi", false)) {
-					if (event.getAction() == MotionEvent.ACTION_DOWN) {
-						((ImageView) v).setImageDrawable(getResources()
-								.getDrawable(R.drawable.img_press_unchecked));
-					}
-					nm.cancel(0);
-					Editor editor = sp.edit();
-					editor.putBoolean("showxianshi", false);
-					editor.commit();
-//					Toast.makeText(
-//							MainActivity.this,
-//							MainActivity.this.getResources().getString(
-//									R.string.bxianshi), showtime).show();
-				} else {
-					if (event.getAction() == MotionEvent.ACTION_DOWN) {
-						((ImageView) v).setImageDrawable(getResources()
-								.getDrawable(R.drawable.img_press_checked));
-					}
-					sendMessage(sp.getString("citys", ""),
-							sp.getString("message", ""));
-					Editor editor = sp.edit();
-					editor.putBoolean("showxianshi", true);
-					editor.commit();
-//					Toast.makeText(
-//							MainActivity.this,
-//							MainActivity.this.getResources().getString(
-//									R.string.yxianshi), showtime).show();
-				}
-				break;
-			case R.id.jiudian_img:
-				if (sp.getBoolean("showjiudian", false)) {
-					PollingUtils.stopPollingService(MainActivity.this, PollingService.class, PollingService.ACTION);
-					if (event.getAction() == MotionEvent.ACTION_DOWN) {
-						((ImageView) v).setImageDrawable(getResources()
-								.getDrawable(R.drawable.img_press_unchecked));
-					}
-					Editor editor = sp.edit();
-					editor.putBoolean("showjiudian", false);
-					editor.commit();
-				} else {
-					PollingUtils.startPollingService(MainActivity.this, PollingService.class, PollingService.ACTION);
-					if (event.getAction() == MotionEvent.ACTION_DOWN) {
-						((ImageView) v).setImageDrawable(getResources()
-								.getDrawable(R.drawable.img_press_checked));
-					}			
-					Editor editor = sp.edit();
-					editor.putBoolean("showjiudian", true);
-					editor.commit();
-				}
-				break;
-			default:
-				break;
-			}
-			return false;
-		}
-	};
-
 
 	private OnClickListener itemsOnClick = new OnClickListener() {
 
@@ -560,29 +496,58 @@ public class MainActivity extends Activity implements OnTouchListener,
 					}
 				}
 				break;
-			// case R.id.xianshi:
-			// if (sp.getBoolean("showxianshi", false)) {
-			// nm.cancel(0);
-			// Editor editor = sp.edit();
-			// editor.putBoolean("showxianshi", false);
-			// editor.commit();
-			// Toast.makeText(
-			// MainActivity.this,
-			// MainActivity.this.getResources().getString(
-			// R.string.bxianshi), showtime).show();
-			// } else {
-			// sendMessage(sp.getString("citys", ""),
-			// sp.getString("message", ""));
-			// Editor editor = sp.edit();
-			// editor.putBoolean("showxianshi", true);
-			// editor.commit();
-			// Toast.makeText(
-			// MainActivity.this,
-			// MainActivity.this.getResources().getString(
-			// R.string.yxianshi), showtime).show();
-			// }
-			// break;
-			case R.id.jiudian:
+			case R.id.xianshi_img:
+				Log.v("wangqinqin", "  xianshi "+(sp.getBoolean("showxianshi", false)) );
+				if (sp.getBoolean("showxianshi", false)) {
+//					if (event.getAction() == MotionEvent.ACTION_DOWN) {
+					((TextImage) v).setImageDrawables(getResources()
+								.getDrawable(R.drawable.img_press_unchecked));
+//					}
+					nm.cancel(0);
+					Editor editor = sp.edit();
+					editor.putBoolean("showxianshi", false);
+					editor.commit();
+//					Toast.makeText(
+//							MainActivity.this,
+//							MainActivity.this.getResources().getString(
+//									R.string.bxianshi), showtime).show();
+				} else {
+//					if (event.getAction() == MotionEvent.ACTION_DOWN) {
+						((TextImage) v).setImageDrawables(getResources()
+								.getDrawable(R.drawable.img_press_checked));
+//					}
+					sendMessage(sp.getString("citys", ""),
+							sp.getString("message", ""));
+					Editor editor = sp.edit();
+					editor.putBoolean("showxianshi", true);
+					editor.commit();
+//					Toast.makeText(
+//							MainActivity.this,
+//							MainActivity.this.getResources().getString(
+//									R.string.yxianshi), showtime).show();
+				}
+				break;
+			case R.id.jiudian_img:
+				Log.v("wangqinqin", "  jiudian "+(sp.getBoolean("showjiudian", false)) );
+				if (sp.getBoolean("showjiudian", false)) {
+					PollingUtils.stopPollingService(MainActivity.this, PollingService.class, PollingService.ACTION);
+//					if (event.getAction() == MotionEvent.ACTION_DOWN) {
+						((TextImage) v).setImageDrawables(getResources()
+								.getDrawable(R.drawable.img_press_unchecked));
+//					}
+					Editor editor = sp.edit();
+					editor.putBoolean("showjiudian", false);
+					editor.commit();
+				} else {
+					PollingUtils.startPollingService(MainActivity.this, PollingService.class, PollingService.ACTION);
+//					if (event.getAction() == MotionEvent.ACTION_DOWN) {
+						((TextImage) v).setImageDrawables(getResources()
+								.getDrawable(R.drawable.img_press_checked));
+//					}			
+					Editor editor = sp.edit();
+					editor.putBoolean("showjiudian", true);
+					editor.commit();
+				}
 				break;
 			default:
 				break;

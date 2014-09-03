@@ -8,7 +8,9 @@ import java.io.InputStream;
 import java.io.RandomAccessFile;
 import java.net.URL;
 import java.net.URLConnection;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -23,6 +25,7 @@ import org.json.JSONObject;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.Notification;
@@ -46,6 +49,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.provider.ContactsContract.Contacts.Data;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.Gravity;
@@ -59,6 +63,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -67,11 +72,11 @@ import android.widget.Toast;
 
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 import com.smallweather.R;
-import com.tencent.mm.sdk.openapi.IWXAPI;
-import com.tencent.mm.sdk.openapi.SendMessageToWX;
-import com.tencent.mm.sdk.openapi.WXAPIFactory;
-import com.tencent.mm.sdk.openapi.WXMediaMessage;
-import com.tencent.mm.sdk.openapi.WXTextObject;
+//import com.tencent.mm.sdk.openapi.IWXAPI;
+//import com.tencent.mm.sdk.openapi.SendMessageToWX;
+//import com.tencent.mm.sdk.openapi.WXAPIFactory;
+//import com.tencent.mm.sdk.openapi.WXMediaMessage;
+//import com.tencent.mm.sdk.openapi.WXTextObject;
 import com.umeng.analytics.MobclickAgent;
 import com.weather.adapter.MyAdapter;
 import com.weather.bean.SDPATH;
@@ -79,6 +84,8 @@ import com.weather.util.AndroidUtil;
 import com.weather.util.Constant;
 import com.weather.util.FontManager;
 import com.weather.util.HttpUtil;
+import com.weather.util.PollingService;
+import com.weather.util.PollingUtils;
 import com.weather.util.TestUtils;
 
 public class MainActivity extends Activity implements OnTouchListener,
@@ -102,7 +109,7 @@ public class MainActivity extends Activity implements OnTouchListener,
 	private JSONArray jsonArr;
 	private JSONObject obj;
 	private NotificationManager nm;
-	private IWXAPI wxApi;
+//	private IWXAPI wxApi;
 	private SelectPopupWindow menuWindow;
 	private HttpUtil httpUtil;
 	private SharedPreferences sp = null;
@@ -122,8 +129,8 @@ public class MainActivity extends Activity implements OnTouchListener,
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		wxApi = WXAPIFactory.createWXAPI(this, APP_ID, true);
-		wxApi.registerApp(APP_ID);
+//		wxApi = WXAPIFactory.createWXAPI(this, APP_ID, true);
+//		wxApi.registerApp(APP_ID);
 		SDPATH.sdcardExit = Environment.getExternalStorageState().equals(
 				android.os.Environment.MEDIA_MOUNTED);
 		SDPATH.sdCardPer = com.weather.util.SDPermission.checkFsWritable();
@@ -148,7 +155,14 @@ public class MainActivity extends Activity implements OnTouchListener,
 		// menu.setSecondaryMenu(R.layout.activity_zixun);
 		menu.setMenu(R.layout.activity_setting);
 		sp = getSharedPreferences("weather", Context.MODE_PRIVATE);
-
+		if(sp.getInt("isFirst", 0) == 0){
+			PollingUtils.startPollingService(MainActivity.this, PollingService.class, PollingService.ACTION);
+			Editor editor = sp.edit();
+			editor.putBoolean("showjiudian", true);
+			editor.putBoolean("showxianshi", true);
+			editor.putInt("isFirst", 1);
+			editor.commit();
+		}
 		httpUtil = new HttpUtil(MainActivity.this);
 		gestureDetector = new GestureDetector(this);
 		setView();
@@ -256,7 +270,7 @@ public class MainActivity extends Activity implements OnTouchListener,
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
 				menuWindow = new SelectPopupWindow(MainActivity.this, null,
-						onitemsOnClicks, 1);
+						onitemsOnClicks, null, 1);
 				menuWindow.showAtLocation(
 						MainActivity.this.findViewById(R.id.main),
 						Gravity.BOTTOM, 0, 0); //
@@ -270,7 +284,7 @@ public class MainActivity extends Activity implements OnTouchListener,
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
 				menuWindow = new SelectPopupWindow(MainActivity.this,
-						itemsOnClick, null, 2);
+						itemsOnClick, null, itemsOnTouch, 2);
 				menuWindow.showAtLocation(
 						MainActivity.this.findViewById(R.id.main),
 						Gravity.BOTTOM, 0, 0);
@@ -354,7 +368,7 @@ public class MainActivity extends Activity implements OnTouchListener,
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
 				menuWindow = new SelectPopupWindow(MainActivity.this,
-						itemsOnClick, null, 0);
+						itemsOnClick, null, null, 0);
 				menuWindow.showAtLocation(
 						MainActivity.this.findViewById(R.id.main),
 						Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, 0);
@@ -382,10 +396,74 @@ public class MainActivity extends Activity implements OnTouchListener,
 		}
 	};
 
+	private OnTouchListener itemsOnTouch = new OnTouchListener() {
+
+		@Override
+		public boolean onTouch(View v, MotionEvent event) {
+			// TODO Auto-generated method stub
+			switch (v.getId()) {
+			case R.id.xianshi_img:
+				if (sp.getBoolean("showxianshi", false)) {
+					if (event.getAction() == MotionEvent.ACTION_DOWN) {
+						((ImageView) v).setImageDrawable(getResources()
+								.getDrawable(R.drawable.img_press_unchecked));
+					}
+					nm.cancel(0);
+					Editor editor = sp.edit();
+					editor.putBoolean("showxianshi", false);
+					editor.commit();
+//					Toast.makeText(
+//							MainActivity.this,
+//							MainActivity.this.getResources().getString(
+//									R.string.bxianshi), showtime).show();
+				} else {
+					if (event.getAction() == MotionEvent.ACTION_DOWN) {
+						((ImageView) v).setImageDrawable(getResources()
+								.getDrawable(R.drawable.img_press_checked));
+					}
+					sendMessage(sp.getString("citys", ""),
+							sp.getString("message", ""));
+					Editor editor = sp.edit();
+					editor.putBoolean("showxianshi", true);
+					editor.commit();
+//					Toast.makeText(
+//							MainActivity.this,
+//							MainActivity.this.getResources().getString(
+//									R.string.yxianshi), showtime).show();
+				}
+				break;
+			case R.id.jiudian_img:
+				if (sp.getBoolean("showjiudian", false)) {
+					PollingUtils.stopPollingService(MainActivity.this, PollingService.class, PollingService.ACTION);
+					if (event.getAction() == MotionEvent.ACTION_DOWN) {
+						((ImageView) v).setImageDrawable(getResources()
+								.getDrawable(R.drawable.img_press_unchecked));
+					}
+					Editor editor = sp.edit();
+					editor.putBoolean("showjiudian", false);
+					editor.commit();
+				} else {
+					PollingUtils.startPollingService(MainActivity.this, PollingService.class, PollingService.ACTION);
+					if (event.getAction() == MotionEvent.ACTION_DOWN) {
+						((ImageView) v).setImageDrawable(getResources()
+								.getDrawable(R.drawable.img_press_checked));
+					}			
+					Editor editor = sp.edit();
+					editor.putBoolean("showjiudian", true);
+					editor.commit();
+				}
+				break;
+			default:
+				break;
+			}
+			return false;
+		}
+	};
+
+
 	private OnClickListener itemsOnClick = new OnClickListener() {
 
 		public void onClick(View v) {
-			menuWindow.dismiss();
 			Uri uri = shotScreen();
 			switch (v.getId()) {
 			case R.id.share_friend:
@@ -421,6 +499,7 @@ public class MainActivity extends Activity implements OnTouchListener,
 				}
 				break;
 			case R.id.share_circle:
+				menuWindow.dismiss();
 				if (isNetworkAvailable(MainActivity.this)) {
 					if (checkApkExist(Constant.pkgweixin)) {
 						share(uri, Constant.pkgweixin, Constant.weixincircle);
@@ -452,6 +531,7 @@ public class MainActivity extends Activity implements OnTouchListener,
 				}
 				break;
 			case R.id.share_weibo:
+				menuWindow.dismiss();
 				if (isNetworkAvailable(MainActivity.this)) {
 					if (checkApkExist(Constant.pkgweibo)) {
 						share(uri, Constant.pkgweibo, Constant.weibowhere);
@@ -480,28 +560,28 @@ public class MainActivity extends Activity implements OnTouchListener,
 					}
 				}
 				break;
-			case R.id.xianshi:
-				if (sp.getBoolean("showxianshi", false)) {
-					nm.cancel(0);
-					Editor editor = sp.edit();
-					editor.putBoolean("showxianshi", false);
-					editor.commit();
-					Toast.makeText(
-							MainActivity.this,
-							MainActivity.this.getResources().getString(
-									R.string.bxianshi), showtime).show();
-				} else {
-					sendMessage(sp.getString("citys", ""),
-							sp.getString("message", ""));
-					Editor editor = sp.edit();
-					editor.putBoolean("showxianshi", true);
-					editor.commit();
-					Toast.makeText(
-							MainActivity.this,
-							MainActivity.this.getResources().getString(
-									R.string.yxianshi), showtime).show();
-				}
-				break;
+			// case R.id.xianshi:
+			// if (sp.getBoolean("showxianshi", false)) {
+			// nm.cancel(0);
+			// Editor editor = sp.edit();
+			// editor.putBoolean("showxianshi", false);
+			// editor.commit();
+			// Toast.makeText(
+			// MainActivity.this,
+			// MainActivity.this.getResources().getString(
+			// R.string.bxianshi), showtime).show();
+			// } else {
+			// sendMessage(sp.getString("citys", ""),
+			// sp.getString("message", ""));
+			// Editor editor = sp.edit();
+			// editor.putBoolean("showxianshi", true);
+			// editor.commit();
+			// Toast.makeText(
+			// MainActivity.this,
+			// MainActivity.this.getResources().getString(
+			// R.string.yxianshi), showtime).show();
+			// }
+			// break;
 			case R.id.jiudian:
 				break;
 			default:
@@ -844,7 +924,7 @@ public class MainActivity extends Activity implements OnTouchListener,
 
 			message = obj.getString("type") + "  "
 					+ obj.getString("temperature");
-			String weather = citys + "  " + message;
+			String weather =  message;
 			Editor editor = sp.edit();
 			editor.putString("weather", weather);
 			editor.putString("citys", citys);
@@ -918,25 +998,18 @@ public class MainActivity extends Activity implements OnTouchListener,
 			URL myUrl = new URL(URL);
 			URLConnection connection = myUrl.openConnection();
 			connection.connect();
-
 			is = connection.getInputStream();
 			int len = connection.getContentLength();
 			int nowSize = 0;
 			if (is != null) {
-
 				File file = new File(SDPATH.SD_PATH + fileName);
 				if (file.exists()) {
-
 					file.delete();
 				}
-
 				File p = new File(SDPATH.SD_PATH);
-
 				if (!p.exists()) {
-
 					p.mkdirs();
 				}
-
 				RandomAccessFile randomAccessFile = new RandomAccessFile(
 						SDPATH.SD_PATH + fileName, "rw");
 				byte[] buffer = new byte[4096];
@@ -978,41 +1051,41 @@ public class MainActivity extends Activity implements OnTouchListener,
 		}
 	}
 
-	private void wechatShare(int flag) {
-		String text = "dffsgfdg";
-		// 初始化一个WXTextObject对象
-		WXTextObject textObj = new WXTextObject();
-		textObj.text = text;
-
-		// 用WXTextObject对象初始化一个WXMediaMessage对象
-		WXMediaMessage msg = new WXMediaMessage();
-		msg.mediaObject = textObj;
-		// 发送文本类型的消息时，title字段不起作用
-		// msg.title = "Will be ignored";
-		msg.description = text;
-		SendMessageToWX.Req req = new SendMessageToWX.Req();
-		req.transaction = buildTransaction("text"); // transaction字段用于唯一标识一个请求
-		req.message = msg;
-		// String path = shotScree().toString();
-		// WXImageObject imgObj = new WXImageObject();
-		// imgObj.setImagePath(path);
-		//
-		// WXMediaMessage msg = new WXMediaMessage();
-		// msg.mediaObject = imgObj;
-		//
-		// Bitmap bmp = BitmapFactory.decodeFile(path);
-		// Bitmap thumbBmp = Bitmap.createScaledBitmap(bmp, THUMB_SIZE,
-		// THUMB_SIZE, true);
-		// bmp.recycle();
-		// msg.thumbData = Util.bmpToByteArray(thumbBmp, true);
-		//
-		// SendMessageToWX.Req req = new SendMessageToWX.Req();
-		// req.transaction = buildTransaction("img");
-		// req.message = msg;
-		req.scene = flag == 0 ? SendMessageToWX.Req.WXSceneSession
-				: SendMessageToWX.Req.WXSceneTimeline;
-		wxApi.sendReq(req);
-	}
+//	private void wechatShare(int flag) {
+//		String text = "dffsgfdg";
+//		// 初始化一个WXTextObject对象
+//		WXTextObject textObj = new WXTextObject();
+//		textObj.text = text;
+//
+//		// 用WXTextObject对象初始化一个WXMediaMessage对象
+//		WXMediaMessage msg = new WXMediaMessage();
+//		msg.mediaObject = textObj;
+//		// 发送文本类型的消息时，title字段不起作用
+//		// msg.title = "Will be ignored";
+//		msg.description = text;
+//		SendMessageToWX.Req req = new SendMessageToWX.Req();
+//		req.transaction = buildTransaction("text"); // transaction字段用于唯一标识一个请求
+//		req.message = msg;
+//		// String path = shotScree().toString();
+//		// WXImageObject imgObj = new WXImageObject();
+//		// imgObj.setImagePath(path);
+//		//
+//		// WXMediaMessage msg = new WXMediaMessage();
+//		// msg.mediaObject = imgObj;
+//		//
+//		// Bitmap bmp = BitmapFactory.decodeFile(path);
+//		// Bitmap thumbBmp = Bitmap.createScaledBitmap(bmp, THUMB_SIZE,
+//		// THUMB_SIZE, true);
+//		// bmp.recycle();
+//		// msg.thumbData = Util.bmpToByteArray(thumbBmp, true);
+//		//
+//		// SendMessageToWX.Req req = new SendMessageToWX.Req();
+//		// req.transaction = buildTransaction("img");
+//		// req.message = msg;
+//		req.scene = flag == 0 ? SendMessageToWX.Req.WXSceneSession
+//				: SendMessageToWX.Req.WXSceneTimeline;
+//		wxApi.sendReq(req);
+//	}
 
 	private String buildTransaction(final String type) {
 		return (type == null) ? String.valueOf(System.currentTimeMillis())

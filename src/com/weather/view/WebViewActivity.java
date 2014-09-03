@@ -1,5 +1,7 @@
 package com.weather.view;
 
+import java.util.Random;
+
 import com.smallweather.R;
 import com.weather.util.Constant;
 import com.weather.util.FontManager;
@@ -50,6 +52,7 @@ public class WebViewActivity extends Activity {
 		});
 		Intent intent = getIntent();
 		if(intent.getStringExtra("id") == null){
+//			int number = new Random().nextInt(10) + 1;   随机数
 			webView.loadUrl(Constant.newsUrls+("1"));
 		}else{
 			webView.loadUrl(Constant.newsUrls+intent.getStringExtra("id"));

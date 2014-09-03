@@ -4,8 +4,7 @@
     android:versionCode="1"
     android:versionName="1.0" >
 
-    <uses-sdk
-        android:minSdkVersion="14" />
+    <uses-sdk android:minSdkVersion="14" />
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -24,31 +23,39 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-          <activity
+        <!--
+            <activity
             android:name="com.weather.view.wxapi.WXEntryActivity"
             android:exported="true"
             android:theme="@android:style/Theme.Translucent" />
-           <activity
+        -->
+        <activity
             android:name="com.weather.view.TiXingSetting"
-            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"/>
-            <activity
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" />
+        <activity
             android:name="com.weather.view.ZiXunActivity"
-            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"/>
-            <activity
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" />
+        <activity
             android:name="com.weather.view.WebViewActivity"
-            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"/>
-             <activity
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" />
+        <activity
             android:name="com.weather.view.YiJianSetting"
-            android:windowSoftInputMode="adjustPan|adjustUnspecified|adjustResize"
-            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"/>
-            <meta-data
-                android:name="UMENG_APPKEY"
-                android:value="53eb2564fd98c50d4600d1f2" >
-            </meta-data>
-            <meta-data
-                android:name="UMENG_CHANNEL"
-                android:value="Umeng" />
-      
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
+            android:windowSoftInputMode="adjustPan|adjustUnspecified|adjustResize" />
+
+        <service android:name="com.weather.util.PollingService">
+            <intent-filter>
+                <action android:name="com.weather.util.PollingService"/>
+            </intent-filter>
+        </service>
+
+        <meta-data
+            android:name="UMENG_APPKEY"
+            android:value="53eb2564fd98c50d4600d1f2" >
+        </meta-data>
+        <meta-data
+            android:name="UMENG_CHANNEL"
+            android:value="Umeng" />
     </application>
 
 </manifest>

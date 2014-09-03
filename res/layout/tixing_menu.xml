@@ -26,7 +26,8 @@
             android:id="@+id/xianshi_img"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentRight="true" />
+            android:layout_alignParentRight="true"
+            android:clickable="true"/>
     </RelativeLayout>
 
 
@@ -50,7 +51,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
-            android:src="@drawable/checked" />
+            android:clickable="true"/>
     </RelativeLayout>
 
 

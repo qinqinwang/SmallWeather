@@ -38,14 +38,14 @@ public class SelectPopupWindow extends PopupWindow {
 	private TextView cancel;
 	private View mMenuView;
 	private ListView listColor;
-	private RelativeLayout xianshi,jiudian;
+//	private RelativeLayout xianshi,jiudian;
 	private TextView xianshiText,jiudianText;
 	private NotificationManager nm;
 	private SharedPreferences sp = null;
 	private int duration = 5000;
 
 	public SelectPopupWindow(Activity context, OnClickListener itemsOnClick,
-			 OnItemClickListener ietmclicklistener,int flag) {
+			 OnItemClickListener ietmclicklistener,OnTouchListener itemsOnTouch,int flag) {
 		super(context);
 		LayoutInflater inflater = (LayoutInflater) context
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -65,32 +65,32 @@ public class SelectPopupWindow extends PopupWindow {
 		}else if(flag == 2){
 			mMenuView = inflater.inflate(R.layout.tixing_menu, null);
 			sp = context.getSharedPreferences("weather", Context.MODE_PRIVATE);
-			xianshi = (RelativeLayout)mMenuView.findViewById(R.id.xianshi);
-			jiudian = (RelativeLayout)mMenuView.findViewById(R.id.jiudian);
-			
-			xianshi.setOnClickListener(new OnClickListener() {
-				
-				@Override
-				public void onClick(View v) {
-					// TODO Auto-generated method stub
-//					if(sp.getBoolean("show", false)){
-//						nm.cancel(0);
-//						Editor editor = sp.edit();
-//						editor.putBoolean("show", false);
-//						editor.commit();
-////						Toast.makeText(context.this, context.this.getResources().getString(
-////								R.string.bxianshi), duration).show();
-//					}else{
-//						
-//						MainActivity.sendMessage(sp.getString("citys",""),sp.getString("message",""));
-//						Editor editor = sp.edit();
-//						editor.putBoolean("show", true);
-//						editor.commit();
-////						Toast.makeText(TiXingSetting.this, TiXingSetting.this.getResources().getString(
-////								R.string.yxianshi), duration).show();
-//					}
-				}
-			});
+//			xianshi = (RelativeLayout)mMenuView.findViewById(R.id.xianshi);
+//			jiudian = (RelativeLayout)mMenuView.findViewById(R.id.jiudian);
+//			
+//			xianshi.setOnClickListener(new OnClickListener() {
+//				
+//				@Override
+//				public void onClick(View v) {
+//					// TODO Auto-generated method stub
+////					if(sp.getBoolean("show", false)){
+////						nm.cancel(0);
+////						Editor editor = sp.edit();
+////						editor.putBoolean("show", false);
+////						editor.commit();
+//////						Toast.makeText(context.this, context.this.getResources().getString(
+//////								R.string.bxianshi), duration).show();
+////					}else{
+////						
+////						MainActivity.sendMessage(sp.getString("citys",""),sp.getString("message",""));
+////						Editor editor = sp.edit();
+////						editor.putBoolean("show", true);
+////						editor.commit();
+//////						Toast.makeText(TiXingSetting.this, TiXingSetting.this.getResources().getString(
+//////								R.string.yxianshi), duration).show();
+////					}
+//				}
+//			});
 			xianshiText = (TextView)mMenuView.findViewById(R.id.xianshi_text);
 			jiudianText = (TextView)mMenuView.findViewById(R.id.jiudian_text);
 			xianshiText.setTypeface(Typeface.createFromAsset(context.getAssets(),
@@ -98,19 +98,21 @@ public class SelectPopupWindow extends PopupWindow {
 			jiudianText.setTypeface(Typeface.createFromAsset(context.getAssets(),
 					"fonts/font.ttf"));
 			xianshiImg = (ImageView)mMenuView.findViewById(R.id.xianshi_img);
+			xianshiImg.setOnTouchListener(itemsOnTouch);
 			if(sp.getBoolean("showxianshi", false)){
 				xianshiImg.setImageDrawable(context.getResources().getDrawable(R.drawable.checked));
 			}else{
 				xianshiImg.setImageDrawable(context.getResources().getDrawable(R.drawable.unchecked));
 			}
 			jiudianImg = (ImageView)mMenuView.findViewById(R.id.jiudian_img);
+			jiudianImg.setOnTouchListener(itemsOnTouch);
 			if(sp.getBoolean("showjiudian", false)){
 				jiudianImg.setImageDrawable(context.getResources().getDrawable(R.drawable.checked));
 			}else{
 				jiudianImg.setImageDrawable(context.getResources().getDrawable(R.drawable.unchecked));
 			}
-			xianshi.setOnClickListener(itemsOnClick);
-			jiudian.setOnClickListener(itemsOnClick);
+//			xianshi.setOnClickListener(itemsOnClick);
+//			jiudian.setOnClickListener(itemsOnClick);
 		}
 		this.setWidth(LayoutParams.MATCH_PARENT);
 		this.setHeight(LayoutParams.WRAP_CONTENT);

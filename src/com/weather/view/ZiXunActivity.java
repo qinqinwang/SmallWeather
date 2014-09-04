@@ -2,6 +2,7 @@ package com.weather.view;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -248,19 +249,10 @@ public class ZiXunActivity extends Activity implements OnTouchListener,
 				json = (String) m.obj;
 				try {
 					Jsonarr = new JSONArray(json);
-					// JSONObject obj = (JSONObject) Jsonarr.get(0);
-					// Log.v("wangqinqin",
-					// " id=  " + obj.getString("id") + " title=  "
-					// + obj.getString("title") + " source=  "
-					// + obj.getString("source") + " hits=  "
-					// + obj.getString("hits") + " created_at=  "
-					// + obj.getString("created_at") + " href=  "
-					// + obj.getString("href") + " content=  "
-					// + obj.getString("content"));
 					for (int i = 0; i < Jsonarr.length(); i++) {
 						JSONObject obj = (JSONObject) Jsonarr.get(i);
 						Editor editor = sp.edit();
-						if(i == 0){
+						if (i == 0) {
 							editor.putString("title", obj.getString("title"));
 						}
 						editor.commit();

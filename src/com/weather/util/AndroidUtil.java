@@ -23,14 +23,6 @@ public class AndroidUtil {
 				"application/vnd.android.package-archive");
 		context.startActivity(intent);
 	}
-
-	
-	
-	
-	
-	
-	
-	
 	public static void install(Context context, File f) {
 		Intent intent = new Intent(Intent.ACTION_VIEW);
 		Uri uri = Uri.fromFile(f);

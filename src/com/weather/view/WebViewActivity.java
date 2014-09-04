@@ -53,7 +53,7 @@ public class WebViewActivity extends Activity {
 		Intent intent = getIntent();
 		if(intent.getStringExtra("id") == null){
 //			int number = new Random().nextInt(10) + 1;   随机数
-			webView.loadUrl(Constant.newsUrls+("1"));
+			webView.loadUrl(Constant.newsUrls+(sp.getString("id", "")));
 		}else{
 			webView.loadUrl(Constant.newsUrls+intent.getStringExtra("id"));
 		}

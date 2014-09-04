@@ -10,6 +10,17 @@
         android:layout_alignParentTop="true"
         android:background="@color/blackc" >
 
+        <ImageView
+            android:id="@+id/back_yijian"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:clickable="true"
+            android:paddingBottom="10dip"
+            android:paddingLeft="10dip"
+            android:paddingTop="10dip"
+            android:src="@drawable/back" />
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -20,17 +31,6 @@
             android:text="@string/yijian"
             android:textColor="@color/white"
             android:textSize="20sp" />
-
-        <ImageView
-            android:id="@+id/back_yijian"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:clickable="true"
-            android:paddingBottom="10dip"
-            android:paddingRight="10dip"
-            android:paddingTop="10dip"
-            android:src="@drawable/backright" />
     </RelativeLayout>
 
     <EditText

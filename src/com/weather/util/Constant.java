@@ -12,4 +12,5 @@ public class Constant {
 	public final static String pkgweibo ="com.sina.weibo";
 	public final static String weibowhere = "com.sina.weibo.EditActivity";
 	public final static String newsUrls = "http://weather.iyoo.me/articles/";
+	public static final String ACTION = "com.weather.util.WeatherService";
 	}

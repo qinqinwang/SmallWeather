@@ -43,9 +43,9 @@
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
             android:windowSoftInputMode="adjustPan|adjustUnspecified|adjustResize" />
 
-        <service android:name="com.weather.util.PollingService">
+        <service android:name="com.weather.util.WeatherService">
             <intent-filter>
-                <action android:name="com.weather.util.PollingService"/>
+                <action android:name="com.weather.util.WeatherService"/>
             </intent-filter>
         </service>
 

@@ -8,15 +8,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.SystemClock;
 import android.util.Log;
-public class PollingUtils {
 
-	/**
-	 * @param context
-	 * @param seconds
-	 * @param cls
-	 * @param action
-	 */ 
-	public static void startPollingService(Context context, Class<?> cls,String action) {
+public class ServiceUtils {
+	public static void startWeatherService(Context context, Class<?> cls,
+			String action) {
 		AlarmManager manager = (AlarmManager) context
 				.getSystemService(Context.ALARM_SERVICE);
 		Intent intent = new Intent(context, cls);
@@ -27,25 +22,22 @@ public class PollingUtils {
 		int hour = calendar.get(Calendar.HOUR_OF_DAY);
 		int minute = calendar.get(Calendar.MINUTE);
 		int second = calendar.get(Calendar.SECOND);
-		long time =0;
-		if(hour< 9){
-			time = 9*60*60*1000-hour*60*60*1000-minute*60*1000-second*1000;
-		}else{
-			time = 33*60*60*1000-hour*60*60*1000-minute*60*1000-second*1000;
+		long time = 0;
+		if (hour < 9) {
+			time = 9 * 60 * 60 * 1000 - hour * 60 * 60 * 1000 - minute * 60
+					* 1000 - second * 1000;
+		} else {
+			time = 33 * 60 * 60 * 1000 - hour * 60 * 60 * 1000 - minute * 60
+					* 1000 - second * 1000;
 		}
-		long jiangeTime = 24*60*60*1000;
-		long triggerAtTime = SystemClock.elapsedRealtime()+time;
+		long jiangeTime = 24 * 60 * 60 * 1000;
+		long triggerAtTime = SystemClock.elapsedRealtime() + time;
 		manager.setRepeating(AlarmManager.ELAPSED_REALTIME, triggerAtTime,
 				jiangeTime, pendingIntent);
 	}
 
-	/**
-	 * 
-	 * @param context
-	 * @param cls
-	 * @param action
-	 */
-	public static void stopPollingService(Context context, Class<?> cls,String action) {
+	public static void stopWeatherService(Context context, Class<?> cls,
+			String action) {
 		AlarmManager manager = (AlarmManager) context
 				.getSystemService(Context.ALARM_SERVICE);
 		Intent intent = new Intent(context, cls);

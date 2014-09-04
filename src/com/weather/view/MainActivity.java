@@ -11,6 +11,7 @@ import java.net.URLConnection;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Random;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -84,8 +85,8 @@ import com.weather.util.AndroidUtil;
 import com.weather.util.Constant;
 import com.weather.util.FontManager;
 import com.weather.util.HttpUtil;
-import com.weather.util.PollingService;
-import com.weather.util.PollingUtils;
+import com.weather.util.WeatherService;
+import com.weather.util.ServiceUtils;
 import com.weather.util.TestUtils;
 import com.weather.util.TextImage;
 
@@ -110,7 +111,7 @@ public class MainActivity extends Activity implements OnTouchListener,
 	private JSONArray jsonArr;
 	private JSONObject obj;
 	private NotificationManager nm;
-//	private IWXAPI wxApi;
+	// private IWXAPI wxApi;
 	private SelectPopupWindow menuWindow;
 	private HttpUtil httpUtil;
 	private SharedPreferences sp = null;
@@ -130,8 +131,8 @@ public class MainActivity extends Activity implements OnTouchListener,
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-//		wxApi = WXAPIFactory.createWXAPI(this, APP_ID, true);
-//		wxApi.registerApp(APP_ID);
+		// wxApi = WXAPIFactory.createWXAPI(this, APP_ID, true);
+		// wxApi.registerApp(APP_ID);
 		SDPATH.sdcardExit = Environment.getExternalStorageState().equals(
 				android.os.Environment.MEDIA_MOUNTED);
 		SDPATH.sdCardPer = com.weather.util.SDPermission.checkFsWritable();
@@ -156,8 +157,9 @@ public class MainActivity extends Activity implements OnTouchListener,
 		// menu.setSecondaryMenu(R.layout.activity_zixun);
 		menu.setMenu(R.layout.activity_setting);
 		sp = getSharedPreferences("weather", Context.MODE_PRIVATE);
-		if(sp.getInt("isFirst", 0) == 0){
-			PollingUtils.startPollingService(MainActivity.this, PollingService.class, PollingService.ACTION);
+		if (sp.getInt("isFirst", 0) == 0) {
+			ServiceUtils.startWeatherService(MainActivity.this,
+					WeatherService.class, Constant.ACTION);
 			Editor editor = sp.edit();
 			editor.putBoolean("showjiudian", true);
 			editor.putBoolean("showxianshi", true);
@@ -180,11 +182,39 @@ public class MainActivity extends Activity implements OnTouchListener,
 	}
 
 	public void sendMessage(String citys, String message) {
-		String title = sp.getString("title", "");
 		NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-		// Notification notification;
-		// Intent intent;
-		if (title == null || "".equals(title)) {
+		String news = httpUtil.readFile(Constant.NEWS_FILE_NAME);
+		JSONArray Jsonarray;
+		int number;
+		JSONObject jsonObj;
+		String title;
+		if (news != null && (!"".equals(news))) {
+			try {
+				Jsonarray = new JSONArray(news);
+				number = new Random().nextInt(Jsonarray.length()) + 1;
+				jsonObj = (JSONObject) Jsonarray.get(number);
+				title = jsonObj.getString("title");
+				Editor editor = sp.edit();
+				editor.putString("title", title);
+				editor.putString("id", jsonObj.getString("id"));
+				editor.commit();
+				Notification notification = new Notification(R.drawable.logo,
+						title, System.currentTimeMillis());
+				Intent intent = new Intent(MainActivity.this,
+						WebViewActivity.class);
+				PendingIntent pendingIntent = PendingIntent.getActivity(
+						MainActivity.this, 0, intent, 0);
+				notification.setLatestEventInfo(getApplicationContext(), citys
+						+ message, title, pendingIntent);
+				notification.flags = Notification.FLAG_ONGOING_EVENT;// 消息不可取消
+				// notification.defaults = Notification.DEFAULT_SOUND;//声音默认
+				manager.notify(0, notification);
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		} else {
 			Notification notification = new Notification(R.drawable.logo,
 					message, System.currentTimeMillis());
 			Intent intent = new Intent(MainActivity.this, MainActivity.class);
@@ -195,34 +225,7 @@ public class MainActivity extends Activity implements OnTouchListener,
 			notification.flags = Notification.FLAG_ONGOING_EVENT;// 消息不可取消
 			// notification.defaults = Notification.DEFAULT_SOUND;//声音默认
 			manager.notify(0, notification);
-		} else {
-			Notification notification = new Notification(R.drawable.logo,
-					title, System.currentTimeMillis());
-			Intent intent = new Intent(MainActivity.this, WebViewActivity.class);
-			PendingIntent pendingIntent = PendingIntent.getActivity(
-					MainActivity.this, 0, intent, 0);
-			notification.setLatestEventInfo(getApplicationContext(), citys
-					+ message, title, pendingIntent);
-			notification.flags = Notification.FLAG_ONGOING_EVENT;// 消息不可取消
-			// notification.defaults = Notification.DEFAULT_SOUND;//声音默认
-			manager.notify(0, notification);
 		}
-		// Notification notification = new Notification(R.drawable.logo,
-		// message,
-		// System.currentTimeMillis());
-
-		// PendingIntent pendingIntent = PendingIntent.getActivity(
-		// MainActivity.this, 0, intent, 0);
-		// if (title == null && "".equals(title)) {
-		// notification.setLatestEventInfo(getApplicationContext(), citys,
-		// message, pendingIntent);
-		// } else {
-		// notification.setLatestEventInfo(getApplicationContext(), citys
-		// + message, title, pendingIntent);
-		// }
-		// notification.flags = Notification.FLAG_ONGOING_EVENT;// 消息不可取消
-		// // notification.defaults = Notification.DEFAULT_SOUND;//声音默认
-		// manager.notify(0, notification);
 	}
 
 	private void hasNet() {
@@ -271,7 +274,7 @@ public class MainActivity extends Activity implements OnTouchListener,
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
 				menuWindow = new SelectPopupWindow(MainActivity.this, null,
-						onitemsOnClicks,1);
+						onitemsOnClicks, 1);
 				menuWindow.showAtLocation(
 						MainActivity.this.findViewById(R.id.main),
 						Gravity.BOTTOM, 0, 0); //
@@ -396,9 +399,7 @@ public class MainActivity extends Activity implements OnTouchListener,
 			menuWindow.dismiss();
 		}
 	};
-
 	private OnClickListener itemsOnClick = new OnClickListener() {
-
 		public void onClick(View v) {
 			Uri uri = shotScreen();
 			switch (v.getId()) {
@@ -497,53 +498,37 @@ public class MainActivity extends Activity implements OnTouchListener,
 				}
 				break;
 			case R.id.xianshi_img:
-				Log.v("wangqinqin", "  xianshi "+(sp.getBoolean("showxianshi", false)) );
 				if (sp.getBoolean("showxianshi", false)) {
-//					if (event.getAction() == MotionEvent.ACTION_DOWN) {
 					((TextImage) v).setImageDrawables(getResources()
-								.getDrawable(R.drawable.img_press_unchecked));
-//					}
+							.getDrawable(R.drawable.img_press_unchecked));
 					nm.cancel(0);
 					Editor editor = sp.edit();
 					editor.putBoolean("showxianshi", false);
 					editor.commit();
-//					Toast.makeText(
-//							MainActivity.this,
-//							MainActivity.this.getResources().getString(
-//									R.string.bxianshi), showtime).show();
 				} else {
-//					if (event.getAction() == MotionEvent.ACTION_DOWN) {
-						((TextImage) v).setImageDrawables(getResources()
-								.getDrawable(R.drawable.img_press_checked));
-//					}
+					((TextImage) v).setImageDrawables(getResources()
+							.getDrawable(R.drawable.img_press_checked));
 					sendMessage(sp.getString("citys", ""),
 							sp.getString("message", ""));
 					Editor editor = sp.edit();
 					editor.putBoolean("showxianshi", true);
 					editor.commit();
-//					Toast.makeText(
-//							MainActivity.this,
-//							MainActivity.this.getResources().getString(
-//									R.string.yxianshi), showtime).show();
 				}
 				break;
 			case R.id.jiudian_img:
-				Log.v("wangqinqin", "  jiudian "+(sp.getBoolean("showjiudian", false)) );
 				if (sp.getBoolean("showjiudian", false)) {
-					PollingUtils.stopPollingService(MainActivity.this, PollingService.class, PollingService.ACTION);
-//					if (event.getAction() == MotionEvent.ACTION_DOWN) {
-						((TextImage) v).setImageDrawables(getResources()
-								.getDrawable(R.drawable.img_press_unchecked));
-//					}
+					ServiceUtils.stopWeatherService(MainActivity.this,
+							WeatherService.class, Constant.ACTION);
+					((TextImage) v).setImageDrawables(getResources()
+							.getDrawable(R.drawable.img_press_unchecked));
 					Editor editor = sp.edit();
 					editor.putBoolean("showjiudian", false);
 					editor.commit();
 				} else {
-					PollingUtils.startPollingService(MainActivity.this, PollingService.class, PollingService.ACTION);
-//					if (event.getAction() == MotionEvent.ACTION_DOWN) {
-						((TextImage) v).setImageDrawables(getResources()
-								.getDrawable(R.drawable.img_press_checked));
-//					}			
+					ServiceUtils.startWeatherService(MainActivity.this,
+							WeatherService.class, Constant.ACTION);
+					((TextImage) v).setImageDrawables(getResources()
+							.getDrawable(R.drawable.img_press_checked));
 					Editor editor = sp.edit();
 					editor.putBoolean("showjiudian", true);
 					editor.commit();
@@ -889,7 +874,7 @@ public class MainActivity extends Activity implements OnTouchListener,
 
 			message = obj.getString("content") + "  "
 					+ obj.getString("temperature");
-			String weather =  message;
+			String weather = message;
 			Editor editor = sp.edit();
 			editor.putString("weather", weather);
 			editor.putString("citys", citys);
@@ -1016,41 +1001,41 @@ public class MainActivity extends Activity implements OnTouchListener,
 		}
 	}
 
-//	private void wechatShare(int flag) {
-//		String text = "dffsgfdg";
-//		// 初始化一个WXTextObject对象
-//		WXTextObject textObj = new WXTextObject();
-//		textObj.text = text;
-//
-//		// 用WXTextObject对象初始化一个WXMediaMessage对象
-//		WXMediaMessage msg = new WXMediaMessage();
-//		msg.mediaObject = textObj;
-//		// 发送文本类型的消息时，title字段不起作用
-//		// msg.title = "Will be ignored";
-//		msg.description = text;
-//		SendMessageToWX.Req req = new SendMessageToWX.Req();
-//		req.transaction = buildTransaction("text"); // transaction字段用于唯一标识一个请求
-//		req.message = msg;
-//		// String path = shotScree().toString();
-//		// WXImageObject imgObj = new WXImageObject();
-//		// imgObj.setImagePath(path);
-//		//
-//		// WXMediaMessage msg = new WXMediaMessage();
-//		// msg.mediaObject = imgObj;
-//		//
-//		// Bitmap bmp = BitmapFactory.decodeFile(path);
-//		// Bitmap thumbBmp = Bitmap.createScaledBitmap(bmp, THUMB_SIZE,
-//		// THUMB_SIZE, true);
-//		// bmp.recycle();
-//		// msg.thumbData = Util.bmpToByteArray(thumbBmp, true);
-//		//
-//		// SendMessageToWX.Req req = new SendMessageToWX.Req();
-//		// req.transaction = buildTransaction("img");
-//		// req.message = msg;
-//		req.scene = flag == 0 ? SendMessageToWX.Req.WXSceneSession
-//				: SendMessageToWX.Req.WXSceneTimeline;
-//		wxApi.sendReq(req);
-//	}
+	// private void wechatShare(int flag) {
+	// String text = "dffsgfdg";
+	// // 初始化一个WXTextObject对象
+	// WXTextObject textObj = new WXTextObject();
+	// textObj.text = text;
+	//
+	// // 用WXTextObject对象初始化一个WXMediaMessage对象
+	// WXMediaMessage msg = new WXMediaMessage();
+	// msg.mediaObject = textObj;
+	// // 发送文本类型的消息时，title字段不起作用
+	// // msg.title = "Will be ignored";
+	// msg.description = text;
+	// SendMessageToWX.Req req = new SendMessageToWX.Req();
+	// req.transaction = buildTransaction("text"); // transaction字段用于唯一标识一个请求
+	// req.message = msg;
+	// // String path = shotScree().toString();
+	// // WXImageObject imgObj = new WXImageObject();
+	// // imgObj.setImagePath(path);
+	// //
+	// // WXMediaMessage msg = new WXMediaMessage();
+	// // msg.mediaObject = imgObj;
+	// //
+	// // Bitmap bmp = BitmapFactory.decodeFile(path);
+	// // Bitmap thumbBmp = Bitmap.createScaledBitmap(bmp, THUMB_SIZE,
+	// // THUMB_SIZE, true);
+	// // bmp.recycle();
+	// // msg.thumbData = Util.bmpToByteArray(thumbBmp, true);
+	// //
+	// // SendMessageToWX.Req req = new SendMessageToWX.Req();
+	// // req.transaction = buildTransaction("img");
+	// // req.message = msg;
+	// req.scene = flag == 0 ? SendMessageToWX.Req.WXSceneSession
+	// : SendMessageToWX.Req.WXSceneTimeline;
+	// wxApi.sendReq(req);
+	// }
 
 	private String buildTransaction(final String type) {
 		return (type == null) ? String.valueOf(System.currentTimeMillis())

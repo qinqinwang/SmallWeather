@@ -8,7 +8,9 @@
     <color name="gray">#959090</color> <!-- 灰 -->
     <color name="blacks">#393939</color> <!-- 黑 -->
     <color name="blackc">#1D1D1D</color> <!-- 深黑 -->
-
+    <color name="zixun_item">#f7f7f7</color>
+    <color name="zixun_bg">#E5E5E5</color>
+    
     <color name="white">#ffffff</color> <!-- 白色 -->
     <color name="ivory">#fffff0</color> <!-- 象牙色 -->
     <color name="lightyellow">#ffffe0</color> <!-- 亮黄色 -->

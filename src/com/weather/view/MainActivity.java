@@ -98,6 +98,7 @@ public class MainActivity extends Activity implements OnTouchListener,
 	private TextView tixing;
 	private TextView banben;
 	private TextView yijian;
+	private TextView jingxi;
 	private ImageButton share;
 	private ProgressBar progress;
 	private RelativeLayout viewMain;
@@ -157,7 +158,11 @@ public class MainActivity extends Activity implements OnTouchListener,
 		// menu.setSecondaryMenu(R.layout.activity_zixun);
 		menu.setMenu(R.layout.activity_setting);
 		sp = getSharedPreferences("weather", Context.MODE_PRIVATE);
+		httpUtil = new HttpUtil(MainActivity.this);
+		gestureDetector = new GestureDetector(this);
+		setView();
 		if (sp.getInt("isFirst", 0) == 0) {
+			jingxi.setVisibility(View.VISIBLE);
 			ServiceUtils.startWeatherService(MainActivity.this,
 					WeatherService.class, Constant.ACTION);
 			Editor editor = sp.edit();
@@ -166,9 +171,6 @@ public class MainActivity extends Activity implements OnTouchListener,
 			editor.putInt("isFirst", 1);
 			editor.commit();
 		}
-		httpUtil = new HttpUtil(MainActivity.this);
-		gestureDetector = new GestureDetector(this);
-		setView();
 		hasNet();
 		getDate();
 		ViewGroup viewGroup = (ViewGroup) findViewById(android.R.id.content);
@@ -379,6 +381,7 @@ public class MainActivity extends Activity implements OnTouchListener,
 			}
 		});
 		progress = (ProgressBar) findViewById(R.id.progress);
+		jingxi = (TextView)findViewById(R.id.jingxi);
 	}
 
 	private OnItemClickListener onitemsOnClicks = new OnItemClickListener() {

@@ -11,6 +11,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -52,7 +53,6 @@ public class WebViewActivity extends Activity {
 		});
 		Intent intent = getIntent();
 		if(intent.getStringExtra("id") == null){
-//			int number = new Random().nextInt(10) + 1;   随机数
 			webView.loadUrl(Constant.newsUrls+(sp.getString("id", "")));
 		}else{
 			webView.loadUrl(Constant.newsUrls+intent.getStringExtra("id"));

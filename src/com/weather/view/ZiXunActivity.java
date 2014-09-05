@@ -271,19 +271,14 @@ public class ZiXunActivity extends Activity implements OnTouchListener,
 					editor.putString("title", objs.getString("title"));
 					editor.putString("id", objs.getString("id"));
 					editor.commit();
+					if (sp.getBoolean("showxianshi", false)) {
+						ZiXunActivity.this.sendMessage(sp.getString("citys", "")
+								+ sp.getString("message", ""),
+								objs.getString("title"));
+					}
 				} catch (JSONException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
-				}
-//				number = new Random().nextInt(Jsonarr.length()) + 1;
-//				Editor editor = sp.edit();
-//				editor.putString("title", listTitle.get(number - 1));
-//				editor.putString("id", listId.get(number));
-//				editor.commit();
-				if (sp.getBoolean("showxianshi", false)) {
-					ZiXunActivity.this.sendMessage(sp.getString("citys", "")
-							+ sp.getString("message", ""),
-							listTitle.get(number));
 				}
 				break;
 			case 1:

@@ -71,15 +71,4 @@ public class YiJianSetting extends Activity {
 		}
 		return super.onKeyDown(keyCode, event);
 	}
-//	@Override
-//	public void onConfigurationChanged(Configuration newConfig) {
-//		// TODO Auto-generated method stub
-//		Log.v("wangqinqin", "hidden   =="+newConfig.keyboardHidden+"   newConfig.keyboard   "+newConfig.keyboard);
-//		if(newConfig.keyboardHidden == Configuration.KEYBOARDHIDDEN_NO){
-//			Log.v("wangqinqin", "hidden");
-//		}else if(newConfig.keyboardHidden == Configuration.KEYBOARDHIDDEN_YES){
-//			Log.v("wangqinqin", "show");
-//		}
-//		super.onConfigurationChanged(newConfig);
-//	}
 }

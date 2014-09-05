@@ -15,6 +15,9 @@ import com.weather.util.FontManager;
 import com.weather.util.HttpUtil;
 
 import android.app.Activity;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -47,6 +50,7 @@ public class ZiXunActivity extends Activity implements OnTouchListener,
 	private LinearLayout viewZiXun;
 	private int verticalMinDistance = 10;
 	private int minVelocity = 0;
+	private int number;
 	private ImageView back;
 	private String json;
 
@@ -95,6 +99,7 @@ public class ZiXunActivity extends Activity implements OnTouchListener,
 				Intent intent = new Intent();
 				intent.setClass(ZiXunActivity.this, WebViewActivity.class);
 				intent.putExtra("id", listId.get(position));
+				Log.v("wangqinqin", "   zixunId " + listId.get(position));
 				startActivity(intent);
 				overridePendingTransition(R.anim.push_left_in,
 						R.anim.push_left_out);
@@ -251,11 +256,6 @@ public class ZiXunActivity extends Activity implements OnTouchListener,
 					Jsonarr = new JSONArray(json);
 					for (int i = 0; i < Jsonarr.length(); i++) {
 						JSONObject obj = (JSONObject) Jsonarr.get(i);
-						Editor editor = sp.edit();
-						if (i == 0) {
-							editor.putString("title", obj.getString("title"));
-						}
-						editor.commit();
 						listTitle.add(obj.getString("title"));
 						listId.add(obj.getString("id"));
 						if (i == Jsonarr.length() - 1) {
@@ -269,6 +269,16 @@ public class ZiXunActivity extends Activity implements OnTouchListener,
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
+				number = new Random().nextInt(Jsonarr.length()) + 1;
+				Editor editor = sp.edit();
+				editor.putString("title", listTitle.get(number - 1));
+				editor.putString("id", listId.get(number));
+				editor.commit();
+				if (sp.getBoolean("showxianshi", false)) {
+					ZiXunActivity.this.sendMessage(sp.getString("citys", "")
+							+ sp.getString("message", ""),
+							listTitle.get(number));
+				}
 				break;
 			case 1:
 				listzixun.setAdapter(new ZiXunAdapter(ZiXunActivity.this,
@@ -276,6 +286,22 @@ public class ZiXunActivity extends Activity implements OnTouchListener,
 				break;
 			}
 		}
+	}
+
+	public void sendMessage(String citys, String message) {
+		NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+		Notification notification = new Notification(R.drawable.logo, message,
+				System.currentTimeMillis());
+		Intent intent = new Intent(ZiXunActivity.this, WebViewActivity.class);
+		PendingIntent pendingIntent = PendingIntent.getActivity(
+				ZiXunActivity.this, 0, intent, 0);
+		notification.setLatestEventInfo(getApplicationContext(), citys,
+				message, pendingIntent);
+		notification.flags = Notification.FLAG_ONGOING_EVENT;// 消息不可取消
+		// notification.defaults = Notification.DEFAULT_SOUND;//声音默认
+		manager.notify(0, notification);
+
 	}
 
 }

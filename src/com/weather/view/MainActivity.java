@@ -8,9 +8,7 @@ import java.io.InputStream;
 import java.io.RandomAccessFile;
 import java.net.URL;
 import java.net.URLConnection;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.Random;
 
 import org.apache.http.HttpResponse;
@@ -26,7 +24,6 @@ import org.json.JSONObject;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.Notification;
@@ -50,7 +47,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
-import android.provider.ContactsContract.Contacts.Data;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.Gravity;
@@ -64,7 +60,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -294,13 +289,6 @@ public class MainActivity extends Activity implements OnTouchListener,
 				menuWindow.showAtLocation(
 						MainActivity.this.findViewById(R.id.main),
 						Gravity.BOTTOM, 0, 0);
-
-				// Intent intent = new Intent();
-				// intent.setClass(MainActivity.this, TiXingSetting.class);
-				// startActivity(intent);
-				// overridePendingTransition(R.anim.push_right_in,
-				// R.anim.push_right_out);
-				// finish();
 			}
 		});
 		banben = (TextView) findViewById(R.id.banben);
@@ -657,7 +645,10 @@ public class MainActivity extends Activity implements OnTouchListener,
 		Editor editor = sp.edit();
 		editor.putString("date", dates);
 		editor.commit();
-		date.setText(dates);
+		Message msg = new Message();
+		msg.what = 8;
+		msg.obj = dates;
+		handler.sendMessage(msg);
 	}
 
 	private void getData() {
@@ -771,6 +762,9 @@ public class MainActivity extends Activity implements OnTouchListener,
 				AndroidUtil
 						.install(MainActivity.this, fileName, SDPATH.SD_PATH);
 				break;
+			case 8:
+				String da = (String) m.obj;
+				date.setText(da);
 			}
 		}
 	}

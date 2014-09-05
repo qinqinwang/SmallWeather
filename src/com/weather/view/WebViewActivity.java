@@ -1,7 +1,5 @@
 package com.weather.view;
 
-import java.util.Random;
-
 import com.smallweather.R;
 import com.weather.util.Constant;
 import com.weather.util.FontManager;
@@ -11,6 +9,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -18,7 +18,7 @@ import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
+
 
 
 public class WebViewActivity extends Activity {
@@ -26,7 +26,8 @@ public class WebViewActivity extends Activity {
 	private ImageView back;
 	private SharedPreferences sp = null;
 	private RelativeLayout webcolor;
-
+	private String NewsId;
+	private MyHandler handler = new MyHandler();
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -52,13 +53,46 @@ public class WebViewActivity extends Activity {
 			}
 		});
 		Intent intent = getIntent();
+		Log.v("wangqinqin", "   webId "+intent.getStringExtra("id")+Constant.newsUrls+intent.getStringExtra("id"));
 		if(intent.getStringExtra("id") == null){
-			webView.loadUrl(Constant.newsUrls+(sp.getString("id", "")));
+			NewsId =sp.getString("id", ""); 
+//			webView.loadUrl(Constant.newsUrls+(sp.getString("id", "")));
 		}else{
-			webView.loadUrl(Constant.newsUrls+intent.getStringExtra("id"));
+			NewsId =intent.getStringExtra("id"); 
+//			webView.loadUrl(Constant.newsUrls+intent.getStringExtra("id"));
 		}
+		Message msg = new Message();
+		msg.what = 0;
+		msg.obj = NewsId;
+		handler.sendMessage(msg);
 		ViewGroup viewGroup = (ViewGroup) findViewById(android.R.id.content);
 		FontManager.changeFonts(viewGroup, this);
+	}
+	public class MyHandler extends Handler {
+		public void handleMessage(Message m) {
+			switch (m.what) {
+			case 0:
+				String id = (String) m.obj;
+				LoadThread load = new LoadThread(id);
+				load.start();
+				break;
+			
+			}
+		}
+	}
+	class LoadThread extends Thread{
+		private String id;
+		LoadThread(String id) {
+			// TODO Auto-generated constructor stub
+			this.id = id;
+		}
+
+		@Override
+		public void run() {
+			// TODO Auto-generated method stub
+			webView.loadUrl(Constant.newsUrls+id);
+		}
+		
 	}
 	private void setColor(int colorPosition) {
 		if (colorPosition == 0) {

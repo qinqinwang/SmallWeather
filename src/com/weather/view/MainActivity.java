@@ -515,6 +515,9 @@ public class MainActivity extends Activity implements OnTouchListener,
 					Editor editor = sp.edit();
 					editor.putBoolean("showjiudian", false);
 					editor.commit();
+					if(!sp.getBoolean("showxianshi", false)){
+						nm.cancel(0);
+					}
 				} else {
 					ServiceUtils.startWeatherService(MainActivity.this,
 							WeatherService.class, Constant.ACTION);

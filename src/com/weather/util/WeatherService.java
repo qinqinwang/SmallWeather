@@ -29,9 +29,6 @@ public class WeatherService extends Service {
 	public void onStart(Intent intent, int startId) {
 		showNotification();
 	}
-
-
-
 	private void showNotification() {
 		String title = sp.getString("title", "");
 		String citys = sp.getString("citys", "");

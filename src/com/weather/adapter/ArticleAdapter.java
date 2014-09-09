@@ -13,13 +13,13 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
-public class ZiXunAdapter extends BaseAdapter {
+public class ArticleAdapter extends BaseAdapter {
 
 	private Context mContext;
 	private List<String> list, listhref;
 	SpannableString ss;
 
-	public ZiXunAdapter(Context mContext, List<String> list,
+	public ArticleAdapter(Context mContext, List<String> list,
 			List<String> listhref) {
 		this.mContext = mContext;
 		this.list = list;
@@ -44,7 +44,7 @@ public class ZiXunAdapter extends BaseAdapter {
 		if (convertView == null) {
 			convertView = ((LayoutInflater) this.mContext
 					.getSystemService(Context.LAYOUT_INFLATER_SERVICE))
-					.inflate(R.layout.zixun_item, null);
+					.inflate(R.layout.article_item, null);
 
 		}
 		TextView title = (TextView) convertView.findViewById(R.id.title);

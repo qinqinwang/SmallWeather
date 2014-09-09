@@ -17,7 +17,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 
-public class YiJianSetting extends Activity {
+public class FeedBackSetting extends Activity {
 	private ImageView back;
 	private TextView yijian;
 	private EditText edit;
@@ -28,7 +28,7 @@ public class YiJianSetting extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.yijian_setting);
+		setContentView(R.layout.feedback_setting);
 		imm = (InputMethodManager) getApplicationContext()
                 .getSystemService(this.INPUT_METHOD_SERVICE);
 		back =(ImageView)findViewById(R.id.back_yijian);
@@ -38,7 +38,7 @@ public class YiJianSetting extends Activity {
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
 				Intent intent = new Intent();
-				intent.setClass(YiJianSetting.this, MainActivity.class);
+				intent.setClass(FeedBackSetting.this, MainActivity.class);
 				startActivity(intent);
 				overridePendingTransition(R.anim.push_left_in,
 						R.anim.push_left_out);
@@ -52,7 +52,7 @@ public class YiJianSetting extends Activity {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				if(YiJianSetting.this.getWindow().getAttributes().softInputMode ==WindowManager.LayoutParams.SOFT_INPUT_ADJUST_UNSPECIFIED){
+				if(FeedBackSetting.this.getWindow().getAttributes().softInputMode ==WindowManager.LayoutParams.SOFT_INPUT_ADJUST_UNSPECIFIED){
 					   
 
 //               imm.so;
@@ -64,7 +64,7 @@ public class YiJianSetting extends Activity {
 		// TODO Auto-generated method stub
 		if (keyCode == KeyEvent.KEYCODE_BACK) {
 			Intent intent = new Intent();
-			intent.setClass(YiJianSetting.this, MainActivity.class);
+			intent.setClass(FeedBackSetting.this, MainActivity.class);
 			startActivity(intent);
 			overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
 			finish();

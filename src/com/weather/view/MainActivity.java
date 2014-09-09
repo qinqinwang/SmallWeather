@@ -75,15 +75,15 @@ import com.smallweather.R;
 //import com.tencent.mm.sdk.openapi.WXTextObject;
 import com.umeng.analytics.MobclickAgent;
 import com.weather.adapter.MyAdapter;
-import com.weather.bean.SDPATH;
-import com.weather.util.AndroidUtil;
-import com.weather.util.Constant;
+import com.weather.util.CommonUtil;
+import com.weather.util.Config;
 import com.weather.util.FontManager;
 import com.weather.util.HttpUtil;
+import com.weather.util.SDUtil;
 import com.weather.util.WeatherService;
 import com.weather.util.ServiceUtils;
 import com.weather.util.TestUtils;
-import com.weather.util.TextImage;
+import com.weather.layout.TextImage;
 
 public class MainActivity extends Activity implements OnTouchListener,
 		OnGestureListener {
@@ -129,18 +129,18 @@ public class MainActivity extends Activity implements OnTouchListener,
 		setContentView(R.layout.activity_main);
 		// wxApi = WXAPIFactory.createWXAPI(this, APP_ID, true);
 		// wxApi.registerApp(APP_ID);
-		SDPATH.sdcardExit = Environment.getExternalStorageState().equals(
+		SDUtil.sdcardExit = Environment.getExternalStorageState().equals(
 				android.os.Environment.MEDIA_MOUNTED);
-		SDPATH.sdCardPer = com.weather.util.SDPermission.checkFsWritable();
-		if (SDPATH.sdcardExit) {
-			if (!SDPATH.sdCardPer) {
-				SDPATH.SD_PATH = this.getCacheDir().toString();
+		SDUtil.sdCardPer = com.weather.util.SDUtil.checkFsWritable();
+		if (SDUtil.sdcardExit) {
+			if (!SDUtil.sdCardPer) {
+				SDUtil.SD_PATH = this.getCacheDir().toString();
 			} else {
-				SDPATH.SD_PATH = Environment.getExternalStorageDirectory()
+				SDUtil.SD_PATH = Environment.getExternalStorageDirectory()
 						.getPath() + "/SmallWeather/";
 			}
 		} else {
-			SDPATH.SD_PATH = this.getCacheDir().toString();
+			SDUtil.SD_PATH = this.getCacheDir().toString();
 		}
 		menu = new SlidingMenu(this);
 		menu.setMode(SlidingMenu.LEFT);
@@ -159,7 +159,7 @@ public class MainActivity extends Activity implements OnTouchListener,
 		if (sp.getInt("isFirst", 0) == 0) {
 			jingxi.setVisibility(View.VISIBLE);
 			ServiceUtils.startWeatherService(MainActivity.this,
-					WeatherService.class, Constant.ACTION);
+					WeatherService.class, Config.ACTION);
 			Editor editor = sp.edit();
 			editor.putBoolean("showjiudian", true);
 			editor.putBoolean("showxianshi", true);
@@ -180,7 +180,7 @@ public class MainActivity extends Activity implements OnTouchListener,
 
 	public void sendMessage(String citys, String message) {
 		NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-		String news = httpUtil.readFile(Constant.NEWS_FILE_NAME);
+		String news = httpUtil.readFile(Config.NEWS_FILE_NAME);
 		JSONArray Jsonarray;
 		int number;
 		JSONObject jsonObj;
@@ -233,8 +233,8 @@ public class MainActivity extends Activity implements OnTouchListener,
 			// getDate();
 			getData();
 		} else {
-			if ("".equals(httpUtil.readFile(Constant.WEATHER_FILE_NAME))
-					|| httpUtil.readFile(Constant.WEATHER_FILE_NAME) == null) {
+			if ("".equals(httpUtil.readFile(Config.WEATHER_FILE_NAME))
+					|| httpUtil.readFile(Config.WEATHER_FILE_NAME) == null) {
 				Toast.makeText(
 						MainActivity.this,
 						MainActivity.this.getResources().getString(
@@ -249,7 +249,7 @@ public class MainActivity extends Activity implements OnTouchListener,
 								R.string.linknet), showtime).show();
 				Message msg = new Message();
 				msg.what = 0;
-				msg.obj = httpUtil.readFile(Constant.WEATHER_FILE_NAME);
+				msg.obj = httpUtil.readFile(Config.WEATHER_FILE_NAME);
 				handler.sendMessage(msg);
 			}
 		}
@@ -309,7 +309,7 @@ public class MainActivity extends Activity implements OnTouchListener,
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
 				Intent intent = new Intent();
-				intent.setClass(MainActivity.this, YiJianSetting.class);
+				intent.setClass(MainActivity.this, FeedBackSetting.class);
 				startActivity(intent);
 				overridePendingTransition(R.anim.push_right_in,
 						R.anim.push_right_out);
@@ -335,8 +335,8 @@ public class MainActivity extends Activity implements OnTouchListener,
 					msg.arg1 = position;
 					handler.sendMessage(msg);
 				} else {
-					if ("".equals(httpUtil.readFile(Constant.WEATHER_FILE_NAME))
-							|| httpUtil.readFile(Constant.WEATHER_FILE_NAME) == null) {
+					if ("".equals(httpUtil.readFile(Config.WEATHER_FILE_NAME))
+							|| httpUtil.readFile(Config.WEATHER_FILE_NAME) == null) {
 						Toast.makeText(
 								MainActivity.this,
 								MainActivity.this.getResources().getString(
@@ -399,8 +399,8 @@ public class MainActivity extends Activity implements OnTouchListener,
 			case R.id.share_friend:
 				menuWindow.dismiss();
 				if (isNetworkAvailable(MainActivity.this)) {
-					if (checkApkExist(Constant.pkgweixin)) {
-						share(uri, Constant.pkgweixin, Constant.weixinfriend);
+					if (checkApkExist(Config.pkgweixin)) {
+						share(uri, Config.pkgweixin, Config.weixinfriend);
 					} else {
 						Toast.makeText(
 								MainActivity.this,
@@ -408,16 +408,16 @@ public class MainActivity extends Activity implements OnTouchListener,
 										R.string.noweixin), showtime).show();
 					}
 				} else {
-					if ("".equals(httpUtil.readFile(Constant.WEATHER_FILE_NAME))
-							|| httpUtil.readFile(Constant.WEATHER_FILE_NAME) == null) {
+					if ("".equals(httpUtil.readFile(Config.WEATHER_FILE_NAME))
+							|| httpUtil.readFile(Config.WEATHER_FILE_NAME) == null) {
 						Toast.makeText(
 								MainActivity.this,
 								MainActivity.this.getResources().getString(
 										R.string.linknets), showtime).show();
 					} else {
-						if (checkApkExist(Constant.pkgweixin)) {
-							share(uri, Constant.pkgweixin,
-									Constant.weixinfriend);
+						if (checkApkExist(Config.pkgweixin)) {
+							share(uri, Config.pkgweixin,
+									Config.weixinfriend);
 						} else {
 							Toast.makeText(
 									MainActivity.this,
@@ -431,8 +431,8 @@ public class MainActivity extends Activity implements OnTouchListener,
 			case R.id.share_circle:
 				menuWindow.dismiss();
 				if (isNetworkAvailable(MainActivity.this)) {
-					if (checkApkExist(Constant.pkgweixin)) {
-						share(uri, Constant.pkgweixin, Constant.weixincircle);
+					if (checkApkExist(Config.pkgweixin)) {
+						share(uri, Config.pkgweixin, Config.weixincircle);
 					} else {
 						Toast.makeText(
 								MainActivity.this,
@@ -440,16 +440,16 @@ public class MainActivity extends Activity implements OnTouchListener,
 										R.string.noweixin), showtime).show();
 					}
 				} else {
-					if ("".equals(httpUtil.readFile(Constant.WEATHER_FILE_NAME))
-							|| httpUtil.readFile(Constant.WEATHER_FILE_NAME) == null) {
+					if ("".equals(httpUtil.readFile(Config.WEATHER_FILE_NAME))
+							|| httpUtil.readFile(Config.WEATHER_FILE_NAME) == null) {
 						Toast.makeText(
 								MainActivity.this,
 								MainActivity.this.getResources().getString(
 										R.string.linknets), showtime).show();
 					} else {
-						if (checkApkExist(Constant.pkgweixin)) {
-							share(uri, Constant.pkgweixin,
-									Constant.weixincircle);
+						if (checkApkExist(Config.pkgweixin)) {
+							share(uri, Config.pkgweixin,
+									Config.weixincircle);
 						} else {
 							Toast.makeText(
 									MainActivity.this,
@@ -463,8 +463,8 @@ public class MainActivity extends Activity implements OnTouchListener,
 			case R.id.share_weibo:
 				menuWindow.dismiss();
 				if (isNetworkAvailable(MainActivity.this)) {
-					if (checkApkExist(Constant.pkgweibo)) {
-						share(uri, Constant.pkgweibo, Constant.weibowhere);
+					if (checkApkExist(Config.pkgweibo)) {
+						share(uri, Config.pkgweibo, Config.weibowhere);
 					} else {
 						Toast.makeText(
 								MainActivity.this,
@@ -472,15 +472,15 @@ public class MainActivity extends Activity implements OnTouchListener,
 										R.string.noweibo), showtime).show();
 					}
 				} else {
-					if ("".equals(httpUtil.readFile(Constant.WEATHER_FILE_NAME))
-							|| httpUtil.readFile(Constant.WEATHER_FILE_NAME) == null) {
+					if ("".equals(httpUtil.readFile(Config.WEATHER_FILE_NAME))
+							|| httpUtil.readFile(Config.WEATHER_FILE_NAME) == null) {
 						Toast.makeText(
 								MainActivity.this,
 								MainActivity.this.getResources().getString(
 										R.string.linknets), showtime).show();
 					} else {
-						if (checkApkExist(Constant.pkgweibo)) {
-							share(uri, Constant.pkgweibo, Constant.weibowhere);
+						if (checkApkExist(Config.pkgweibo)) {
+							share(uri, Config.pkgweibo, Config.weibowhere);
 						} else {
 							Toast.makeText(
 									MainActivity.this,
@@ -511,7 +511,7 @@ public class MainActivity extends Activity implements OnTouchListener,
 			case R.id.jiudian_img:
 				if (sp.getBoolean("showjiudian", false)) {
 					ServiceUtils.stopWeatherService(MainActivity.this,
-							WeatherService.class, Constant.ACTION);
+							WeatherService.class, Config.ACTION);
 					((TextImage) v).setImageDrawables(getResources()
 							.getDrawable(R.drawable.img_press_unchecked));
 					Editor editor = sp.edit();
@@ -522,7 +522,7 @@ public class MainActivity extends Activity implements OnTouchListener,
 					}
 				} else {
 					ServiceUtils.startWeatherService(MainActivity.this,
-							WeatherService.class, Constant.ACTION);
+							WeatherService.class, Config.ACTION);
 					((TextImage) v).setImageDrawables(getResources()
 							.getDrawable(R.drawable.img_press_checked));
 					Editor editor = sp.edit();
@@ -663,10 +663,10 @@ public class MainActivity extends Activity implements OnTouchListener,
 			@Override
 			public void run() {
 				// TODO Auto-generated method stub
-				result = httpUtil.getJsonContent(Constant.weatherUrl);
+				result = httpUtil.getJsonContent(Config.weatherUrl);
 				if(result != null&&!("".equals(result))){
 					Log.v("wangqiniqnmainactivity"," http.save");
-					httpUtil.saveFile(result, Constant.WEATHER_FILE_NAME);
+					httpUtil.saveFile(result, Config.WEATHER_FILE_NAME);
 				}
 				Calendar calendar = Calendar.getInstance();
 				int year = calendar.get(Calendar.YEAR);
@@ -766,8 +766,8 @@ public class MainActivity extends Activity implements OnTouchListener,
 				break;
 			case 7:
 				progress.setVisibility(View.GONE);
-				AndroidUtil
-						.install(MainActivity.this, fileName, SDPATH.SD_PATH);
+				CommonUtil
+						.install(MainActivity.this, fileName, SDUtil.SD_PATH);
 				break;
 			case 8:
 				String da = (String) m.obj;
@@ -908,7 +908,7 @@ public class MainActivity extends Activity implements OnTouchListener,
 				HttpConnectionParams
 						.setConnectionTimeout(httpParams, 30 * 1000);
 				HttpConnectionParams.setSoTimeout(httpParams, 5000);
-				HttpPost request = new HttpPost(Constant.updateUrl);
+				HttpPost request = new HttpPost(Config.updateUrl);
 				try {
 					HttpResponse response = new DefaultHttpClient()
 							.execute(request);
@@ -956,23 +956,23 @@ public class MainActivity extends Activity implements OnTouchListener,
 			int len = connection.getContentLength();
 			int nowSize = 0;
 			if (is != null) {
-				File file = new File(SDPATH.SD_PATH + fileName);
+				File file = new File(SDUtil.SD_PATH + fileName);
 				if (file.exists()) {
 					file.delete();
 				}
-				File p = new File(SDPATH.SD_PATH);
+				File p = new File(SDUtil.SD_PATH);
 				if (!p.exists()) {
 					p.mkdirs();
 				}
 				RandomAccessFile randomAccessFile = new RandomAccessFile(
-						SDPATH.SD_PATH + fileName, "rw");
+						SDUtil.SD_PATH + fileName, "rw");
 				byte[] buffer = new byte[4096];
 				int length = -1;
 				int count = 0;
-				if (!SDPATH.sdcardExit || !SDPATH.sdCardPer) {
+				if (!SDUtil.sdcardExit || !SDUtil.sdCardPer) {
 					try {
 						String command = "chmod " + "777" + " "
-								+ (SDPATH.SD_PATH + fileName);
+								+ (SDUtil.SD_PATH + fileName);
 						Runtime runtime = Runtime.getRuntime();
 						runtime.exec(command);
 					} catch (IOException e) {
@@ -1083,7 +1083,7 @@ public class MainActivity extends Activity implements OnTouchListener,
 		// TODO Auto-generated method stub
 		if (e1.getX() - e2.getX() > verticalMinDistance
 				&& Math.abs(velocityX) > minVelocity) {
-			Intent intent = new Intent(MainActivity.this, ZiXunActivity.class);
+			Intent intent = new Intent(MainActivity.this, ArticleActivity.class);
 			startActivity(intent);
 		}
 		return false;

@@ -1,7 +1,7 @@
 package com.weather.view;
 
 import com.smallweather.R;
-import com.weather.util.Constant;
+import com.weather.util.Config;
 import com.weather.util.FontManager;
 
 import android.app.Activity;
@@ -45,7 +45,7 @@ public class WebViewActivity extends Activity {
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
 				Intent intent = new Intent(WebViewActivity.this,
-						ZiXunActivity.class);
+						ArticleActivity.class);
 				intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 				startActivity(intent);
 				overridePendingTransition(R.anim.push_right_in,
@@ -54,7 +54,7 @@ public class WebViewActivity extends Activity {
 		});
 		Intent intent = getIntent();
 		Log.v("wangqinqin", "   webId " + intent.getStringExtra("id")
-				+ Constant.newsUrls + intent.getStringExtra("id"));
+				+ Config.newsUrls + intent.getStringExtra("id"));
 		if (intent.getStringExtra("id") == null) {
 			NewsId = sp.getString("id", "");
 		} else {
@@ -92,7 +92,7 @@ public class WebViewActivity extends Activity {
 		@Override
 		public void run() {
 			// TODO Auto-generated method stub
-			webView.loadUrl(Constant.newsUrls + id);
+			webView.loadUrl(Config.newsUrls + id);
 		}
 
 	}

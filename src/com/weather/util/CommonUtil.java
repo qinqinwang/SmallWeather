@@ -13,7 +13,7 @@ import android.graphics.PixelFormat;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 
-public class AndroidUtil {
+public class CommonUtil {
 
 
 	public static void install(Context context, String fileName, String path) {

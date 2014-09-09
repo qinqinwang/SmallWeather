@@ -5,13 +5,13 @@ import java.io.IOException;
 
 import android.os.Environment;
 
-public class SDPermission {
-
+public class SDUtil {
+	public static boolean sdcardExit;
+	public static String SD_PATH;
+	public static boolean sdCardPer;
+	public static String Skin_path;
 
 	public static boolean checkFsWritable() {
-        // Create a temporary file to see whether a volume is really writeable.
-        // It's important not to put it in the root directory which may have a
-        // limit on the number of files.
         String directoryName = Environment.getExternalStorageDirectory().toString() + "/DCIM";
         File directory = new File(directoryName); // 在SD卡上创建DCIM目录
         if (!directory.isDirectory()) {   // 测试创建目录

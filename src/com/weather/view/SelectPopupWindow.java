@@ -2,7 +2,7 @@ package com.weather.view;
 
 import com.smallweather.R;
 import com.weather.adapter.MyAdapter;
-import com.weather.util.TextImage;
+import com.weather.layout.TextImage;
 
 import android.app.Activity;
 import android.app.NotificationManager;
@@ -48,7 +48,7 @@ public class SelectPopupWindow extends PopupWindow {
 			listColor.setAdapter(new MyAdapter(context, context.getResources().getStringArray(R.array.coloritem),0));
 			listColor.setOnItemClickListener(ietmclicklistener);
 		}else if(flag == 2){
-			mMenuView = inflater.inflate(R.layout.tixing_menu, null);
+			mMenuView = inflater.inflate(R.layout.remind_menu, null);
 			sp = context.getSharedPreferences("weather", Context.MODE_PRIVATE);
 			jiudian_img = (TextImage)mMenuView.findViewById(R.id.jiudian_img);
 			xianshi_img = (TextImage)mMenuView.findViewById(R.id.xianshi_img);

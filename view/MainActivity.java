@@ -73,7 +73,7 @@ import com.tencent.mm.sdk.openapi.WXAPIFactory;
 import com.umeng.analytics.MobclickAgent;
 import com.weather.adapter.MyAdapter;
 import com.weather.bean.SDPATH;
-import com.weather.util.AndroidUtil;
+import com.weather.util.CommonUtil;
 import com.weather.util.FontManager;
 import com.weather.util.HttpUtil;
 import com.weather.util.TestUtils;
@@ -125,7 +125,7 @@ public class MainActivity extends Activity {
 		// 存放路径设置
 		SDPATH.sdcardExit = Environment.getExternalStorageState().equals(
 				android.os.Environment.MEDIA_MOUNTED);// 判断SDCard是否存在
-		SDPATH.sdCardPer = com.weather.util.SDPermission.checkFsWritable();// 判断SDCard权限
+		SDPATH.sdCardPer = com.weather.util.SDUtil.checkFsWritable();// 判断SDCard权限
 		if (SDPATH.sdcardExit) {
 			if (!SDPATH.sdCardPer) {
 				SDPATH.SD_PATH = this.getCacheDir().toString();

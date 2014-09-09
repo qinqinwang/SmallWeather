@@ -1,6 +1,6 @@
 package com.weather.util;
 
-public class Constant {
+public class Config {
 	public static final String weatherUrl = "http://weather.iyoo.me/weathers";
 	public static final String newsUrl ="http://weather.iyoo.me/articles/source/jx09";
 	public final static String WEATHER_FILE_NAME = "weather.txt";

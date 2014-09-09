@@ -33,13 +33,13 @@
             android:name="com.weather.view.TiXingSetting"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen" />
         <activity
-            android:name="com.weather.view.ZiXunActivity"
+            android:name="com.weather.view.ArticleActivity"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen" />
         <activity
             android:name="com.weather.view.WebViewActivity"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen" />
         <activity
-            android:name="com.weather.view.YiJianSetting"
+            android:name="com.weather.view.FeedBackSetting"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
             android:windowSoftInputMode="adjustPan|adjustUnspecified|adjustResize" />
 

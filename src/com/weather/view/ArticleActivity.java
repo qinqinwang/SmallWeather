@@ -9,8 +9,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.smallweather.R;
-import com.weather.adapter.ZiXunAdapter;
-import com.weather.util.Constant;
+import com.weather.adapter.ArticleAdapter;
+import com.weather.util.Config;
 import com.weather.util.FontManager;
 import com.weather.util.HttpUtil;
 
@@ -43,7 +43,7 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
-public class ZiXunActivity extends Activity implements OnTouchListener,
+public class ArticleActivity extends Activity implements OnTouchListener,
 		OnGestureListener {
 	private GestureDetector gestureDetector;
 	private ListView listzixun;
@@ -68,7 +68,7 @@ public class ZiXunActivity extends Activity implements OnTouchListener,
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_zixun);
+		setContentView(R.layout.activity_article);
 		sp = getSharedPreferences("weather", Context.MODE_PRIVATE);
 		int colorPo = sp.getInt("colorPosition", 0);
 		zixuncolor = (RelativeLayout) findViewById(R.id.zixuncolor);
@@ -80,7 +80,7 @@ public class ZiXunActivity extends Activity implements OnTouchListener,
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				Intent intent = new Intent(ZiXunActivity.this,
+				Intent intent = new Intent(ArticleActivity.this,
 						MainActivity.class);
 				intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 				startActivity(intent);
@@ -97,7 +97,7 @@ public class ZiXunActivity extends Activity implements OnTouchListener,
 					int position, long id) {
 				// TODO Auto-generated method stub
 				Intent intent = new Intent();
-				intent.setClass(ZiXunActivity.this, WebViewActivity.class);
+				intent.setClass(ArticleActivity.this, WebViewActivity.class);
 				intent.putExtra("id", listId.get(position));
 				Log.v("wangqinqin", "   zixunId " + listId.get(position));
 				startActivity(intent);
@@ -112,23 +112,23 @@ public class ZiXunActivity extends Activity implements OnTouchListener,
 
 		ViewGroup viewGroup = (ViewGroup) findViewById(android.R.id.content);
 		FontManager.changeFonts(viewGroup, this);
-		httpUtil = new HttpUtil(ZiXunActivity.this);
+		httpUtil = new HttpUtil(ArticleActivity.this);
 		hasNet();
 
 	}
 
 	private void setColor(int colorPosition) {
 		if (colorPosition == 0) {
-			zixuncolor.setBackgroundColor(ZiXunActivity.this.getResources()
+			zixuncolor.setBackgroundColor(ArticleActivity.this.getResources()
 					.getColor(R.color.green));
 		} else if (colorPosition == 1) {
-			zixuncolor.setBackgroundColor(ZiXunActivity.this.getResources()
+			zixuncolor.setBackgroundColor(ArticleActivity.this.getResources()
 					.getColor(R.color.red));
 		} else if (colorPosition == 2) {
-			zixuncolor.setBackgroundColor(ZiXunActivity.this.getResources()
+			zixuncolor.setBackgroundColor(ArticleActivity.this.getResources()
 					.getColor(R.color.blue));
 		} else if (colorPosition == 3) {
-			zixuncolor.setBackgroundColor(ZiXunActivity.this.getResources()
+			zixuncolor.setBackgroundColor(ArticleActivity.this.getResources()
 					.getColor(R.color.purple));
 
 		}
@@ -136,23 +136,23 @@ public class ZiXunActivity extends Activity implements OnTouchListener,
 
 	private void hasNet() {
 		// TODO Auto-generated method stub
-		if (isNetworkAvailable(ZiXunActivity.this)) {
+		if (isNetworkAvailable(ArticleActivity.this)) {
 			getData();
 		} else {
-			if ("".equals(httpUtil.readFile(Constant.NEWS_FILE_NAME))
-					|| httpUtil.readFile(Constant.NEWS_FILE_NAME) == null) {
+			if ("".equals(httpUtil.readFile(Config.NEWS_FILE_NAME))
+					|| httpUtil.readFile(Config.NEWS_FILE_NAME) == null) {
 				Toast.makeText(
-						ZiXunActivity.this,
-						ZiXunActivity.this.getResources().getString(
+						ArticleActivity.this,
+						ArticleActivity.this.getResources().getString(
 								R.string.nonet), showtime).show();
 			} else {
 				Toast.makeText(
-						ZiXunActivity.this,
-						ZiXunActivity.this.getResources().getString(
+						ArticleActivity.this,
+						ArticleActivity.this.getResources().getString(
 								R.string.linknet), showtime).show();
 				Message msg = new Message();
 				msg.what = 0;
-				msg.obj = httpUtil.readFile(Constant.NEWS_FILE_NAME);
+				msg.obj = httpUtil.readFile(Config.NEWS_FILE_NAME);
 				handler.sendMessage(msg);
 			}
 		}
@@ -182,11 +182,11 @@ public class ZiXunActivity extends Activity implements OnTouchListener,
 			@Override
 			public void run() {
 				// TODO Auto-generated method stub
-				HttpUtil httpUtil = new HttpUtil(ZiXunActivity.this);
-				result = httpUtil.getJsonContent(Constant.newsUrl);
+				HttpUtil httpUtil = new HttpUtil(ArticleActivity.this);
+				result = httpUtil.getJsonContent(Config.newsUrl);
 				if(result != null&&!("".equals(result))){
 					Log.v("wangqiniqn"," http.save");
-					httpUtil.saveFile(result, Constant.NEWS_FILE_NAME);
+					httpUtil.saveFile(result, Config.NEWS_FILE_NAME);
 				}
 				Message msg = new Message();
 				msg.what = 0;
@@ -235,7 +235,7 @@ public class ZiXunActivity extends Activity implements OnTouchListener,
 		// TODO Auto-generated method stub
 		if (e2.getX() - e1.getX() > verticalMinDistance
 				&& Math.abs(velocityX) > minVelocity) {
-			Intent intent = new Intent(ZiXunActivity.this, MainActivity.class);
+			Intent intent = new Intent(ArticleActivity.this, MainActivity.class);
 			intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 			startActivity(intent);
 			overridePendingTransition(R.anim.push_right_in,
@@ -276,7 +276,7 @@ public class ZiXunActivity extends Activity implements OnTouchListener,
 						editor.putString("id", objs.getString("id"));
 						editor.commit();
 						if (sp.getBoolean("showxianshi", false)) {
-							ZiXunActivity.this.sendMessage(sp.getString("citys", "")
+							ArticleActivity.this.sendMessage(sp.getString("citys", "")
 									+ sp.getString("message", ""),
 									objs.getString("title"));
 						}
@@ -288,7 +288,7 @@ public class ZiXunActivity extends Activity implements OnTouchListener,
 				}
 				break;
 			case 1:
-				listzixun.setAdapter(new ZiXunAdapter(ZiXunActivity.this,
+				listzixun.setAdapter(new ArticleAdapter(ArticleActivity.this,
 						listTitle, listId));
 				break;
 			}
@@ -300,9 +300,9 @@ public class ZiXunActivity extends Activity implements OnTouchListener,
 
 		Notification notification = new Notification(R.drawable.logo, message,
 				System.currentTimeMillis());
-		Intent intent = new Intent(ZiXunActivity.this, WebViewActivity.class);
+		Intent intent = new Intent(ArticleActivity.this, WebViewActivity.class);
 		PendingIntent pendingIntent = PendingIntent.getActivity(
-				ZiXunActivity.this, 0, intent, 0);
+				ArticleActivity.this, 0, intent, 0);
 		notification.setLatestEventInfo(getApplicationContext(), citys,
 				message, pendingIntent);
 		notification.flags = Notification.FLAG_ONGOING_EVENT;// 消息不可取消

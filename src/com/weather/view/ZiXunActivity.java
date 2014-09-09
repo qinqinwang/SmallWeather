@@ -184,7 +184,10 @@ public class ZiXunActivity extends Activity implements OnTouchListener,
 				// TODO Auto-generated method stub
 				HttpUtil httpUtil = new HttpUtil(ZiXunActivity.this);
 				result = httpUtil.getJsonContent(Constant.newsUrl);
-				httpUtil.saveFile(result, Constant.NEWS_FILE_NAME);
+				if(result != null&&!("".equals(result))){
+					Log.v("wangqiniqn"," http.save");
+					httpUtil.saveFile(result, Constant.NEWS_FILE_NAME);
+				}
 				Message msg = new Message();
 				msg.what = 0;
 				msg.obj = result;
@@ -265,17 +268,20 @@ public class ZiXunActivity extends Activity implements OnTouchListener,
 							handler.sendMessage(msg);
 						}
 					}
-					number = new Random().nextInt(Jsonarr.length()) + 1;
-					JSONObject objs = (JSONObject) Jsonarr.get(number);
-					Editor editor = sp.edit();
-					editor.putString("title", objs.getString("title"));
-					editor.putString("id", objs.getString("id"));
-					editor.commit();
-					if (sp.getBoolean("showxianshi", false)) {
-						ZiXunActivity.this.sendMessage(sp.getString("citys", "")
-								+ sp.getString("message", ""),
-								objs.getString("title"));
+					if(Jsonarr.length()>0){
+						number = new Random().nextInt(Jsonarr.length()) + 1;
+						JSONObject objs = (JSONObject) Jsonarr.get(number);
+						Editor editor = sp.edit();
+						editor.putString("title", objs.getString("title"));
+						editor.putString("id", objs.getString("id"));
+						editor.commit();
+						if (sp.getBoolean("showxianshi", false)) {
+							ZiXunActivity.this.sendMessage(sp.getString("citys", "")
+									+ sp.getString("message", ""),
+									objs.getString("title"));
+						}
 					}
+					
 				} catch (JSONException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();

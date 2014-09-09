@@ -188,24 +188,26 @@ public class MainActivity extends Activity implements OnTouchListener,
 		if (news != null && (!"".equals(news))) {
 			try {
 				Jsonarray = new JSONArray(news);
-				number = new Random().nextInt(Jsonarray.length()) + 1;
-				jsonObj = (JSONObject) Jsonarray.get(number);
-				title = jsonObj.getString("title");
-				Editor editor = sp.edit();
-				editor.putString("title", title);
-				editor.putString("id", jsonObj.getString("id"));
-				editor.commit();
-				Notification notification = new Notification(R.drawable.logo,
-						title, System.currentTimeMillis());
-				Intent intent = new Intent(MainActivity.this,
-						WebViewActivity.class);
-				PendingIntent pendingIntent = PendingIntent.getActivity(
-						MainActivity.this, 0, intent, 0);
-				notification.setLatestEventInfo(getApplicationContext(), citys
-						+ message, title, pendingIntent);
-				notification.flags = Notification.FLAG_ONGOING_EVENT;// 消息不可取消
-				// notification.defaults = Notification.DEFAULT_SOUND;//声音默认
-				manager.notify(0, notification);
+				if(Jsonarray.length()>0){
+					number = new Random().nextInt(Jsonarray.length()) + 1;
+					jsonObj = (JSONObject) Jsonarray.get(number);
+					title = jsonObj.getString("title");
+					Editor editor = sp.edit();
+					editor.putString("title", title);
+					editor.putString("id", jsonObj.getString("id"));
+					editor.commit();
+					Notification notification = new Notification(R.drawable.logo,
+							title, System.currentTimeMillis());
+					Intent intent = new Intent(MainActivity.this,
+							WebViewActivity.class);
+					PendingIntent pendingIntent = PendingIntent.getActivity(
+							MainActivity.this, 0, intent, 0);
+					notification.setLatestEventInfo(getApplicationContext(), citys
+							+ message, title, pendingIntent);
+					notification.flags = Notification.FLAG_ONGOING_EVENT;// 消息不可取消
+					// notification.defaults = Notification.DEFAULT_SOUND;//声音默认
+					manager.notify(0, notification);
+				}
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -662,8 +664,10 @@ public class MainActivity extends Activity implements OnTouchListener,
 			public void run() {
 				// TODO Auto-generated method stub
 				result = httpUtil.getJsonContent(Constant.weatherUrl);
-				httpUtil.saveFile(result, Constant.WEATHER_FILE_NAME);
-
+				if(result != null&&!("".equals(result))){
+					Log.v("wangqiniqnmainactivity"," http.save");
+					httpUtil.saveFile(result, Constant.WEATHER_FILE_NAME);
+				}
 				Calendar calendar = Calendar.getInstance();
 				int year = calendar.get(Calendar.YEAR);
 				int month = calendar.get(Calendar.MONTH) + 1;

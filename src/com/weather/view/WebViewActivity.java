@@ -12,14 +12,13 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
-
-
 
 public class WebViewActivity extends Activity {
 	private WebView webView;
@@ -28,6 +27,7 @@ public class WebViewActivity extends Activity {
 	private RelativeLayout webcolor;
 	private String NewsId;
 	private MyHandler handler = new MyHandler();
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -35,12 +35,12 @@ public class WebViewActivity extends Activity {
 		setContentView(R.layout.activity_webview);
 		sp = getSharedPreferences("weather", Context.MODE_PRIVATE);
 		int colorPo = sp.getInt("colorPosition", 0);
-		webcolor = (RelativeLayout)findViewById(R.id.webcolor);
+		webcolor = (RelativeLayout) findViewById(R.id.webcolor);
 		setColor(colorPo);
-		webView = (WebView)findViewById(R.id.webView);
-		back = (ImageView)findViewById(R.id.web_back);
+		webView = (WebView) findViewById(R.id.webView);
+		back = (ImageView) findViewById(R.id.web_back);
 		back.setOnClickListener(new OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
@@ -53,13 +53,12 @@ public class WebViewActivity extends Activity {
 			}
 		});
 		Intent intent = getIntent();
-		Log.v("wangqinqin", "   webId "+intent.getStringExtra("id")+Constant.newsUrls+intent.getStringExtra("id"));
-		if(intent.getStringExtra("id") == null){
-			NewsId =sp.getString("id", ""); 
-//			webView.loadUrl(Constant.newsUrls+(sp.getString("id", "")));
-		}else{
-			NewsId =intent.getStringExtra("id"); 
-//			webView.loadUrl(Constant.newsUrls+intent.getStringExtra("id"));
+		Log.v("wangqinqin", "   webId " + intent.getStringExtra("id")
+				+ Constant.newsUrls + intent.getStringExtra("id"));
+		if (intent.getStringExtra("id") == null) {
+			NewsId = sp.getString("id", "");
+		} else {
+			NewsId = intent.getStringExtra("id");
 		}
 		Message msg = new Message();
 		msg.what = 0;
@@ -68,6 +67,7 @@ public class WebViewActivity extends Activity {
 		ViewGroup viewGroup = (ViewGroup) findViewById(android.R.id.content);
 		FontManager.changeFonts(viewGroup, this);
 	}
+
 	public class MyHandler extends Handler {
 		public void handleMessage(Message m) {
 			switch (m.what) {
@@ -76,12 +76,14 @@ public class WebViewActivity extends Activity {
 				LoadThread load = new LoadThread(id);
 				load.start();
 				break;
-			
+
 			}
 		}
 	}
-	class LoadThread extends Thread{
+
+	class LoadThread extends Thread {
 		private String id;
+
 		LoadThread(String id) {
 			// TODO Auto-generated constructor stub
 			this.id = id;
@@ -90,10 +92,11 @@ public class WebViewActivity extends Activity {
 		@Override
 		public void run() {
 			// TODO Auto-generated method stub
-			webView.loadUrl(Constant.newsUrls+id);
+			webView.loadUrl(Constant.newsUrls + id);
 		}
-		
+
 	}
+
 	private void setColor(int colorPosition) {
 		if (colorPosition == 0) {
 			webcolor.setBackgroundColor(WebViewActivity.this.getResources()
@@ -109,6 +112,24 @@ public class WebViewActivity extends Activity {
 					.getColor(R.color.purple));
 
 		}
+	}
+
+	@Override
+	protected void onStop() {
+		// TODO Auto-generated method stub
+		finish();
+		super.onStop();
+	}
+	@Override
+	protected void onPause() {
+		// TODO Auto-generated method stub
+		finish();
+		super.onPause();
+	}
+	@Override
+	protected void onDestroy() {
+		// TODO Auto-generated method stub
+		super.onDestroy();
 	}
 
 }

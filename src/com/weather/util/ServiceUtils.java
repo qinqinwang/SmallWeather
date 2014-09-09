@@ -7,7 +7,6 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.SystemClock;
-import android.util.Log;
 
 public class ServiceUtils {
 	public static void startWeatherService(Context context, Class<?> cls,

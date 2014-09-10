@@ -664,34 +664,42 @@ public class MainActivity extends Activity implements OnTouchListener,
 			public void run() {
 				// TODO Auto-generated method stub
 				result = httpUtil.getJsonContent(Config.weatherUrl);
-				if(result != null&&!("".equals(result))){
+				if(result == null&&"".equals(result)){
+					if((!"".equals(httpUtil.readFile(Config.WEATHER_FILE_NAME)))
+						&& httpUtil.readFile(Config.WEATHER_FILE_NAME) != null){
+						Message msg = new Message();
+						msg.what = 0;
+						msg.obj = httpUtil.readFile(Config.WEATHER_FILE_NAME);
+						handler.sendMessage(msg);
+					}
+					
+				}else{
 					Log.v("wangqiniqnmainactivity"," http.save");
 					httpUtil.saveFile(result, Config.WEATHER_FILE_NAME);
+					Calendar calendar = Calendar.getInstance();
+					int year = calendar.get(Calendar.YEAR);
+					int month = calendar.get(Calendar.MONTH) + 1;
+					int day = calendar.get(Calendar.DATE);
+					dates = month + "." + day;
+					if (sp.getInt("tag", 0) == 0) {
+						Editor editor = sp.edit();
+						editor.putString("date", dates);
+						editor.putInt("tag", 1);
+						editor.commit();
+						Message msg = new Message();
+						msg.what = 1;
+						msg.obj = result;
+						handler.sendMessage(msg);
+					} else {
+						Message msg = new Message();
+						msg.what = 0;
+						msg.obj = result;
+						handler.sendMessage(msg);
+					}
+					Editor editors = sp.edit();
+					editors.putString("date", dates);
+					editors.commit();
 				}
-				Calendar calendar = Calendar.getInstance();
-				int year = calendar.get(Calendar.YEAR);
-				int month = calendar.get(Calendar.MONTH) + 1;
-				int day = calendar.get(Calendar.DATE);
-				dates = month + "." + day;
-				if (sp.getInt("tag", 0) == 0) {
-					Editor editor = sp.edit();
-					editor.putString("date", dates);
-					editor.putInt("tag", 1);
-					editor.commit();
-					Message msg = new Message();
-					msg.what = 1;
-					msg.obj = result;
-					handler.sendMessage(msg);
-				} else {
-					Message msg = new Message();
-					msg.what = 0;
-					msg.obj = result;
-					handler.sendMessage(msg);
-				}
-				Editor editors = sp.edit();
-				editors.putString("date", dates);
-				editors.commit();
-
 			}
 
 		}).start();
@@ -1094,5 +1102,6 @@ public class MainActivity extends Activity implements OnTouchListener,
 		// TODO Auto-generated method stub
 		return gestureDetector.onTouchEvent(event);
 	}
+
 
 }

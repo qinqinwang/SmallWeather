@@ -184,15 +184,23 @@ public class ArticleActivity extends Activity implements OnTouchListener,
 				// TODO Auto-generated method stub
 				HttpUtil httpUtil = new HttpUtil(ArticleActivity.this);
 				result = httpUtil.getJsonContent(Config.newsUrl);
-				if(result != null&&!("".equals(result))){
-					Log.v("wangqiniqn"," http.save");
+				if (result == null && "".equals(result)) {
+					if (!"".equals(httpUtil.readFile(Config.NEWS_FILE_NAME))
+							&& httpUtil.readFile(Config.NEWS_FILE_NAME) != null) {
+						Message msg = new Message();
+						msg.what = 0;
+						msg.obj = httpUtil.readFile(Config.NEWS_FILE_NAME);
+						handler.sendMessage(msg);
+					}
+					
+				} else {
+					Log.v("wangqiniqn", " http.save");
 					httpUtil.saveFile(result, Config.NEWS_FILE_NAME);
+					Message msg = new Message();
+					msg.what = 0;
+					msg.obj = result;
+					handler.sendMessage(msg);
 				}
-				Message msg = new Message();
-				msg.what = 0;
-				msg.obj = result;
-				handler.sendMessage(msg);
-
 			}
 
 		}).start();
@@ -268,7 +276,8 @@ public class ArticleActivity extends Activity implements OnTouchListener,
 							handler.sendMessage(msg);
 						}
 					}
-					if(Jsonarr.length()>0){
+					Log.v("wangqinqin", "  length  =  "+Jsonarr.length());
+					if (Jsonarr.length() > 0) {
 						number = new Random().nextInt(Jsonarr.length()) + 1;
 						JSONObject objs = (JSONObject) Jsonarr.get(number);
 						Editor editor = sp.edit();
@@ -276,12 +285,13 @@ public class ArticleActivity extends Activity implements OnTouchListener,
 						editor.putString("id", objs.getString("id"));
 						editor.commit();
 						if (sp.getBoolean("showxianshi", false)) {
-							ArticleActivity.this.sendMessage(sp.getString("citys", "")
-									+ sp.getString("message", ""),
+							ArticleActivity.this.sendMessage(
+									sp.getString("citys", "")
+											+ sp.getString("message", ""),
 									objs.getString("title"));
 						}
 					}
-					
+
 				} catch (JSONException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();

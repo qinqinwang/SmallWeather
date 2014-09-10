@@ -152,11 +152,15 @@ public class MainActivity extends Activity implements OnTouchListener,
 		getDate();
 		if (sp.getInt("isFirst", 0) == 0) {
 			jingxi.setVisibility(View.VISIBLE);
+			city.setText(this.getResources().getStringArray(R.array.cityitem)[2]);
+			viewMain.setBackgroundColor(MainActivity.this.getResources()
+					.getColor(R.color.green));
 			ServiceUtils.startWeatherService(MainActivity.this,
 					WeatherService.class, Config.ACTION);
 			Editor editor = sp.edit();
 			editor.putBoolean("showjiudian", true);
 			editor.putBoolean("showxianshi", true);
+			editor.putString("citys", this.getResources().getStringArray(R.array.cityitem)[2]);
 			editor.putInt("isFirst", 1);
 			editor.commit();
 		}
@@ -177,7 +181,7 @@ public class MainActivity extends Activity implements OnTouchListener,
 				JSONObject jsonObj;
 				String title;
 				Jsonarray = new JSONArray(news);
-				if(Jsonarray.length()>0){
+				if (Jsonarray.length() > 0) {
 					number = new Random().nextInt(Jsonarray.length()) + 1;
 					jsonObj = (JSONObject) Jsonarray.get(number);
 					title = jsonObj.getString("title");
@@ -185,14 +189,14 @@ public class MainActivity extends Activity implements OnTouchListener,
 					editor.putString("title", title);
 					editor.putString("id", jsonObj.getString("id"));
 					editor.commit();
-					Notification notification = new Notification(R.drawable.logo,
-							title, System.currentTimeMillis());
+					Notification notification = new Notification(
+							R.drawable.logo, title, System.currentTimeMillis());
 					Intent intent = new Intent(MainActivity.this,
 							WebViewActivity.class);
 					PendingIntent pendingIntent = PendingIntent.getActivity(
 							MainActivity.this, 0, intent, 0);
-					notification.setLatestEventInfo(getApplicationContext(), citys
-							+ message, title, pendingIntent);
+					notification.setLatestEventInfo(getApplicationContext(),
+							citys + message, title, pendingIntent);
 					notification.flags = Notification.FLAG_ONGOING_EVENT;// 消息不可取消
 					// notification.defaults = Notification.DEFAULT_SOUND;//声音默认
 					manager.notify(0, notification);
@@ -370,7 +374,7 @@ public class MainActivity extends Activity implements OnTouchListener,
 			}
 		});
 		progress = (ProgressBar) findViewById(R.id.progress);
-		jingxi = (TextView)findViewById(R.id.jingxi);
+		jingxi = (TextView) findViewById(R.id.jingxi);
 	}
 
 	private OnItemClickListener onitemsOnClicks = new OnItemClickListener() {
@@ -415,8 +419,7 @@ public class MainActivity extends Activity implements OnTouchListener,
 										R.string.linknets), showtime).show();
 					} else {
 						if (checkApkExist(Config.pkgweixin)) {
-							share(uri, Config.pkgweixin,
-									Config.weixinfriend);
+							share(uri, Config.pkgweixin, Config.weixinfriend);
 						} else {
 							Toast.makeText(
 									MainActivity.this,
@@ -447,8 +450,7 @@ public class MainActivity extends Activity implements OnTouchListener,
 										R.string.linknets), showtime).show();
 					} else {
 						if (checkApkExist(Config.pkgweixin)) {
-							share(uri, Config.pkgweixin,
-									Config.weixincircle);
+							share(uri, Config.pkgweixin, Config.weixincircle);
 						} else {
 							Toast.makeText(
 									MainActivity.this,
@@ -516,7 +518,7 @@ public class MainActivity extends Activity implements OnTouchListener,
 					Editor editor = sp.edit();
 					editor.putBoolean("showjiudian", false);
 					editor.commit();
-					if(!sp.getBoolean("showxianshi", false)){
+					if (!sp.getBoolean("showxianshi", false)) {
 						nm.cancel(0);
 					}
 				} else {
@@ -663,17 +665,17 @@ public class MainActivity extends Activity implements OnTouchListener,
 			public void run() {
 				// TODO Auto-generated method stub
 				result = httpUtil.getJsonContent(Config.weatherUrl);
-				if(result == null&&"".equals(result)){
-					if((!"".equals(httpUtil.readFile(Config.WEATHER_FILE_NAME)))
-						&& httpUtil.readFile(Config.WEATHER_FILE_NAME) != null){
+				if (result == null && "".equals(result)) {
+					if ((!"".equals(httpUtil.readFile(Config.WEATHER_FILE_NAME)))
+							&& httpUtil.readFile(Config.WEATHER_FILE_NAME) != null) {
 						Message msg = new Message();
 						msg.what = 0;
 						msg.obj = httpUtil.readFile(Config.WEATHER_FILE_NAME);
 						handler.sendMessage(msg);
 					}
-					
-				}else{
-					Log.v("wangqiniqnmainactivity"," http.save");
+
+				} else {
+					Log.v("wangqiniqnmainactivity", " http.save");
 					httpUtil.saveFile(result, Config.WEATHER_FILE_NAME);
 					Calendar calendar = Calendar.getInstance();
 					int year = calendar.get(Calendar.YEAR);
@@ -773,8 +775,7 @@ public class MainActivity extends Activity implements OnTouchListener,
 				break;
 			case 7:
 				progress.setVisibility(View.GONE);
-				CommonUtil
-						.install(MainActivity.this, fileName, SDUtil.SD_PATH);
+				CommonUtil.install(MainActivity.this, fileName, SDUtil.SD_PATH);
 				break;
 			case 8:
 				String da = (String) m.obj;
@@ -854,6 +855,7 @@ public class MainActivity extends Activity implements OnTouchListener,
 	}
 
 	private void setColor(int colorPosition) {
+		city.setText(sp.getString("citys",""));
 		if (colorPosition == 0) {
 			viewMain.setBackgroundColor(MainActivity.this.getResources()
 					.getColor(R.color.green));
@@ -903,6 +905,7 @@ public class MainActivity extends Activity implements OnTouchListener,
 	@Override
 	protected void onResume() {
 		// TODO Auto-generated method stub
+		hasNet();
 		super.onResume();
 		MobclickAgent.onResume(this);
 	}
@@ -1101,7 +1104,6 @@ public class MainActivity extends Activity implements OnTouchListener,
 		// TODO Auto-generated method stub
 		return gestureDetector.onTouchEvent(event);
 	}
-
 	
 
 }

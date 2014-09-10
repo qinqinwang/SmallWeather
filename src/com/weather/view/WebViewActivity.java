@@ -8,6 +8,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -15,8 +17,8 @@ import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
-import android.webkit.WebViewClient;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
@@ -27,6 +29,7 @@ public class WebViewActivity extends Activity {
 	private SharedPreferences sp = null;
 	private RelativeLayout webcolor;
 	private String NewsId;
+	private int showtime = 8000;
 	private MyHandler handler = new MyHandler();
 
 	@Override
@@ -35,10 +38,19 @@ public class WebViewActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_webview);
 		sp = getSharedPreferences("weather", Context.MODE_PRIVATE);
-		int colorPo = sp.getInt("colorPosition", 0);
-		webcolor = (RelativeLayout) findViewById(R.id.webcolor);
-		setColor(colorPo);
+		initWebView();
+		hasNet();
+		initData();
+		ViewGroup viewGroup = (ViewGroup) findViewById(android.R.id.content);
+		FontManager.changeFonts(viewGroup, this);
+	}
+
+	private void initWebView() {
+		// TODO Auto-generated method stub
 		webView = (WebView) findViewById(R.id.webView);
+		WebSettings s = webView.getSettings();  
+		//设置支持JavaScript脚本
+		s.setJavaScriptEnabled(true); 
 		back = (ImageView) findViewById(R.id.web_back);
 		back.setOnClickListener(new OnClickListener() {
 
@@ -53,50 +65,9 @@ public class WebViewActivity extends Activity {
 						R.anim.push_right_out);
 			}
 		});
-		Intent intent = getIntent();
-		Log.v("wangqinqin", "   webId " + intent.getStringExtra("id")
-				+ Config.newsUrls + intent.getStringExtra("id"));
-		if (intent.getStringExtra("id") == null) {
-			NewsId = sp.getString("id", "");
-		} else {
-			NewsId = intent.getStringExtra("id");
-		}
-		Message msg = new Message();
-		msg.what = 0;
-		msg.obj = NewsId;
-		handler.sendMessage(msg);
-		ViewGroup viewGroup = (ViewGroup) findViewById(android.R.id.content);
-		FontManager.changeFonts(viewGroup, this);
-//		webView.setWebViewClient(new WebViewClient() {
-//			@SuppressWarnings("unused")
-//			public void onPageStarted(WebView view, String url) {
-//				// TODO Auto-generated method stub
-//				super.onPageStarted(view, url, null);
-////				progressBar.setVisibility(android.view.View.VISIBLE);
-//				 Toast.makeText(WebViewActivity.this, "onPageStarted", 2).show();
-//			}
-//
-//			// 网页加载完成时调用，隐藏加载提示旋转进度条
-//			@Override
-//			public void onPageFinished(WebView view, String url) {
-//				// TODO Auto-generated method stub
-//				super.onPageFinished(view, url);
-////				progressBar.setVisibility(android.view.View.GONE);
-//				 Toast.makeText(WebViewActivity.this, "onPageFinished", 2).show();
-//			}
-//
-//			// 网页加载失败时调用，隐藏加载提示旋转进度条
-//			@Override
-//			public void onReceivedError(WebView view, int errorCode,
-//					String description, String failingUrl) {
-//				// TODO Auto-generated method stub
-//				super.onReceivedError(view, errorCode, description, failingUrl);
-////				progressBar.setVisibility(android.view.View.GONE);
-//				 Toast.makeText(WebViewActivity.this, "onReceivedError", 2).show();
-//			}
-//
-//		});
-
+		int colorPo = sp.getInt("colorPosition", 0);
+		webcolor = (RelativeLayout) findViewById(R.id.webcolor);
+		setColor(colorPo);
 	}
 
 	public class MyHandler extends Handler {
@@ -124,7 +95,6 @@ public class WebViewActivity extends Activity {
 		public void run() {
 			// TODO Auto-generated method stub
 			webView.loadUrl(Config.newsUrls + id);
-//			webView.loadData(webView.loadUrl(Config.newsUrls + id), "text/html", "utf-8");
 		}
 
 	}
@@ -146,6 +116,48 @@ public class WebViewActivity extends Activity {
 		}
 	}
 
+	public static boolean isNetworkAvailable(Context context) {
+		ConnectivityManager cm = (ConnectivityManager) context
+				.getSystemService(Context.CONNECTIVITY_SERVICE);
+		if (cm == null) {
+		} else {
+			NetworkInfo[] info = cm.getAllNetworkInfo();
+			if (info != null) {
+				for (int i = 0; i < info.length; i++) {
+					if (info[i].getState() == NetworkInfo.State.CONNECTED) {
+						return true;
+					}
+				}
+			}
+		}
+		return false;
+	}
+	private void hasNet() {
+		// TODO Auto-generated method stub
+		if (!isNetworkAvailable(WebViewActivity.this)) {
+			Toast.makeText(
+					WebViewActivity.this,
+					WebViewActivity.this.getResources().getString(
+							R.string.nowebnet), showtime).show();
+		}
+	}
+	
+	private void initData() {
+		// TODO Auto-generated method stub
+		Intent intent = getIntent();
+		Log.v("wangqinqin", "   webId " + intent.getStringExtra("id")
+				+ Config.newsUrls + intent.getStringExtra("id"));
+		if (intent.getStringExtra("id") == null) {
+			NewsId = sp.getString("id", "");
+		} else {
+			NewsId = intent.getStringExtra("id");
+		}
+		Message msg = new Message();
+		msg.what = 0;
+		msg.obj = NewsId;
+		handler.sendMessage(msg);
+	}
+
 	@Override
 	protected void onStop() {
 		// TODO Auto-generated method stub
@@ -158,12 +170,6 @@ public class WebViewActivity extends Activity {
 		// TODO Auto-generated method stub
 		finish();
 		super.onPause();
-	}
-
-	@Override
-	protected void onDestroy() {
-		// TODO Auto-generated method stub
-		super.onDestroy();
 	}
 
 }

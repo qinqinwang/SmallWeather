@@ -9,6 +9,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.smallweather.R;
+import com.umeng.analytics.MobclickAgent;
 import com.weather.adapter.ArticleAdapter;
 import com.weather.util.Config;
 import com.weather.util.FontManager;
@@ -318,7 +319,11 @@ public class ArticleActivity extends Activity implements OnTouchListener,
 		notification.flags = Notification.FLAG_ONGOING_EVENT;// 消息不可取消
 		// notification.defaults = Notification.DEFAULT_SOUND;//声音默认
 		manager.notify(0, notification);
-
 	}
-
+	@Override
+	protected void onResume() {
+		// TODO Auto-generated method stub
+		hasNet();
+		super.onResume();
+	}
 }

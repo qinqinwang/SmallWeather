@@ -7,10 +7,8 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 
-public class TestUtils {
+public class UpdateUtils {
 
-
-	
 	public static String getFileName(String url) {
 		String filename = url.substring(url.lastIndexOf('/') + 1);
 		if (filename == null || "".equals(filename.trim())) {
@@ -18,9 +16,6 @@ public class TestUtils {
 		}
 		return filename;
 	}
-
-	
-	
 	public static String getUninatllApkInfo(Context context, String archiveFilePath) {
 		String packageNameU ="" ;
 		

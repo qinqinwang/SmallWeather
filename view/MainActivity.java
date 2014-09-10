@@ -76,7 +76,7 @@ import com.weather.bean.SDPATH;
 import com.weather.util.CommonUtil;
 import com.weather.util.FontManager;
 import com.weather.util.HttpUtil;
-import com.weather.util.TestUtils;
+import com.weather.util.UpdateUtils;
 
 public class MainActivity extends Activity {
 	private TextView date, city, type, temperature, wind;

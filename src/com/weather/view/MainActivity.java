@@ -24,6 +24,7 @@ import org.json.JSONObject;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.Notification;
@@ -82,7 +83,7 @@ import com.weather.util.HttpUtil;
 import com.weather.util.SDUtil;
 import com.weather.util.WeatherService;
 import com.weather.util.ServiceUtils;
-import com.weather.util.TestUtils;
+import com.weather.util.UpdateUtils;
 import com.weather.layout.TextImage;
 
 public class MainActivity extends Activity implements OnTouchListener,
@@ -142,20 +143,13 @@ public class MainActivity extends Activity implements OnTouchListener,
 		} else {
 			SDUtil.SD_PATH = this.getCacheDir().toString();
 		}
-		menu = new SlidingMenu(this);
-		menu.setMode(SlidingMenu.LEFT);
-		menu.setTouchModeAbove(SlidingMenu.TOUCHMODE_FULLSCREEN);
-		menu.setShadowWidthRes(R.dimen.shadow_width);
-		menu.setShadowDrawable(R.drawable.shadow);
-		menu.setBehindOffsetRes(R.dimen.slidingmenu_offset);
-		menu.setFadeDegree(0.35f);
-		menu.attachToActivity(this, SlidingMenu.SLIDING_CONTENT);
-		// menu.setSecondaryMenu(R.layout.activity_zixun);
-		menu.setMenu(R.layout.activity_setting);
 		sp = getSharedPreferences("weather", Context.MODE_PRIVATE);
+		nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 		httpUtil = new HttpUtil(MainActivity.this);
 		gestureDetector = new GestureDetector(this);
 		setView();
+		hasNet();
+		getDate();
 		if (sp.getInt("isFirst", 0) == 0) {
 			jingxi.setVisibility(View.VISIBLE);
 			ServiceUtils.startWeatherService(MainActivity.this,
@@ -166,13 +160,8 @@ public class MainActivity extends Activity implements OnTouchListener,
 			editor.putInt("isFirst", 1);
 			editor.commit();
 		}
-		hasNet();
-		getDate();
 		ViewGroup viewGroup = (ViewGroup) findViewById(android.R.id.content);
 		FontManager.changeFonts(viewGroup, this);
-
-		nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-
 		// 更新
 		// Update(0);
 		MobclickAgent.setDebugMode(true);
@@ -181,12 +170,12 @@ public class MainActivity extends Activity implements OnTouchListener,
 	public void sendMessage(String citys, String message) {
 		NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 		String news = httpUtil.readFile(Config.NEWS_FILE_NAME);
-		JSONArray Jsonarray;
-		int number;
-		JSONObject jsonObj;
-		String title;
 		if (news != null && (!"".equals(news))) {
 			try {
+				JSONArray Jsonarray;
+				int number;
+				JSONObject jsonObj;
+				String title;
 				Jsonarray = new JSONArray(news);
 				if(Jsonarray.length()>0){
 					number = new Random().nextInt(Jsonarray.length()) + 1;
@@ -257,6 +246,16 @@ public class MainActivity extends Activity implements OnTouchListener,
 
 	private void setView() {
 		// TODO Auto-generated method stub
+		menu = new SlidingMenu(this);
+		menu.setMode(SlidingMenu.LEFT);
+		menu.setTouchModeAbove(SlidingMenu.TOUCHMODE_FULLSCREEN);
+		menu.setShadowWidthRes(R.dimen.shadow_width);
+		menu.setShadowDrawable(R.drawable.shadow);
+		menu.setBehindOffsetRes(R.dimen.slidingmenu_offset);
+		menu.setFadeDegree(0.35f);
+		menu.attachToActivity(this, SlidingMenu.SLIDING_CONTENT);
+		// menu.setSecondaryMenu(R.layout.activity_zixun);
+		menu.setMenu(R.layout.activity_setting);
 		viewMain = (RelativeLayout) findViewById(R.id.viewMain);
 		viewMain.setOnTouchListener(this);
 		viewMain.setLongClickable(true);
@@ -739,7 +738,7 @@ public class MainActivity extends Activity implements OnTouchListener,
 				int flag = m.arg1;
 				try {
 					appurl = obj.getString("appurl");
-					fileName = TestUtils.getFileName(appurl);
+					fileName = UpdateUtils.getFileName(appurl);
 					int urlcode = Integer.parseInt(obj.getString("verCode"));
 					Log.v("wangqinqin", "    " + (urlcode > getVersion()));
 					// if (urlcode > getVersion()) {
@@ -1103,5 +1102,6 @@ public class MainActivity extends Activity implements OnTouchListener,
 		return gestureDetector.onTouchEvent(event);
 	}
 
+	
 
 }

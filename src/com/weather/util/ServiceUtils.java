@@ -31,7 +31,7 @@ public class ServiceUtils {
 		}
 		long jiangeTime = 24 * 60 * 60 * 1000;
 		long triggerAtTime = SystemClock.elapsedRealtime() + time;
-		manager.setRepeating(AlarmManager.ELAPSED_REALTIME, triggerAtTime,
+		manager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, triggerAtTime,
 				jiangeTime, pendingIntent);
 	}
 

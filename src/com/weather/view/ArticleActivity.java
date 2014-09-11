@@ -185,6 +185,7 @@ public class ArticleActivity extends Activity implements OnTouchListener,
 				// TODO Auto-generated method stub
 				HttpUtil httpUtil = new HttpUtil(ArticleActivity.this);
 				result = httpUtil.getJsonContent(Config.newsUrl);
+				Log.v("wangqinqn", "  result  = "+result);
 				if (result == null && "".equals(result)) {
 					if (!"".equals(httpUtil.readFile(Config.NEWS_FILE_NAME))
 							&& httpUtil.readFile(Config.NEWS_FILE_NAME) != null) {
@@ -195,6 +196,8 @@ public class ArticleActivity extends Activity implements OnTouchListener,
 					}
 					
 				} else {
+					httpUtil.saveFile(result, Config.NEWS_FILE_NAME);
+					Log.v("wangqinqn", "  httpUtil.readFile(Config.NEWS_FILE_NAME) =   "+httpUtil.readFile(Config.NEWS_FILE_NAME));
 					Log.v("wangqiniqn", " http.save");
 					httpUtil.saveFile(result, Config.NEWS_FILE_NAME);
 					Message msg = new Message();
@@ -267,6 +270,7 @@ public class ArticleActivity extends Activity implements OnTouchListener,
 				try {
 					Jsonarr = new JSONArray(json);
 					for (int i = 0; i < Jsonarr.length(); i++) {
+						Log.v("wangqinqn", "   i  = "+i);
 						JSONObject obj = (JSONObject) Jsonarr.get(i);
 						listTitle.add(obj.getString("title"));
 						listId.add(obj.getString("id"));
@@ -299,6 +303,7 @@ public class ArticleActivity extends Activity implements OnTouchListener,
 				}
 				break;
 			case 1:
+				Log.v("wangqinqn", "  listTitle  = "+listTitle.size());
 				listzixun.setAdapter(new ArticleAdapter(ArticleActivity.this,
 						listTitle, listId));
 				break;
@@ -320,10 +325,5 @@ public class ArticleActivity extends Activity implements OnTouchListener,
 		// notification.defaults = Notification.DEFAULT_SOUND;//声音默认
 		manager.notify(0, notification);
 	}
-	@Override
-	protected void onResume() {
-		// TODO Auto-generated method stub
-		hasNet();
-		super.onResume();
-	}
+
 }

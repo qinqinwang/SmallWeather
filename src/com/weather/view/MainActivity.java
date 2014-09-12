@@ -24,7 +24,6 @@ import org.json.JSONObject;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.Notification;
@@ -50,11 +49,11 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.view.GestureDetector;
+import android.view.GestureDetector.OnGestureListener;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.GestureDetector.OnGestureListener;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
@@ -69,22 +68,22 @@ import android.widget.Toast;
 
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 import com.smallweather.R;
-//import com.tencent.mm.sdk.openapi.IWXAPI;
-//import com.tencent.mm.sdk.openapi.SendMessageToWX;
-//import com.tencent.mm.sdk.openapi.WXAPIFactory;
-//import com.tencent.mm.sdk.openapi.WXMediaMessage;
-//import com.tencent.mm.sdk.openapi.WXTextObject;
 import com.umeng.analytics.MobclickAgent;
 import com.weather.adapter.MyAdapter;
+import com.weather.layout.TextImage;
 import com.weather.util.CommonUtil;
 import com.weather.util.Config;
 import com.weather.util.FontManager;
 import com.weather.util.HttpUtil;
 import com.weather.util.SDUtil;
-import com.weather.util.WeatherService;
 import com.weather.util.ServiceUtils;
 import com.weather.util.UpdateUtils;
-import com.weather.layout.TextImage;
+import com.weather.util.WeatherService;
+//import com.tencent.mm.sdk.openapi.IWXAPI;
+//import com.tencent.mm.sdk.openapi.SendMessageToWX;
+//import com.tencent.mm.sdk.openapi.WXAPIFactory;
+//import com.tencent.mm.sdk.openapi.WXMediaMessage;
+//import com.tencent.mm.sdk.openapi.WXTextObject;
 
 public class MainActivity extends Activity implements OnTouchListener,
 		OnGestureListener {
@@ -148,8 +147,6 @@ public class MainActivity extends Activity implements OnTouchListener,
 		httpUtil = new HttpUtil(MainActivity.this);
 		gestureDetector = new GestureDetector(this);
 		setView();
-		hasNet();
-		getDate();
 		if (sp.getInt("isFirst", 0) == 0) {
 			jingxi.setVisibility(View.VISIBLE);
 			city.setText(this.getResources().getStringArray(R.array.cityitem)[2]);
@@ -160,10 +157,14 @@ public class MainActivity extends Activity implements OnTouchListener,
 			Editor editor = sp.edit();
 			editor.putBoolean("showjiudian", true);
 			editor.putBoolean("showxianshi", true);
-			editor.putString("citys", this.getResources().getStringArray(R.array.cityitem)[2]);
+			editor.putString("citys",
+					this.getResources().getStringArray(R.array.cityitem)[2]);
 			editor.putInt("isFirst", 1);
 			editor.commit();
+		} else {
+			setData();
 		}
+		hasNet();
 		ViewGroup viewGroup = (ViewGroup) findViewById(android.R.id.content);
 		FontManager.changeFonts(viewGroup, this);
 		// 更新
@@ -171,7 +172,15 @@ public class MainActivity extends Activity implements OnTouchListener,
 		MobclickAgent.setDebugMode(true);
 	}
 
-	public void sendMessage(String citys, String message) {
+	private void setData() {
+		// TODO Auto-generated method stub
+		Message msg = new Message();
+		msg.what = 8;
+		handler.sendMessage(msg);
+
+	}
+
+	public void sendNotification(String citys, String message) {
 		NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 		String news = httpUtil.readFile(Config.NEWS_FILE_NAME);
 		if (news != null && (!"".equals(news))) {
@@ -223,6 +232,7 @@ public class MainActivity extends Activity implements OnTouchListener,
 	private void hasNet() {
 		// TODO Auto-generated method stub
 		if (isNetworkAvailable(MainActivity.this)) {
+			// getDate();
 			// getDate();
 			getData();
 		} else {
@@ -502,11 +512,16 @@ public class MainActivity extends Activity implements OnTouchListener,
 				} else {
 					((TextImage) v).setImageDrawables(getResources()
 							.getDrawable(R.drawable.img_press_checked));
-					sendMessage(sp.getString("citys", ""),
-							sp.getString("message", ""));
-					Editor editor = sp.edit();
-					editor.putBoolean("showxianshi", true);
-					editor.commit();
+					String citys = sp.getString("citys", "");
+					String message = sp.getString("message", "");
+					if (citys != null && (!"".equals(citys)) && message != null
+							&& (!"".equals(message))) {
+						sendNotification(sp.getString("citys", ""),
+								sp.getString("message", ""));
+						Editor editor = sp.edit();
+						editor.putBoolean("showxianshi", true);
+						editor.commit();
+					}
 				}
 				break;
 			case R.id.jiudian_img:
@@ -635,27 +650,28 @@ public class MainActivity extends Activity implements OnTouchListener,
 		return menu;
 	}
 
-	private void getDate() {
-		// TODO Auto-generated method stub
-		String[] weekDays = this.getResources()
-				.getStringArray(R.array.weekitem);
-		Calendar calendar = Calendar.getInstance();
-		int month = calendar.get(Calendar.MONTH) + 1;
-		int day = calendar.get(Calendar.DATE);
-		int w = calendar.get(Calendar.DAY_OF_WEEK) - 1;
-		if (w < 0) {
-			w = 0;
-		}
-		String week = weekDays[w];
-		dates = month + "." + day + "/" + week;
-		Editor editor = sp.edit();
-		editor.putString("date", dates);
-		editor.commit();
-		Message msg = new Message();
-		msg.what = 8;
-		msg.obj = dates;
-		handler.sendMessage(msg);
-	}
+	//
+	// private void getDate() {
+	// // TODO Auto-generated method stub
+	// String[] weekDays = this.getResources()
+	// .getStringArray(R.array.weekitem);
+	// Calendar calendar = Calendar.getInstance();
+	// int month = calendar.get(Calendar.MONTH) + 1;
+	// int day = calendar.get(Calendar.DATE);
+	// int w = calendar.get(Calendar.DAY_OF_WEEK) - 1;
+	// if (w < 0) {
+	// w = 0;
+	// }
+	// String week = weekDays[w];
+	// dates = month + "." + day + "/" + week;
+	// Editor editor = sp.edit();
+	// editor.putString("date", dates);
+	// editor.commit();
+	// Message msg = new Message();
+	// msg.what = 8;
+	// msg.obj = dates;
+	// handler.sendMessage(msg);
+	// }
 
 	private void getData() {
 		// TODO Auto-generated method stub
@@ -675,18 +691,22 @@ public class MainActivity extends Activity implements OnTouchListener,
 					}
 
 				} else {
-					Log.v("wangqiniqnmainactivity", " http.save");
 					httpUtil.saveFile(result, Config.WEATHER_FILE_NAME);
+					String[] weekDays = MainActivity.this.getResources()
+							.getStringArray(R.array.weekitem);
 					Calendar calendar = Calendar.getInstance();
-					int year = calendar.get(Calendar.YEAR);
 					int month = calendar.get(Calendar.MONTH) + 1;
 					int day = calendar.get(Calendar.DATE);
-					dates = month + "." + day;
+					int w = calendar.get(Calendar.DAY_OF_WEEK) - 1;
+					if (w < 0) {
+						w = 0;
+					}
+					String week = weekDays[w];
+					dates = month + "." + day + "/" + week;
 					if (sp.getInt("tag", 0) == 0) {
-						Editor editor = sp.edit();
-						editor.putString("date", dates);
-						editor.putInt("tag", 1);
-						editor.commit();
+						Editor editor0 = sp.edit();
+						editor0.putInt("tag", 1);
+						editor0.commit();
 						Message msg = new Message();
 						msg.what = 1;
 						msg.obj = result;
@@ -697,9 +717,9 @@ public class MainActivity extends Activity implements OnTouchListener,
 						msg.obj = result;
 						handler.sendMessage(msg);
 					}
-					Editor editors = sp.edit();
-					editors.putString("date", dates);
-					editors.commit();
+					Editor editor = sp.edit();
+					editor.putString("date", dates);
+					editor.commit();
 				}
 			}
 
@@ -715,8 +735,10 @@ public class MainActivity extends Activity implements OnTouchListener,
 				setCity(cityPo);
 				int colorPo = sp.getInt("colorPosition", 0);
 				setColor(colorPo);
+				date.setText(sp.getString("date", ""));
 				break;
 			case 1:
+				date.setText(sp.getString("date", ""));
 				viewMain.setBackgroundColor(MainActivity.this.getResources()
 						.getColor(R.color.green));
 				json = (String) m.obj;
@@ -764,7 +786,6 @@ public class MainActivity extends Activity implements OnTouchListener,
 
 				break;
 			case 6:
-
 				progress.setVisibility(View.VISIBLE);
 				int lMax,
 				lNowSize;
@@ -778,8 +799,25 @@ public class MainActivity extends Activity implements OnTouchListener,
 				CommonUtil.install(MainActivity.this, fileName, SDUtil.SD_PATH);
 				break;
 			case 8:
-				String da = (String) m.obj;
-				date.setText(da);
+				String types = sp.getString("type", "");
+				String cityss = sp.getString("citys", "");
+				String temperatures = sp.getString("temperature", "");
+				String winds = sp.getString("wind", "");
+				String messages = sp.getString("message", "");
+				String dates = sp.getString("date", "");
+				int cp = sp.getInt("colorPosition", 0);
+				type.setText(types);
+				city.setText(cityss);
+				temperature.setText(temperatures);
+				wind.setText(winds);
+				date.setText(dates);
+				setColor(cp);
+				if (sp.getBoolean("showxianshi", false) && cityss != null
+						&& (!"".equals(cityss)) && messages != null
+						&& (!"".equals(messages))) {
+					MainActivity.this.sendNotification(cityss, messages);
+				}
+				break;
 			}
 		}
 	}
@@ -855,7 +893,7 @@ public class MainActivity extends Activity implements OnTouchListener,
 	}
 
 	private void setColor(int colorPosition) {
-		city.setText(sp.getString("citys",""));
+		city.setText(sp.getString("citys", ""));
 		if (colorPosition == 0) {
 			viewMain.setBackgroundColor(MainActivity.this.getResources()
 					.getColor(R.color.green));
@@ -868,7 +906,6 @@ public class MainActivity extends Activity implements OnTouchListener,
 		} else if (colorPosition == 3) {
 			viewMain.setBackgroundColor(MainActivity.this.getResources()
 					.getColor(R.color.purple));
-
 		}
 	}
 
@@ -891,14 +928,20 @@ public class MainActivity extends Activity implements OnTouchListener,
 			Editor editor = sp.edit();
 			editor.putString("weather", weather);
 			editor.putString("citys", citys);
+			editor.putString("type", obj.getString("content"));
+			editor.putString("temperature", obj.getString("temperature"));
+			editor.putString("wind", obj.getString("wind_direction") + " "
+					+ obj.getString("wind_force"));
 			editor.putString("message", message);
 			editor.commit();
 		} catch (JSONException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		if (sp.getBoolean("showxianshi", false)) {
-			sendMessage(citys, message);
+		if (sp.getBoolean("showxianshi", false) && citys != null
+				&& (!"".equals(citys)) && message != null
+				&& (!"".equals(message))) {
+			sendNotification(citys, message);
 		}
 	}
 
@@ -1104,6 +1147,5 @@ public class MainActivity extends Activity implements OnTouchListener,
 		// TODO Auto-generated method stub
 		return gestureDetector.onTouchEvent(event);
 	}
-	
 
 }

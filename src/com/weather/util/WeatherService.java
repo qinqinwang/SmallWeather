@@ -12,9 +12,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.IBinder;
+import android.widget.Toast;
 
 public class WeatherService extends Service {
 	private SharedPreferences sp = null;
+	private String title ;
+	private String citys ;
+	private String message ;
 	@Override
 	public IBinder onBind(Intent intent) {
 		return null;
@@ -27,13 +31,17 @@ public class WeatherService extends Service {
 	
 	@Override
 	public void onStart(Intent intent, int startId) {
-		showNotification();
+		citys = sp.getString("citys", "");
+		message = sp.getString("weather", "");
+		if(citys != null || (!"".equals(citys))&&message != null || (!"".equals(message))){
+			showNotification(citys,message);
+		}else{
+			Toast.makeText(this,"shdsjhfjdvhjdsvhjkd", 10000);
+		}
 	}
-	private void showNotification() {
-		String title = sp.getString("title", "");
-		String citys = sp.getString("citys", "");
-		String message = sp.getString("weather", "");
+	private void showNotification(String citys,String message) {
 		NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+		title = sp.getString("title", "");
 		if (title == null || "".equals(title)) {
 			Notification notification = new Notification(R.drawable.logo,
 					message, System.currentTimeMillis());

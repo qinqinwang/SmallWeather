@@ -185,7 +185,7 @@ public class ArticleActivity extends Activity implements OnTouchListener,
 				// TODO Auto-generated method stub
 				HttpUtil httpUtil = new HttpUtil(ArticleActivity.this);
 				result = httpUtil.getJsonContent(Config.newsUrl);
-				Log.v("wangqinqn", "  result  = "+result);
+				Log.v("wangqinqn", "  result  = " + result);
 				if (result == null && "".equals(result)) {
 					if (!"".equals(httpUtil.readFile(Config.NEWS_FILE_NAME))
 							&& httpUtil.readFile(Config.NEWS_FILE_NAME) != null) {
@@ -194,10 +194,12 @@ public class ArticleActivity extends Activity implements OnTouchListener,
 						msg.obj = httpUtil.readFile(Config.NEWS_FILE_NAME);
 						handler.sendMessage(msg);
 					}
-					
+
 				} else {
 					httpUtil.saveFile(result, Config.NEWS_FILE_NAME);
-					Log.v("wangqinqn", "  httpUtil.readFile(Config.NEWS_FILE_NAME) =   "+httpUtil.readFile(Config.NEWS_FILE_NAME));
+					Log.v("wangqinqn",
+							"  httpUtil.readFile(Config.NEWS_FILE_NAME) =   "
+									+ httpUtil.readFile(Config.NEWS_FILE_NAME));
 					Log.v("wangqiniqn", " http.save");
 					httpUtil.saveFile(result, Config.NEWS_FILE_NAME);
 					Message msg = new Message();
@@ -270,7 +272,7 @@ public class ArticleActivity extends Activity implements OnTouchListener,
 				try {
 					Jsonarr = new JSONArray(json);
 					for (int i = 0; i < Jsonarr.length(); i++) {
-						Log.v("wangqinqn", "   i  = "+i);
+						Log.v("wangqinqn", "   i  = " + i);
 						JSONObject obj = (JSONObject) Jsonarr.get(i);
 						listTitle.add(obj.getString("title"));
 						listId.add(obj.getString("id"));
@@ -281,19 +283,24 @@ public class ArticleActivity extends Activity implements OnTouchListener,
 							handler.sendMessage(msg);
 						}
 					}
-					Log.v("wangqinqin", "  length  =  "+Jsonarr.length());
+					Log.v("wangqinqin", "  length  =  " + Jsonarr.length());
 					if (Jsonarr.length() > 0) {
 						number = new Random().nextInt(Jsonarr.length()) + 1;
 						JSONObject objs = (JSONObject) Jsonarr.get(number);
+						String title = objs.getString("title");
 						Editor editor = sp.edit();
-						editor.putString("title", objs.getString("title"));
+						editor.putString("title", title);
 						editor.putString("id", objs.getString("id"));
 						editor.commit();
-						if (sp.getBoolean("showxianshi", false)) {
-							ArticleActivity.this.sendMessage(
-									sp.getString("citys", "")
-											+ sp.getString("message", ""),
-									objs.getString("title"));
+						String citys = sp.getString("citys", "");
+						String message = sp.getString("message", "");
+
+						if (sp.getBoolean("showxianshi", false)
+								&& citys != null && (!"".equals(citys))
+								&& message != null && (!"".equals(message))
+								&& title != null && (!"".equals(title))) {
+							ArticleActivity.this.sendNotification(citys
+									+ message, title);
 						}
 					}
 
@@ -303,7 +310,7 @@ public class ArticleActivity extends Activity implements OnTouchListener,
 				}
 				break;
 			case 1:
-				Log.v("wangqinqn", "  listTitle  = "+listTitle.size());
+				Log.v("wangqinqn", "  listTitle  = " + listTitle.size());
 				listzixun.setAdapter(new ArticleAdapter(ArticleActivity.this,
 						listTitle, listId));
 				break;
@@ -311,7 +318,7 @@ public class ArticleActivity extends Activity implements OnTouchListener,
 		}
 	}
 
-	public void sendMessage(String citys, String message) {
+	public void sendNotification(String citys, String message) {
 		NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
 		Notification notification = new Notification(R.drawable.logo, message,
